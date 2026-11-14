@@ -7,9 +7,11 @@ iklimiyle **stres testine** sokan, kurallara ve çiftçinin koşullarına uygun 
 planları **otomatik bulan**, her öneriyi **gerekçesiyle açıklayan** ve aynı ekranda
 bu kararın **havzanın suyuna ve ürün fiyatlarına** etkisini gösteren karar destek aracı.
 
-> **Demo modu:** NASA verisi bağlanana kadar uygulama gerçek şemayla aynı,
-> fiziksel olarak tutarlı **sentetik** veriyle çalışır ve bunu her ekranda açıkça
-> söyler. Gerçek veriye geçiş tek bir ayardır → [docs/DATA_SWAP.md](docs/DATA_SWAP.md)
+> **Veri durumu (teslim):** 8 veri setinden 4'ü gerçek NASA verisi — POWER (iklim),
+> GPM IMERG (yağış düzeltmesi), GRACE/GRACE-FO (havza su deposu), NEX-GDDP-CMIP6 (2040'lar).
+> SMAP ve HLS/MODIS sentetik yer tutucudur (hesaba girmez / yalnızca grafik), SRTM eğimi
+> ve Çumra toprağı elle girilmiştir. Her dosyanın kökeni `data/external/KAYNAK.yaml`'da
+> beyan edilir; uygulama ve PDF karne bunu her ekranda yazar → [docs/DATA_SWAP.md](docs/DATA_SWAP.md)
 
 ## Hızlı başlangıç (Windows)
 
@@ -36,7 +38,7 @@ streamlit run app.py
 python scripts/setup_real_data.py        # gerçek NASA verisi (POWER + SoilGrids; anahtar gerekmez)
 ```
 
-Testler: `python -m pytest -q` (62 test; FAO-56 Örnek 18 doğrulaması, uç durumlar ve veri birim kontrolleri dahil).
+Testler: `python -m pytest -q` (68 test; FAO-56 Örnek 18 doğrulaması, uç durumlar ve veri birim kontrolleri dahil).
 
 ## Sayfalar
 

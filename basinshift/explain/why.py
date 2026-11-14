@@ -35,6 +35,19 @@ CARD_GOAL = {
 }
 
 
+DS_NAMES = {
+    "terrain": ("eğim (SRTM)", "slope (SRTM)"), "soil_properties": ("toprak özellikleri (SoilGrids)", "soil properties (SoilGrids)"),
+    "soil_moisture": ("toprak nemi (SMAP)", "soil moisture (SMAP)"), "ndvi": ("NDVI (HLS/MODIS)", "NDVI (HLS/MODIS)"),
+    "precip_satellite": ("uydu yağışı (IMERG)", "satellite rainfall (IMERG)"), "climate_deltas": ("2040'lar iklimi (CMIP6)", "2040s climate (CMIP6)"),
+    "climate_daily": ("günlük iklim (POWER)", "daily climate (POWER)"),
+}
+
+
+def ds_name(ds: str, lang: str) -> str:
+    """Veri seti kimliği → okunur ad (arayüz ve karne için)."""
+    return DS_NAMES.get(ds, (ds, ds))[0 if lang == "tr" else 1]
+
+
 def _crops_in(option: PlanOption) -> list[str]:
     seen = []
     for plan, _ in option.parts:
@@ -153,11 +166,11 @@ def explain(option: PlanOption, current: PlanOption | None, ctx: FieldContext,
         )
 
     # 4) Bilgi boşlukları
-    defaults = [ds for ds, p in provenance.items() if p.is_default]
+    defaults = [ds_name(ds, lang) for ds, p in provenance.items() if p.is_default]
     if defaults:
         out["gaps"].append(
-            (f"Şu veri setleri alınamadı, varsayılan değer kullanıldı: {', '.join(defaults)}.") if tr else
-            (f"These datasets were unavailable and defaults were used: {', '.join(defaults)}.")
+            (f"Şu değerler ölçülmedi, elle girilmiş varsayımdır: {', '.join(defaults)}.") if tr else
+            (f"These values are not measured but hand-entered assumptions: {', '.join(defaults)}.")
         )
     clim = provenance.get("climate_daily")
     if clim is not None and clim.is_synthetic:

@@ -16,6 +16,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 from fpdf import FPDF  # noqa: E402
 
+from ..explain.why import ds_name
 from ..explain.fmt import area_factor, merged_year, money, num, water  # noqa: E402
 
 INK = (31, 42, 36)
@@ -34,7 +35,7 @@ TXT = {
         "status_green": "Kurallara uygun", "status_yellow": "Sarı kart riski", "status_red": "Kırmızı kart riski",
         "nitrogen": "Azot", "organic_matter": "Organik madde", "erosion": "Erozyon/çıplak toprak", "pest_cycle": "Zararlı döngüsü",
         "data": "Veri", "years": "hasat yılı",
-        "defaults": "Şu veri setleri alınamadı, varsayılan değer kullanıldı: {}.",
+        "defaults": "Şu değerler ölçülmedi, elle girilmiş varsayımdır: {}.",
         "placeholders": "Not: Şu veri setleri sentetik yer tutucudur (iklim ve yağış gerçek NASA verisidir): {}.",
     },
     "en": {
@@ -48,7 +49,7 @@ TXT = {
         "status_green": "Compliant", "status_yellow": "Yellow card risk", "status_red": "Red card risk",
         "nitrogen": "Nitrogen", "organic_matter": "Organic matter", "erosion": "Erosion/bare soil", "pest_cycle": "Pest cycle",
         "data": "Data", "years": "harvest years",
-        "defaults": "These datasets were unavailable; defaults were used: {}.",
+        "defaults": "These values are not measured but hand-entered assumptions: {}.",
         "placeholders": "Note: these datasets are synthetic placeholders (climate and rainfall are real NASA data): {}.",
     },
 }
@@ -68,19 +69,19 @@ def _hex(c: str) -> tuple[int, int, int]:
 
 
 def _dist_png(option, current, f: float, sym: str, unit: str, labels: tuple[str, str]) -> bytes:
-    fig, ax = plt.subplots(figsize=(6.2, 2.1), dpi=150)
+    fig, ax = plt.subplots(figsize=(7.4, 1.95), dpi=150)
     data, names, colors = [], [], []
     if current is not None:
         data.append(current.detail["sim"]["margin"].sum(axis=1) * f)
         names.append(labels[1])
-        colors.append("#6B7A70")
+        colors.append("#8A97B4")
     data.append(option.detail["sim"]["margin"].sum(axis=1) * f)
     names.append(labels[0])
-    colors.append("#2E7D4F")
+    colors.append("#0960E1")
     try:
-        bp = ax.boxplot(data, orientation="horizontal", patch_artist=True, widths=0.55)
+        bp = ax.boxplot(data, orientation="horizontal", patch_artist=True, widths=0.55, medianprops=dict(color="#E43700", linewidth=1.6))
     except TypeError:  # matplotlib < 3.10
-        bp = ax.boxplot(data, vert=False, patch_artist=True, widths=0.55)
+        bp = ax.boxplot(data, vert=False, patch_artist=True, widths=0.55, medianprops=dict(color="#E43700", linewidth=1.6))
     for patch, c in zip(bp["boxes"], colors):
         patch.set_facecolor(c + "33")
         patch.set_edgecolor(c)
@@ -108,10 +109,21 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
     pdf.add_page()
     pdf.set_margins(14, 12, 14)
 
-    # Başlık
+    # Başlık bandı (Space Apps marka renkleri: Deep Blue zemin, Neon Yellow vurgu)
+    pdf.set_fill_color(7, 23, 63)
+    pdf.rect(0, 0, 210, 27, "F")
+    pdf.set_fill_color(0, 66, 166)
+    pdf.rect(0, 27, 210, 1.6, "F")
+    pdf.set_fill_color(234, 254, 7)
+    pdf.rect(14, 27, 34, 1.6, "F")
+    pdf.set_xy(14, 6)
+    pdf.set_font("DejaVu", "B", 7.5)
+    pdf.set_text_color(234, 254, 7)
+    pdf.cell(0, 4, "NASA SPACE APPS CHALLENGE 2026 · FIELD SHIFT · KONYA", new_x="LMARGIN", new_y="NEXT")
     pdf.set_font("DejaVu", "B", 18)
-    pdf.set_text_color(*INK)
-    pdf.cell(0, 9, f"BasinShift · {L['title']}", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(0, 10, f"BasinShift · {L['title']}", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_y(31)
     pdf.set_font("DejaVu", "", 9)
     pdf.set_text_color(*MUTED)
     meta = [f"{L['date']}: {date.today().isoformat()}", f"{L['site']}: {ctx.site.name} ({ctx.site.lat:.3f}, {ctx.site.lon:.3f})",
@@ -125,10 +137,10 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
     if clim is not None and clim.is_synthetic:
         warn.append(L["synthetic"])
     else:
-        ph = [ds for ds, p in provenance.items() if p.is_synthetic]
+        ph = [ds_name(ds, lang) for ds, p in provenance.items() if p.is_synthetic]
         if ph:
             warn.append(L["placeholders"].format(", ".join(ph)))
-    defaults = [ds for ds, p in provenance.items() if p.is_default]
+    defaults = [ds_name(ds, lang) for ds, p in provenance.items() if p.is_default]
     if defaults:
         warn.append(L["defaults"].format(", ".join(defaults)))
     if warn:
@@ -192,7 +204,7 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
     ]
     widths = (86, 48, 48)
     pdf.set_font("DejaVu", "B", 9)
-    pdf.set_fill_color(228, 232, 225)
+    pdf.set_fill_color(226, 237, 252)
     for txt, wd in zip((L["metric"], L["this"], L["current"]), widths):
         pdf.cell(wd, 6, txt, border=0, fill=True)
     pdf.ln()
@@ -213,9 +225,9 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
         pdf.set_text_color(*MUTED)
         pdf.cell(bar_w, 4, f"{L[k]}  {soil[k]:.0f}")
         yb = pdf.get_y() + 4.4
-        pdf.set_fill_color(213, 219, 210)
+        pdf.set_fill_color(214, 222, 236)
         pdf.rect(x, yb, bar_w - 4, 1.8, style="F")
-        pdf.set_fill_color(46, 125, 79)
+        pdf.set_fill_color(0, 66, 166)
         pdf.rect(x, yb, (bar_w - 4) * max(0, min(100, soil[k])) / 100, 1.8, style="F")
         x += bar_w + 4
     pdf.ln(9)

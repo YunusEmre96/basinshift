@@ -257,12 +257,12 @@ def page_field() -> None:
         st.markdown(f"### {t('constraints', lang)}")
         tags = sorted({crops[c].equipment for c in ids if crops[c].equipment})
         if tags:
-            st.multiselect(t("equipment", lang), tags, key="equipment", format_func=_equipment_label)
+            st.multiselect(t("equipment", lang), tags, key="equipment", placeholder=("Seçin" if lang == "tr" else "Choose"), format_func=_equipment_label)
         contract_crops = [c for c in ids if crops[c].contract_required]
         if contract_crops:
-            st.multiselect(t("contracts", lang), contract_crops, key="contracts", format_func=crop_label)
-        st.multiselect(t("no_buyer", lang), [c for c in ids if c != "fallow"], key="no_buyer", format_func=crop_label)
-        st.multiselect(t("excluded", lang), ids, key="excluded", format_func=crop_label)
+            st.multiselect(t("contracts", lang), contract_crops, key="contracts", placeholder=("Seçin" if lang == "tr" else "Choose"), format_func=crop_label)
+        st.multiselect(t("no_buyer", lang), [c for c in ids if c != "fallow"], key="no_buyer", placeholder=("Seçin" if lang == "tr" else "Choose"), format_func=crop_label)
+        st.multiselect(t("excluded", lang), ids, key="excluded", placeholder=("Seçin" if lang == "tr" else "Choose"), format_func=crop_label)
         st.slider(t("min_forage", lang), 0.0, 1000.0, step=25.0, key="min_forage")
 
     with right:
@@ -275,7 +275,7 @@ def page_field() -> None:
         st.markdown(f"### {t('options', lang)}")
         st.toggle(t("cover_crop", lang), key="cover")
         st.toggle(t("respect_breaks", lang), key="breaks")
-        st.multiselect(t("rule_packs", lang), list_rule_packs(), key="packs",
+        st.multiselect(t("rule_packs", lang), list_rule_packs(), key="packs", placeholder=("Seçin" if lang == "tr" else "Choose"),
                        format_func=lambda p: load_rule_pack(p).name(lang))
       _location_map(b)
 
@@ -576,7 +576,7 @@ def page_plans() -> None:
         _cover_tradeoff(res.options["balance"], unit)
 
     with st.expander(t("pareto_title", lang)):
-        st.caption(t("pareto_help", lang, n=res.n_total, f=len(res.feasible), p=len(res.pareto)))
+        st.caption(t("pareto_help", lang, n=ui.num(res.n_total, lang), f=ui.num(len(res.feasible), lang), p=len(res.pareto)))
         labels = {k: card_title(k, ctx.settings.irrigated)[0] for k in res.options}
         ui.chart(ui.pareto_chart(res, res.options, labels, ctx, unit, lang), width="stretch")
         f = area_factor(unit)
