@@ -126,6 +126,39 @@ SMAP kök bölgesi nemi (2015–) ─────┤► ekimde başlangıç topr
 * Not: Planlama dokümanı PuLP diyordu; PuLP 4 sürümünde API değiştiği ve hazır çözücü
   kaldırıldığı için aynı HiGHS çözücüsünü kullanan SciPy tercih edildi.
 
+## 8b. Kooperatif kazanç paylaşımı (`basin/model.py → cooperative_sharing`)
+
+* Koordineli havza planının toplam geliri ile "herkes kendi başına" (örümcek ağı, ısınma yılları sonrası
+  ortalama) toplam geliri arasındaki fark = koordinasyon fazlası.
+* Her üye (çiftlik tipi) önce kendi başına gelirini garanti alır; fazla alan payına göre dağıtılır.
+  Transfer = paylaşım sonrası gelir − koordineli plandaki gelir; transferlerin toplamı sıfırdır.
+* Fazla pozitifse hiçbir üye kendi başına durumdan kötü olmaz (test: `test_cooperative_sharing_is_budget_neutral`).
+* Çiftlik tipleri temsilidir; mekanizma gösterimidir.
+
+## 8c. Borsa ve fiyat riski (`engine/price_risk.py`, `tables/price_risk.csv`)
+
+* Ana stres testi 2026 sabit fiyatlarıyla yapılır. Ek analizde aynı 41 dönem 200 fiyat senaryosuyla
+  yeniden oynatılır: her takvim yılı ve ürün için çarpan ~ LogNormal(ortalama 1, CV), isteğe bağlı şok.
+* kâr' = kâr + verim × fiyat × (çarpan − 1). Kötü dönem geliri her senaryoda ana tanımla (41 dönemin
+  en kötü %5'i) hesaplanır, senaryoların ortalaması alınır → sıfır oynaklıkta ana sonuçla birebir aynı.
+* CV değerleri **varsayımdır**: TMO alım fiyatı (buğday %12) ve fabrika sözleşmesi (pancar %5) olan
+  ürünlerde düşük, serbest borsa (nohut, mercimek %25) ve hal (patates %40) ürünlerinde yüksek.
+  Konya Ticaret Borsası bültenleriyle kalibre edilmelidir. Ürünler arası fiyat ilişkisi yok sayılır.
+
+## 8d. Ürün uygunluk taraması (`engine/suitability.py`, `tables/crop_suitability.csv`)
+
+* Ürün tablosundaki bütün ürünler seçili tarlada denenir; havzada ekilmeyenler (pamuk, çeltik,
+  domates, kanola) için ürünün yetiştiği referans bölge (Fresno, Ludhiana) tabloda yazılıdır.
+* Isı yeterliliği: GDD = Σ max(0, (Tmax+Tmin)/2 − Ttaban). Olgunluk ihtiyacı (`gdd_req`, literatür
+  orta değeri, VARSAYIM) kaç günde birikiyor? Pencere: yazlık üründe Ağustos sonrası ilk ağır dona
+  (Tmin < −2 °C), kışlık üründe ertesi 20 Temmuz'a kadar. Isı payı = pencere / gereken gün.
+* Ekim tarihi referans bölgenin tarihi etrafında −30…+30 gün denenir; gelişim dönemleri gereken güne
+  ölçeklenir; su ve verim planlarla aynı FAO-56/FAO-33 modeli.
+* Karar: kırmızı = ısı payı < 1,0 ya da kötü yılda (p10) verim oranı < 0,60 ya da don ≥ 5 gün;
+  sarı = ısı payı < 1,1 ya da ortanca verim < 0,85 ya da don ≥ 2 gün ya da sulama referanstan %25 fazla.
+* Yalnızca agronomi; fiyat ve pazar değerlendirilmez. Yeni ürünü planlara eklemek için
+  `tables/basin_economics.csv`'ye satır gerekir.
+
 ## 9. Uydudan ürün geçmişi
 
 HLS NDVI: ilkbahar (Nis–May) ve yaz sonu (15 Tem–Ağu) tepe değerleri → kışlık/erken,

@@ -38,7 +38,7 @@ streamlit run app.py
 python scripts/setup_real_data.py        # gerçek NASA verisi (POWER + SoilGrids; anahtar gerekmez)
 ```
 
-Testler: `python -m pytest -q` (68 test; FAO-56 Örnek 18 doğrulaması, uç durumlar ve veri birim kontrolleri dahil).
+Testler: `python -m pytest -q` (80 test; FAO-56 Örnek 18 doğrulaması, uç durumlar ve veri birim kontrolleri dahil).
 
 ## Yayına alma (Streamlit Community Cloud)
 
@@ -53,9 +53,10 @@ Testler: `python -m pytest -q` (68 test; FAO-56 Örnek 18 doğrulaması, uç dur
 |---|---|
 | **Tarla** | Geçmiş ürünler, düşünülen plan, su/ekipman/sözleşme/alıcı/yem koşulları, öncelikler, kural paketleri, uydudan ürün geçmişi doğrulaması |
 | **İklim geçmişi** | Risk takvimi (don, sıcak, şiddetli yağış, kurak ay, çıplak toprak), aylık yağış/ET0, Mann-Kendall eğilim testi, NDVI ve SMAP serileri, uydu–iklim verisi yağış karşılaştırması |
-| **Planlar** | Mevcut plan + Kâr / Akifer / Denge kartları, sarı/kırmızı kart, toprak alt skorları, yem, güven etiketleri, "Neden bu plan?" (5 başlık), 40 yıllık gelir dağılımı, ürün takvimi, örtü bitkisi ödünleşimi, Pareto görünümü |
+| **Ürün uygunluğu** | Ürün tablosundaki bütün ürünler (başka havzalardan pamuk, çeltik, domates, kanola dahil) bu tarlanın 40+ yıllık iklimiyle: ısı yetiyor mu (büyüme derece-günü), don/sıcak stresi, sulu/kuru verim, sulama; yeşil/sarı/kırmızı |
+| **Planlar** | Mevcut plan + Kâr / Akifer / Denge kartları, sarı/kırmızı kart, toprak alt skorları, yem, güven etiketleri, "Neden bu plan?" (5 başlık), 40 yıllık gelir dağılımı, **borsa ve fiyat riski** (pazar, oynaklık, fiyat şoku), ürün takvimi, örtü bitkisi ödünleşimi, Pareto görünümü |
 | **İki gelecek** | Alışkanlıkla ekim ile BasinShift planının 2027–2030 gelir ve su aralıkları |
-| **Havza** | GRACE su deposu, obruk bilgileri, bugünkü / koordinasyonsuz / koordineli senaryolar, koordinasyonsuzluğun bedeli, suyun gölge fiyatı, örümcek ağı fiyat döngüsü |
+| **Havza** | GRACE su deposu, obruk bilgileri, bugünkü / koordinasyonsuz / koordineli senaryolar, koordinasyonsuzluğun bedeli, suyun gölge fiyatı, örümcek ağı fiyat döngüsü, **kooperatif kazanç paylaşımı**, ulusal ticaret tablosu |
 | **Karne** | Banka/sigorta/kooperatif için tek sayfalık PDF Risk ve Su Karnesi |
 | **Yöntem ve veriler** | Veri seti–ürün–çözünürlük–kullanılan kaynak tablosu, varsayımlar ve güven düzeyleri, sözlük |
 

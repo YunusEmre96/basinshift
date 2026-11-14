@@ -104,6 +104,28 @@ Hayır. Mevcut plan her zaman karşılaştırmada, her önerinin bilgi boşlukla
 Havza menüsünden Pencap'ı seçin; kural paketi ve para birimi değişir, motor aynı kalır. Diğer üç havzanın ekonomi ve
 kural tabloları temsilidir.
 
+## Mentör geri bildirimiyle eklenenler
+
+**Hal ve borsa entegrasyonu var mı?**
+Canlı bağlantı yok; borsa bültenleri için resmî bir arayüz yok. Ama fiyat riskini modelledik: her ürünün
+pazarı (TMO, borsa, fabrika sözleşmesi, hal) ve yıllık fiyat oynaklığıyla aynı 41 dönemi 200 fiyat
+senaryosunda tekrar oynatıyoruz. Örnek tarlada mevcut planın zarar eden yıl olasılığı %8'den %18'e çıkıyor.
+Hal Kayıt Sistemi yaş meyve-sebze içindir; bizim ürünlerimizden yalnızca patatese uyar.
+
+**Kooperatif nasıl işler?**
+Havza sayfasında: koordineli plan toplamda daha çok kazandırır; kooperatif her üyeye kendi başına gelirini
+garanti eder, ek kazancı alan payına göre böler ve kaybedene transfer yapar. Konya örneğinde her üye
+dekar başına ~316 ₺ fazla kazanır. Uygulama yolları: ortak su kotası, toplu pancar sözleşmesi, lisanslı
+depo + borsada toplu satış, ortak makine, telafi fonu. Çiftlik tipleri temsilidir.
+
+**Başka bölgenin ürünü Konya'da olur mu?**
+Ürün uygunluğu sayfası: Çumra'da domates uygun, çeltik koşullu (ısı sınırda, çok su), pamuk ve kanola
+uygun değil (olgunlaşacak ısı yok). Isı ihtiyacı literatürden yaklaşık değer; çeşide göre değişir.
+
+**Mikro iklim?**
+Yok. İklim verisi ~50 km hücre; tarla içi farkı toprak ve yönetim girdileri taşıyor. Yüksek çözünürlüklü
+yüzey sıcaklığı (MODIS LST, 1 km) ya da tarla istasyonu ile gelecek adım.
+
 ## Söylenmeyecekler
 
-"İlk", "sıfır risk", "ECOSTRESS ile doğruladık", "28 bin plan", "görüştük" (görüşmediyseniz), "2.500+ çökme yapısı".
+"İlk", "sıfır risk", "ECOSTRESS ile doğruladık", "28 bin plan", "görüştük" (görüşmediyseniz), "2.500+ çökme yapısı". "8/8 gerçek veri", "hal/borsa entegrasyonu var" (canlı bağlantı yok; fiyat riski modeli var), "mikro iklim modeli".
