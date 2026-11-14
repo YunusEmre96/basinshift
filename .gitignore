@@ -3,15 +3,12 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
-data/cache/*
-!data/cache/.gitkeep
-data/external/*
-!data/external/.gitkeep
-!data/external/README.md
-!data/external/KAYNAK.yaml
+# data/external (NASA + SoilGrids dosyaları) ve data/cache (POWER yanıtları) depoya dahildir:
+# yayındaki uygulama internet beklemeden gerçek veriyle açılsın diye.
 .env
 *.log
 .streamlit/secrets.toml
 data/veri_raporu.txt
 data/external_example/
 dist/
+mevcutarayuzler/

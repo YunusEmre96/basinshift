@@ -40,6 +40,13 @@ python scripts/setup_real_data.py        # gerçek NASA verisi (POWER + SoilGrid
 
 Testler: `python -m pytest -q` (68 test; FAO-56 Örnek 18 doğrulaması, uç durumlar ve veri birim kontrolleri dahil).
 
+## Yayına alma (Streamlit Community Cloud)
+
+1. share.streamlit.io → **Create app** → bu depo, dal `main`, ana dosya `app.py`.
+2. **Advanced settings → Python 3.12** (varsayılan 3.14 bazı paketlerle uyumsuz olabilir).
+3. Secrets gerekmez. Veri (`data/external`, `data/cache`) depoda olduğu için uygulama gerçek veriyle açılır.
+4. 12 saat ziyaret almayan uygulama uyur; sunumdan önce linki bir kez açın.
+
 ## Sayfalar
 
 | Sayfa | Ne gösterir |
