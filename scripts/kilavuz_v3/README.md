@@ -7,7 +7,7 @@ Gerekenler: Python, `playwright` + Google Chrome, `pypdf`, `Pillow`, poppler (`p
 ```bash
 # 1) uygulamayı açın (calistir.bat) ve ekran görüntülerini alın (scripts/capture_all.py ya da kendi aracınız)
 # 2) kılavuzu üretin:
-python scripts/kilavuz_v3/build.py docs/ekran_goruntuleri/tr_png  BasinShift_Kilavuz.pdf
+python scripts/kilavuz_v3/build.py docs/ekran_goruntuleri/tr  BasinShift_Kilavuz.pdf
 ```
 
 Ekran görüntüsü dosya adları: `00_field_top, 01_field, 03_plans, 04_plans_why, 05_status, 06_futures, 07_basin,

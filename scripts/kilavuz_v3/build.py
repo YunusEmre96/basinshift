@@ -40,14 +40,21 @@ CROPS = {
 }
 
 
+def _open(fn: str) -> Image.Image:
+    p = SHOTS / fn
+    if not p.exists():
+        p = p.with_suffix(".jpg")
+    return Image.open(p).convert("RGB")
+
+
 def make_crops(overrides: dict | None = None) -> None:
     crops = dict(CROPS, **(overrides or {}))
     for name, (fn, box) in crops.items():
-        im = Image.open(SHOTS / fn).convert("RGB")
+        im = _open(fn)
         x0, y0, x1, y1 = box
         im.crop((x0, y0, min(x1, im.width), min(y1, im.height))).save(IMG / f"{name}.jpg", quality=88, optimize=True)
     # Denge kartının "Neden bu plan?" sütunu → yan yana üç şerit
-    why = Image.open(SHOTS / "04_plans_why.png").convert("RGB")
+    why = _open("04_plans_why.png")
     col = why.crop(WHY_BOX)
     n = 3
     h = (col.height + n - 1) // n
