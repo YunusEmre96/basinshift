@@ -70,7 +70,19 @@ def explain(option: PlanOption, current: PlanOption | None, ctx: FieldContext,
     if key == "aquifer" and not ctx.settings.irrigated:
         key = "aquifer_rainfed"
     goal = CARD_GOAL[lang][key]
-    out["why"].append(("Bu plan, " if tr else "Suggested because ") + goal + ("." if not tr else " için önerildi."))
+    if key == "current":
+        status = option.detail.get("status", "green")
+        if tr:
+            msg = "Bu sizin mevcut planınız; öneri değil, karşılaştırma referansıdır."
+            if status != "green":
+                msg += " Su kısıtı / münavebe kuralını ihlal ettiği için " + ("kırmızı" if status == "red" else "sarı") + " kart riski taşır ve destek kaybına yol açar."
+        else:
+            msg = "This is your current plan: a reference for comparison, not a recommendation."
+            if status != "green":
+                msg += f" It breaks the water / rotation rule, so it carries a {'red' if status == 'red' else 'yellow'} card risk and loses support."
+        out["why"].append(msg)
+    else:
+        out["why"].append(("Bu plan, " if tr else "Suggested because ") + goal + ("." if not tr else " için önerildi."))
     if option.is_mix:
         out["why"].append(
             "Tarla ikiye bölünerek farklı ürünler aynı yıl birlikte ekilir; ürünler kötü yıllara farklı tepki verdiği için gelir dalgalanması azalır."

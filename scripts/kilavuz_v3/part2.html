@@ -1,0 +1,255 @@
+
+<!-- ============================ 04 ============================ -->
+<section class="chapter" data-toc="04|Temel kavramlar|Su, verim, risk ve kurallar sıfırdan">
+  <div class="chap-head"><div class="num">04</div><div class="kicker">Sıfırdan</div>
+  <h1>Temel kavramlar</h1>
+  <p class="lead">Uygulamadaki her sayı aşağıdaki kavramlardan birine dayanır. Ziraat ya da finans geçmişi olmayan biri için yazıldı.</p></div>
+
+  <h2>4.1 Su: bitki ne kadar içer?</h2>
+  <div class="grid2">
+    <div>
+      <h4>Referans buharlaşma-terleme (ET₀)</h4>
+      <p>Atmosferin "susuzluğu": iyi sulanmış kısa bir çim örtüsünün günde ne kadar su kaybedeceği (mm/gün). Sıcaklık, nem, rüzgâr ve güneş radyasyonundan FAO-56 Penman-Monteith denklemiyle hesaplanır. Çumra'da yıllık ET₀ ≈ 1.172 mm; düzeltilmiş yağış ≈ 316 mm. Aradaki ≈ 856 mm açığı sulama kapatır.</p>
+      <h4>Ürün su ihtiyacı (ETc = Kc · ET₀)</h4>
+      <p>Her ürünün katsayısı (Kc) gelişim dönemine göre değişir: ekimde düşük, tam örtüde en yüksek, olgunlukta yine düşük. Pancar ve mısır yaz ortasında en yüksek Kc'ye ulaştığı için Konya'nın en kurak aylarında en çok suyu ister.</p>
+      <h4>Kök bölgesi kovası (TAW, RAW)</h4>
+      <p>Toprak bir kovadır. <b>TAW</b> (toplam kullanılabilir su) = topraktaki kullanılabilir su (mm/m) × kök derinliği. Bitki kovanın üst kısmını (<b>RAW</b> = p · TAW, genellikle p = 0,5) zorlanmadan kullanır; daha aşağı inince stomalarını kapatır ve verim düşer.</p>
+    </div>
+    <figure style="margin-top:0">
+    <svg viewBox="0 0 320 300" xmlns="http://www.w3.org/2000/svg" font-family="Inter">
+      <defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E96F5"/><stop offset="1" stop-color="#0042A6"/></linearGradient>
+      <marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0B1633"/></marker></defs>
+      <text x="160" y="16" text-anchor="middle" font-size="12" font-weight="800" fill="#07173F">Kök bölgesi su kovası</text>
+      <path d="M70,40 L70,250 Q70,262 82,262 L198,262 Q210,262 210,250 L210,40" fill="none" stroke="#07173F" stroke-width="3"/>
+      <rect x="72" y="120" width="136" height="140" fill="url(#w)" opacity="0.9"/>
+      <line x1="62" y1="40" x2="218" y2="40" stroke="#1E9E5A" stroke-dasharray="4 3"/>
+      <text x="222" y="44" font-size="9.5" fill="#1E9E5A" font-weight="700">Tarla kapasitesi (dolu)</text>
+      <line x1="62" y1="150" x2="218" y2="150" stroke="#E43700" stroke-dasharray="4 3"/>
+      <text x="222" y="146" font-size="9.5" fill="#E43700" font-weight="700">RAW sınırı</text>
+      <text x="222" y="158" font-size="8.5" fill="#E43700">altında stres (Ks&lt;1)</text>
+      <line x1="62" y1="260" x2="218" y2="260" stroke="#4B5A78" stroke-dasharray="4 3"/>
+      <text x="222" y="264" font-size="9.5" fill="#4B5A78" font-weight="700">Solma noktası</text>
+      <line x1="50" y1="40" x2="50" y2="260" stroke="#0B1633" marker-start="url(#a2)" marker-end="url(#a2)"/>
+      <text x="44" y="155" font-size="11" font-weight="800" fill="#07173F" text-anchor="end">TAW</text>
+      <line x1="30" y1="40" x2="30" y2="150" stroke="#0B1633" marker-start="url(#a2)" marker-end="url(#a2)"/>
+      <text x="24" y="98" font-size="10" font-weight="800" fill="#07173F" text-anchor="end">RAW</text>
+      <text x="140" y="72" font-size="10" fill="#0042A6" text-anchor="middle" font-weight="700">↓ yağış, sulama</text>
+      <text x="140" y="200" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">kalan su (S)</text>
+      <text x="140" y="216" font-size="9" fill="#DCE7FF" text-anchor="middle">ETa = Ks · ETc ile azalır</text>
+      <text x="160" y="290" font-size="9" fill="#4B5A78" text-anchor="middle">S, RAW sınırına inince TAW'a kadar sulanır (tam sulama)</text>
+    </svg>
+    <figcaption><b>Şekil 4.1</b> · Günlük su dengesi. Su seviyesi RAW sınırının altına inince bitki zorlanır (Ks &lt; 1); tam sulama senaryosunda kova tekrar doldurulur ve doldurulan miktar net sulama ihtiyacıdır.</figcaption></figure>
+  </div>
+  <h4>Sulama randımanı</h4>
+  <p>Kuyudan çekilen suyun hepsi köke ulaşmaz. Brüt su = net ihtiyaç / randıman. Modelde damla 0,90, yağmurlama 0,75, salma 0,60. Aynı tarlada damlaya geçiş yağmurlamaya göre suyu %16,7 azaltır; FAO'nun Konya rehberindeki %23–26'lık tasarrufun altındadır, yani model temkinli taraftadır.</p>
+
+  <h2>4.2 Verim: su eksikliği ne kadar zarar verir?</h2>
+  <p>FAO-33 verim tepki denklemi bitkinin su eksikliğine duyarlılığını tek bir katsayıyla (<b>Ky</b>) özetler:</p>
+  <div class="formula">1 − Ya/Ym = Ky · (1 − ETa/ETc)        Ya: gerçekleşen verim · Ym: en yüksek verim</div>
+  <p>Ky &gt; 1 olan ürünler (mısır, pancar) su eksikliğinde orantıdan fazla verim kaybeder; Ky &lt; 1 olanlar (buğday, aspir, nohut) daha dayanıklıdır. Buna iklim stresi (sıcak, don, hasatta yağış) ve önceki ürün etkisi (ör. baklagilden sonra buğday +%10) eklenir.</p>
+
+  <h2>4.3 Risk: ortalama yetmez</h2>
+  <div class="grid2">
+    <div><h4>Stres testi</h4><p>Bir plan 2027–2030 için düşünülür ama geleceğin havası bilinmez. BasinShift planı geçmişin <b>her ardışık dört yıllık döneminde</b> oynatır (1982–85, 1983–86, … 2022–25 = 41 dönem). Böylece art arda gelen kurak yıllar gibi gerçek diziler korunur.</p>
+    <h4>Kötü dönem geliri (CVaR %5)</h4><p>41 dönemin yıllık ortalama kârı sıralanır; en kötü %5'lik dilimin ortalaması alınır. "İşler gerçekten kötü giderse ortalama ne kazanırım?" sorusunun cevabıdır. Bankaların kullandığı "koşullu riske maruz değer" ölçüsünün tarla versiyonudur.</p>
+    <h4>Zarar eden yıl olasılığı</h4><p>Tüm dönem × yıl hücrelerinin yüzde kaçında brüt kârın sıfırın altında kaldığı.</p></div>
+    <figure style="margin-top:0">
+    <svg viewBox="0 0 320 210" xmlns="http://www.w3.org/2000/svg" font-family="Inter">
+      <text x="160" y="14" text-anchor="middle" font-size="11.5" font-weight="800" fill="#07173F">Kayan dört yıllık pencereler</text>
+      <g font-size="8" fill="#4B5A78">
+        <text x="20" y="38">1982</text><text x="140" y="38">2000</text><text x="270" y="38">2025</text>
+      </g>
+      <rect x="20" y="44" width="280" height="10" rx="3" fill="#E6EEFB"/>
+      <rect x="62" y="44" width="14" height="10" fill="#E43700" opacity="0.75"/><rect x="190" y="44" width="10" height="10" fill="#E43700" opacity="0.75"/>
+      <rect x="272" y="44" width="10" height="10" fill="#E43700" opacity="0.75"/>
+      <g fill="#0960E1">
+        <rect x="20" y="66" width="27" height="9" rx="2"/><rect x="27" y="80" width="27" height="9" rx="2" opacity="0.85"/>
+        <rect x="34" y="94" width="27" height="9" rx="2" opacity="0.7"/><rect x="41" y="108" width="27" height="9" rx="2" opacity="0.55"/>
+        <rect x="273" y="136" width="27" height="9" rx="2" fill="#07173F"/>
+      </g>
+      <text x="160" y="128" text-anchor="middle" font-size="16" fill="#0042A6">⋯</text>
+      <text x="20" y="162" font-size="9" fill="#0B1633">Her pencere = planın bir "olası geleceği"</text>
+      <text x="20" y="176" font-size="9" fill="#0B1633">41 pencere × 4 yıl → kâr, su, destek dağılımı</text>
+      <text x="20" y="190" font-size="9" fill="#E43700">Kırmızı: kurak yıllar (ör. 1989, 2007–08, 2025)</text>
+    </svg>
+    <figcaption><b>Şekil 4.2</b> · Plan, 1982'den 2025'e kadar her ardışık dört yıllık dönemde oynatılır; her dönem ayrı bir "geçmişteki gelecek"tir.</figcaption></figure>
+  </div>
+
+  <h2>4.4 Birden çok hedef: Pareto cephesi</h2>
+  <p>Kâr, kötü dönem geliri, su ve toprak sağlığı birbiriyle çatışır. Bir plan diğerinden <b>her göstergede eşit ya da daha iyi ve en az birinde kesin daha iyiyse</b> onu "baskılar". Hiçbir plan tarafından baskılanmayanların kümesi <b>Pareto cephesidir</b>. Cephedeki her plan savunulabilir bir uzlaşmadır; aralarındaki seçim önceliklere bağlıdır. Örnek tarlada 5.324 kurala uygun planın 125'i cephededir.</p>
+
+  <h2>4.5 Kurallar: sarı ve kırmızı kart</h2>
+  <p>2026 destekleme düzenlemesine göre Konya'daki su kısıtlı 19 ilçede sulu arazide <b>mısır (dane/silaj), patates, şeker pancarı, domates ve havuç dört üretim yılında art arda gelmemek şartıyla en fazla iki kez</b> ekilebilir. Başlangıç, 2024 ÇKS kaydındaki son üründür. İlk ihlal yılında sarı kart (uyarı), ikinci ihlalde kırmızı kart ve tüm desteklerden mahrumiyet. Dane mısır ve patatese su kısıtlı havzalarda destek ödenmez. Uygulama bu kuralı <code>tables/rules/tr_konya_water_2026.yaml</code> dosyasından okur; ihlal eden yıllar kartta kırmızı çerçeve ve ünlemle işaretlenir.</p>
+  <div class="box warn"><div class="t">Yorum gerektiren nokta</div><p>Sarı kart yılında o yılın desteğinin sıfırlanıp sıfırlanmadığı tebliğ metninde açık değildir; model sıfırlandığını <b>varsayar</b> (ayar dosyada <code>yellow_loses_support_that_year</code>). İl Müdürlüğü'ne teyit ettirilmelidir.</p></div>
+
+  <h2>4.6 Havza kavramları</h2>
+  <div class="grid3">
+    <div class="card"><h4>Suyun gölge fiyatı</h4><p>Havzanın su bütçesine 1 m³ eklenince toplam kârın ne kadar artacağı. Doğrusal programlamada su kısıtının dual değeridir. Damla sulama ya da su tasarrufu yatırımının havzaya değerini gösterir.</p></div>
+    <div class="card"><h4>Koordinasyonsuzluğun bedeli</h4><p>Herkes kendi başına karar verdiğinde ulaşılan sonuç ile havza ölçeğinde koordineli planın sonucu arasındaki fark (kâr ve su). Oyun kuramında "anarşinin bedeli" (price of anarchy).</p></div>
+    <div class="card"><h4>Örümcek ağı döngüsü</h4><p>Herkes geçen yılın yüksek fiyatına bakıp aynı ürünü ekerse arz artar, fiyat düşer; ertesi yıl herkes kaçar, fiyat yükselir. Fiyatlar zikzak çizer (cobweb modeli).</p></div>
+  </div>
+</section>
+
+<!-- ============================ 05 ============================ -->
+<section class="chapter" data-toc="05|Veriler|Ne, nereden, hangi ölçekte, hangi durumda">
+  <div class="chap-head"><div class="num">05</div><div class="kicker">Veri</div>
+  <h1>Veriler: ne, nereden, hangi durumda?</h1>
+  <p class="lead">Sekiz veri seti, üç kaynak türü (canlı NASA API, yerel dosya, sentetik yer tutucu) ve her birinin dürüst durumu.</p></div>
+
+  <h2>5.1 Teslim halindeki durum</h2>
+  <table>
+    <thead><tr><th style="width:17%">Veri seti</th><th style="width:22%">Ürün</th><th style="width:11%">Durum</th><th style="width:13%">Çözünürlük</th><th>Ne için kullanılıyor</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Günlük iklim</td><td>NASA POWER (Agroclimatology, günlük)</td><td><span class="tag real">GERÇEK</span></td><td>0,5° × 0,625°</td><td>Stres testinin omurgası: sıcaklık, nem, rüzgâr, radyasyon, yağış → ET₀, su dengesi, iklim stresi, risk takvimi. 1981–2026.</td></tr>
+      <tr><td class="k">Uydu yağışı</td><td>GPM IMERG (POWER API, <code>IMERG_PRECTOT</code>)</td><td><span class="tag real">GERÇEK</span></td><td>0,1°</td><td>POWER yağışının aylık oran düzeltmesi (5.4). 2000-06 → 2026.</td></tr>
+      <tr><td class="k">Havza su deposu</td><td>GRACE/GRACE-FO JPL Mascon RL06.3 v04 CRI</td><td><span class="tag real">GERÇEK</span></td><td>~300 km, aylık</td><td>Yalnızca havza bağlamı (Havza sayfası). Kosinüs ağırlıklı kutu ortalaması.</td></tr>
+      <tr><td class="k">2040'lar iklimi</td><td>NEX-GDDP-CMIP6, ACCESS-CM2 r1i1p1f1, SSP2-4.5</td><td><span class="tag real">GERÇEK</span></td><td>0,25° → aylık değişim</td><td>2041–2059 ile 1995–2013 arasındaki aylık sıcaklık farkı ve yağış oranı geçmiş seriye uygulanır. <b>Tek model, tek senaryo.</b></td></tr>
+      <tr><td class="k">Toprak özellikleri</td><td>ISRIC SoilGrids (NASA dışı)</td><td><span class="tag real">KARAPINAR, CİHANBEYLİ</span> <span class="tag def">ÇUMRA: VARSAYIM</span></td><td>250 m</td><td>Kullanılabilir su (TAW), kil, kum, organik karbon. Çumra noktasında SoilGrids kil/kum döndürmediği için değerler elle girildi.</td></tr>
+      <tr><td class="k">Kök bölgesi nemi</td><td>SMAP L4 (SPL4SMGP)</td><td><span class="tag syn">SENTETİK</span></td><td>9 km, 3 saatlik</td><td>Gerçek olduğunda ekimdeki başlangıç toprak suyu. Şu an <b>hesaba girmiyor</b>; yerine son 90 günün gerçek yağışından tahmin.</td></tr>
+      <tr><td class="k">Bitki örtüsü NDVI</td><td>HLS (Landsat+Sentinel-2) 30 m, MODIS MOD13Q1 250 m</td><td><span class="tag syn">SENTETİK</span></td><td>30 m / 250 m</td><td>Gerçek olduğunda çiftçi beyanının uydu kontrolü ve çıplak toprak ayları. Şu an yalnızca yöntemi gösteren grafik.</td></tr>
+      <tr><td class="k">Yükseklik ve eğim</td><td>SRTM GL1</td><td><span class="tag def">VARSAYIM</span></td><td>30 m</td><td>Erozyon riski. Eğim <code>tables/basins.yaml</code>'da elle girildi (Konya ≈ 0,8°).</td></tr>
+    </tbody>
+  </table>
+  <figure>{{STATUS_SVG}}<figcaption><b>Şekil 5.1</b> · Kenar çubuğundaki sayaç aynı bilgiyi verir: 4 gerçek, 2 sentetik, 2 varsayım. Sunumda bu sayıyı söyleyin.</figcaption></figure>
+
+  <h2>5.2 Veri nasıl gelir? Üç kaynak, bir hub</h2>
+  <p>Bütün veri <code>basinshift/data/hub.py</code>'deki <b>DataHub</b> üzerinden geçer. <code>config.yaml → data.sources</code> her veri seti için kaynak sırasını belirler; hub sırayla dener ve ilk başarılı olanı kullanır. Her çağrı bir <b>Provenance</b> (köken) kaydı üretir: istenen kaynak, gerçekleşen kaynak, ürün adı, notlar, uyarılar.</p>
+  <table>
+    <thead><tr><th style="width:16%">Kaynak</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td class="k"><code>nasa</code></td><td>Canlı API: NASA POWER (anahtar gerekmez), AppEEARS (SMAP/HLS/MODIS/SRTM), CMR/PO.DAAC (GRACE), NCCS THREDDS (CMIP6), SoilGrids. İndirilenler <code>data/cache/nasa/</code>'ya yazılır; ikinci açılışta internet gerekmez.</td></tr>
+      <tr><td class="k"><code>files</code></td><td>Yerel dosya: <code>data/external/&lt;veri seti&gt;/&lt;konum&gt;.csv</code>. Kökeni <code>data/external/KAYNAK.yaml</code>'dan okunur.</td></tr>
+      <tr><td class="k"><code>synthetic</code></td><td>Gerçek şemayla aynı, fiziksel olarak tutarlı üretilmiş veri (tohum sabit). Yalnızca yedek; her ekranda "SENTETİK" yazar.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5.3 Köken beyanı: <code>KAYNAK.yaml</code></h2>
+  <p>Önceki sürümdeki "8/8 gerçek" hatasının kök nedeni, klasörde duran her dosyanın gerçek sayılmasıydı. Artık her dosyanın kökeni yazılır; yazılmayan dosya <b>doğrulanmamış</b> görünür ve gerçek sayılmaz.</p>
+<pre><span class="c"># data/external/KAYNAK.yaml (özet)</span>
+<span class="k">climate_deltas:</span>
+  default: {origin: <span class="s">nasa</span>, product: "NEX-GDDP-CMIP6 ACCESS-CM2 r1i1p1f1 SSP2-4.5"}
+<span class="k">soil_moisture:</span>
+  default: {origin: <span class="s">synthetic</span>, note_tr: "SMAP L4 için AppEEARS görevi gönderildi ama sonucu indirilmedi"}
+<span class="k">soil_properties:</span>
+  default: {origin: <span class="s">assumed</span>}
+  files:
+    karapinar:  {origin: <span class="s">external</span>, note_tr: "ISRIC SoilGrids"}
+    cihanbeyli: {origin: <span class="s">external</span>}</pre>
+  <table>
+    <thead><tr><th>origin</th><th>Ekrandaki durum</th><th>Anlamı</th></tr></thead>
+    <tbody>
+      <tr><td><code>nasa</code></td><td><span class="tag real">Gerçek</span></td><td>NASA ürünü; "NASA verisi (yerel dosya)" etiketi</td></tr>
+      <tr><td><code>external</code></td><td><span class="tag real">Gerçek</span></td><td>NASA dışı açık veri (SoilGrids gibi); NASA sayılmaz</td></tr>
+      <tr><td><code>synthetic</code></td><td><span class="tag syn">Sentetik</span></td><td>Yer tutucu; ürün adı "SENTETİK — gerçek ürün: …"</td></tr>
+      <tr><td><code>assumed</code></td><td><span class="tag def">Varsayım</span></td><td>Elle girilmiş değer</td></tr>
+      <tr><td>(yok)</td><td><span class="tag ass">Doğrulanmamış</span></td><td>Kökeni yazılmamış; gerçek sayılmaz, uyarı çıkar</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5.4 Yağış düzeltmesi (GPM IMERG)</h2>
+  <p>NASA POWER yağışı MERRA-2 yeniden analizine dayanır ve Konya Kapalı Havzası'nda belirgin şekilde yüksektir. Örtüşen yıllarda Çumra için <b>POWER ≈ 539 mm/yıl, IMERG ≈ 327 mm/yıl</b>; Konya istasyon normali ≈ 320–330 mm. Model %60 fazla yağışla çalışsaydı sulama ihtiyacı olduğundan az, kuru tarım verimi olduğundan yüksek çıkardı.</p>
+  <div class="formula">oran(ay) = Σ IMERG(ay) / Σ POWER(ay)      yalnızca ≥25 günü dolu aylar, ≥10 örtüşen yıl, [0,30 – 1,50] aralığına kırpılır
+yağış_düzeltilmiş(gün) = yağış_POWER(gün) × oran(ayın kendisi)          → günlerin sırası (kurak/yağışlı dizilim) korunur</div>
+  <figure>{{RATIO_SVG}}<figcaption><b>Şekil 5.2</b> · Çumra için uygulanan aylık IMERG/POWER oranları. Ocak (0,30) ve Haziran (1,50) kırpma sınırına dayanıyor. Kışın düşük oran kısmen IMERG'in kar ve donmuş yağışı az ölçmesinden kaynaklanabilir; yıllık toplam istasyon normaline uyuyor ama aylar arası dağılım temkinle yorumlanmalı.</figcaption></figure>
+  <p>Düzeltme yalnızca <code>config.yaml → data.precip_correction: imerg_monthly</code> açıkken ve <b>iki veri de gerçekse</b> yapılır. İklim geçmişi sayfasında POWER, IMERG ve düzeltilmiş seri yan yana gösterilir (Bölüm 9.3).</p>
+
+  <h2>5.5 Bilerek kullanmadıklarımız</h2>
+  <div class="grid2">
+    <div class="card"><h4>OpenET</h4><p>Türkiye'yi kapsamıyor (ABD ve Brezilya pilotu). Yerine FAO-56 su dengesi.</p></div>
+    <div class="card"><h4>ECOSTRESS</h4><p>Termal ET ürünü; iki günlük sürede entegre edilmedi. Gelecek iş.</p></div>
+    <div class="card"><h4>GRACE tarla ölçeğinde</h4><p>~300 km çözünürlük; tarla kararında kullanmak bilimsel olarak yanlış olurdu.</p></div>
+    <div class="card"><h4>Karbon sertifikası, GEDI</h4><p>Toprak karbonu değişimi 1–3 yılda uydudan doğrulanamaz; GEDI orman biyokütlesi içindir. Karne "karbon iddiası içermez" der.</p></div>
+  </div>
+</section>
+
+<!-- ============================ 06 ============================ -->
+<section class="chapter" data-toc="06|Hesap hattı|Veriden karta on adım">
+  <div class="chap-head"><div class="num">06</div><div class="kicker">Model</div>
+  <h1>Hesap hattı: veriden karta</h1>
+  <p class="lead">Bir tarla için bütün hesap yaklaşık 1,5–2 saniye sürer. Aşağıdaki akış <code>engine/pipeline.py → build_context</code> ve <code>optimizer/search.py → search</code> fonksiyonlarının yaptığıdır.</p></div>
+  <figure>{{PIPELINE_SVG}}<figcaption><b>Şekil 6.1</b> · Hesap hattı. Mavi: NASA verisi; sarı: tablolar (<code>tables/</code>); koyu: hesap modülleri. Her ürün × her yıl yalnızca bir kez simüle edilir; 20.736 plan bu tablodan saniyenin altında birleştirilir.</figcaption></figure>
+
+  <div class="step"><div class="i">1</div><div><h4>İklimi yükle ve düzelt</h4><p>POWER günlük seri (1981–) yüklenir; radyasyon eksik günlerde (1984 öncesi) Hargreaves radyasyon tahmini kullanılır. IMERG gerçekse aylık oranla yağış düzeltilir (5.4). Senaryo seçiliyse sıcaklığa fark eklenir, yağış çarpılır ya da CMIP6 aylık katsayıları uygulanır.</p></div></div>
+  <div class="step"><div class="i">2</div><div><h4>ET₀ hesapla</h4><p>FAO-56 Penman-Monteith, günlük. Doğrulama testi: FAO-56 Örnek 18 → 3,88 mm/gün (kitap: 3,9). <code>engine/et0.py</code>.</p></div></div>
+  <div class="step"><div class="i">3</div><div><h4>Ürün takvimi ve Kc eğrisi</h4><p>Dört gelişim dönemi, Kc değerleri, kök derinliği ve Ky <code>tables/crops.csv</code>'den (FAO-56 Tablo 11–12, FAO-33); ekim tarihi ve sezon ölçeği havzaya göre <code>tables/basin_economics.csv</code>'den. Kışlık ürünler sonbaharda ekilir ve hasat yılına göre sayılır (Konya'da tarım yılı Ekim'de başlar).</p></div></div>
+  <div class="step"><div class="i">4</div><div><h4>Günlük su dengesi (her ürün × her yıl)</h4><p>Kova modeli: S ← min(TAW, S + etkili yağış); ETa = Ks·ETc. Sulu tarımda S RAW sınırının altına inince TAW'a kadar doldurulur; sezonun son sulaması kalan sezon ihtiyacıyla sınırlanır. Kuru tarımda sulama yok. Çıktılar: ETc, ETa (kuru ve sulu), net/brüt sulama, kullanılan yağış. <code>engine/water.py</code>.</p></div></div>
+  <div class="step"><div class="i">5</div><div><h4>Başlangıç toprak suyu</h4><p>Gerçek SMAP varsa ekim günündeki kök bölgesi nemi; yoksa ekimden önceki 90 günün yağışından tahmin ("yağış göstergesi"). Teslim sürümünde ikincisi kullanılıyor.</p></div></div>
+  <div class="step"><div class="i">6</div><div><h4>İklim stresi</h4><p>Hassas dönemde Tmax hem ürün eşiğini hem yerel 90. yüzdeliği aşarsa günde −%1,5; don −%3/gün; hasatta &gt;25 mm yağış −%2/gün; toplam en fazla −%50 (<b>varsayım</b> katsayıları). Yerel yüzdelik kuralı, bölgenin olağan sıcağına uyumlu çeşitlerin cezalandırılmasını önler.</p></div></div>
+  <div class="step"><div class="i">7</div><div><h4>Verim, gelir, destek</h4><p>Ya = Ym · su oranı (FAO-33) · iklim stresi · önceki ürün çarpanı. Brüt kâr = Ya·fiyat − değişken maliyet·(1 − azot tasarrufu) − su m³·2,5 ₺ + destek. Destek, kural durumuna göre (sarı/kırmızı kartta kesilir) ve 2026 birim fiyatlarıyla.</p></div></div>
+  <div class="step"><div class="i">8</div><div><h4>Planları birleştir (20.736)</h4><p>12 ürünün dört yıllık her dizilimi (12⁴) için 41 dönem × 4 yıl matrisi kurulur; nadas yılı suyu (%20'si) ve örtü bitkisi (−60 mm) etkileri eklenir. Göstergeler: ortalama kâr, CVaR %5, su, destek, zarar olasılığı, yem, toprak sağlığı.</p></div></div>
+  <div class="step"><div class="i">9</div><div><h4>Kurallar ve çiftçi koşulları</h4><p>Kural paketleri (YAML) her planı yeşil/sarı/kırmızı işaretler. Ekipmanı olmayan, sözleşmesi olmayan, alıcısı olmayan ya da istenmeyen ürünler baştan elenir; hastalık ara verme süreleri (<code>min_gap_years</code>) isteğe bağlı uygulanır.</p></div></div>
+  <div class="step"><div class="i y">10</div><div><h4>Pareto ve kartlar</h4><p>Kurala uyanlar arasından Pareto cephesi bulunur; Kâr, Akifer ve Denge kartları seçilir (Bölüm 7); her kart için "Neden bu plan?" metni hesaplanan değerlerden şablonla üretilir. Karar yolunda yapay zekâ ya da makine öğrenmesi modeli <b>yoktur</b>.</p></div></div>
+
+  <h2>6.1 Toprak sağlığı puanı (0–100)</h2>
+  <p>Uydudan <b>ölçülmez</b>; planın içeriğinden kural tabanlı puanlanır. Dört alt skorun eşit ağırlıklı ortalamasıdır (<code>engine/soil.py</code>; katsayılar varsayım):</p>
+  <table><thead><tr><th style="width:24%">Alt skor</th><th>Formül</th></tr></thead><tbody>
+    <tr><td class="k">Azot bağlama</td><td><code>100 · min(1, baklagil yılı / 2)</code> — dört yılda iki baklagil tam puan</td></tr>
+    <tr><td class="k">Organik madde</td><td><code>100 · ortalama(ürünün organik madde katkısı)</code> + örtü bitkisi varsa +15</td></tr>
+    <tr><td class="k">Erozyon / çıplak toprak</td><td><code>100 · (1 − ortalama çıplak ay / 12)</code>; eğim &gt; 2° ise ceza büyür; örtü bitkisi çıplak ayı 3 azaltır</td></tr>
+    <tr><td class="k">Zararlı döngüsünü kırma</td><td><code>100 − 25 · ara verme ihlali − 10 · aynı aile art arda</code></td></tr>
+  </tbody></table>
+  <p>Örtü bitkisi seçeneği açıkken, hasadı yaz ortasından önce olan ürünlerden sonra örtü bitkisi eklenir: sonraki ürünün başlangıç suyundan 60 mm alır, maliyeti buğday maliyetinin %12'si sayılır. Planlar sayfasındaki "Örtü bitkisi ödünleşimi" tablosu farkı gösterir (örnek: Denge planında kâr 4.775 → 3.875 ₺/da, su 419 → 467 m³/da, toprak 82 → 90).</p>
+</section>
+
+<!-- ============================ 07 ============================ -->
+<section class="chapter" data-toc="07|Plan seçimi ve kartlar|Kâr, Akifer, Denge nasıl seçiliyor">
+  <div class="chap-head"><div class="num">07</div><div class="kicker">Optimizasyon</div>
+  <h1>Plan seçimi: üç kart nasıl bulunuyor?</h1>
+  <p class="lead">Kartlar elle seçilmez; aynı veriyle her zaman aynı sonucu veren, açık kurallarla seçilir. Kod: <code>optimizer/search.py</code>.</p></div>
+  <figure>{{CARDS_SVG}}<figcaption><b>Şekil 7.1</b> · Eleme hunisi ve kart seçimi. Sayılar örnek tarla (Çumra, Mehmet Amca) içindir.</figcaption></figure>
+
+  <table>
+    <thead><tr><th style="width:14%">Kart</th><th style="width:43%">Seçim kuralı</th><th>Neden böyle</th></tr></thead>
+    <tbody>
+      <tr><td class="k">▲ Kâr</td><td>Pareto cephesinde ortalama brüt kârı en yüksek plan.</td><td>Çiftçinin ilk sorusu. Kurala uyduğu için destek kaybı yoktur.</td></tr>
+      <tr><td class="k">◆ Akifer</td><td>Kâr kartı dışındaki cephe planlarından: ortalama kâr ≥ Kâr kartının %50'si, kötü dönem geliri ≥ 0 ve zarar eden yıl olasılığı ≤ %30 olanlar içinde <b>en az sulama suyu</b> kullanan. (Kuru tarımda: kötü dönem geliri en yüksek olan.) Koşulu sağlayan yoksa koşullar adım adım gevşetilir.</td><td>"En az su" tek başına nadas-nadas gibi savunulamaz planlar seçerdi; alt sınırlar planın geçimi sağlamasını garanti eder.</td></tr>
+      <tr><td class="k">⬢ Denge</td><td>Kalan cephe planları arasında ağırlıklı normalize skor en yüksek plan. Ardından skoru en yüksek 25 planın ikili <b>tarla bölme karışımları</b> (%30/70, %50/50, %70/30) denenir; bir karışım skoru 0,01'den fazla artırıyorsa Denge kartı o karışım olur.</td><td>Çiftçinin önceliklerini (kenar çubuğu yerine Tarla sayfasındaki kaydırıcılar) yansıtan tek kart budur.</td></tr>
+      <tr><td class="k">Mevcut planınız</td><td>Çiftçinin girdiği plan, aynı ölçüyle; kurala uymasa da gösterilir.</td><td>Karşılaştırma referansı; görev "mevcut uygulamayı da karşılaştır" diyor.</td></tr>
+    </tbody>
+  </table>
+  <h2>7.1 Denge skoru</h2>
+  <div class="formula">skor = Σ wₖ · zₖ / Σ wₖ        zₖ = (x − min) / (max − min) kurala uyan planlar üzerinden;  su için z = 1 − z
+varsayılan ağırlıklar:  gelir 3 · kötü yılda ayakta kalmak 3 · su tasarrufu 3 · toprak sağlığı 2 · yem 0</div>
+  <p>Ağırlıklar 0–5 arası kaydırıcılardır. Yem ağırlığı sıfırdan büyükse yem de Pareto boyutlarına eklenir. Önemli: ağırlıklar <b>yalnızca Denge kartını</b> etkiler; Kâr ve Akifer kartları sabit kurallarla seçilir.</p>
+  <h2>7.2 Örnek tarlada dört plan</h2>
+  <table>
+    <thead><tr><th>Plan</th><th>2027 → 2030</th><th class="n">Kâr ₺/da/yıl</th><th class="n">Kötü dönem</th><th class="n">Su m³/da</th><th class="n">Destek</th><th class="n">Zarar ol.</th><th class="n">Toprak</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Mevcut</td><td>Pancar → Dane mısır → Pancar → Dane mısır <span class="tag ass">KIRMIZI</span></td><td class="n">4.263</td><td class="n">2.117</td><td class="n">993</td><td class="n">0</td><td class="n">%8</td><td class="n">41</td></tr>
+      <tr><td class="k">Kâr</td><td>Ayçiçeği → Nohut → Pancar → Buğday</td><td class="n">6.486</td><td class="n">5.214</td><td class="n">684</td><td class="n">1.101</td><td class="n">%0</td><td class="n">62</td></tr>
+      <tr><td class="k">Akifer</td><td>Fiğ → Buğday → Nadas → Buğday</td><td class="n">3.248</td><td class="n">2.743</td><td class="n">297</td><td class="n">991</td><td class="n">%25</td><td class="n">64</td></tr>
+      <tr><td class="k">Denge</td><td>Nohut → Buğday → Fiğ → Buğday</td><td class="n">4.775</td><td class="n">4.192</td><td class="n">419</td><td class="n">1.248</td><td class="n">%0</td><td class="n">82</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Kaynak: uygulama çıktısı, 14.11.2026, Çumra, yağmurlama, su kısıtı ilan edilmiş, tarihsel iklim. Akifer planının zarar olasılığı nadas yılından gelir (nadas yılı gelir sıfırdır, maliyet vardır).</p>
+  <div class="box info"><div class="t">Nasıl okunmalı</div><p>Kâr kartı en kârlı ama pancar içerdiği için su ihtiyacı yüksek ve fiyat varsayımına en duyarlı plan. Denge kartı kârdan biraz vazgeçip suyu %58 azaltıyor ve toprak puanını iki katına çıkarıyor. Akifer kartı suyu %70 azaltıyor ama nadas yılı nedeniyle 4 yılın birinde zarar ediyor. <b>Hangisinin seçileceği çiftçinin önceliğine bağlı</b>; araç seçmez, gösterir.</p></div>
+</section>
+
+<!-- ============================ 08 ============================ -->
+<section class="chapter" data-toc="08|Havza modeli|Bir çiftçi için doğru olan, bin çiftçi yapınca">
+  <div class="chap-head"><div class="num">08</div><div class="kicker">Havza</div>
+  <h1>Havza modeli</h1>
+  <p class="lead">Soru: "Bir çiftçi için doğru olan, bin çiftçi aynısını yapınca ne olur?" Kod: <code>basin/model.py</code> (scipy linprog, HiGHS çözücüsü).</p></div>
+  <p>Havza, <b>temsili çiftlik tipleriyle</b> modellenir (<code>tables/farm_types.csv</code>; gerçek uygulamada ÇKS/kooperatif verisiyle değişir). Her tipin her ürün için ortalama verimi, suyu ve kârı tarla modelinin stres testinden gelir. Üç senaryo karşılaştırılır:</p>
+  <figure>{{BASIN_SVG}}<figcaption><b>Şekil 8.1</b> · Üç senaryo ve örnek sonuçlar (Konya, sürdürülebilir su bütçesi = bugünkü çekimin %65'i; uygulama çıktısı).</figcaption></figure>
+  <table>
+    <thead><tr><th style="width:20%">Senaryo</th><th>Nasıl hesaplanır</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1 · Bugünkü desen</td><td>Çiftlik tiplerinin bugünkü ürün payları, referans fiyatlar.</td></tr>
+      <tr><td class="k">2 · Herkes kendi başına</td><td>Her tip, <b>geçen yılın fiyatına göre</b> kendisi için en kârlı deseni seçer; havza su bütçesini kimse dikkate almaz. Fiyatlar sabit esneklikli talep eğrisiyle tepki verir: p = p_ref · (Q/Q_ref)^(1/ε). Birkaç yıl yinelenir → örümcek ağı döngüsü.</td></tr>
+      <tr><td class="k">3 · Koordineli havza planı</td><td>Doğrusal programlama: en yüksek toplam brüt kâr, şu kısıtlarla: sürdürülebilir su bütçesi · yasal rotasyon (kararlı durumda grup payı ≤ max/pencere) · pazar sınırları (fiyat %15'ten fazla düşmeden emilebilecek miktar) · havzanın yem ihtiyacı (bugünkü üretimin %90'ı) · tek ürüne en fazla pay.</td></tr>
+    </tbody>
+  </table>
+  <h2>8.1 Çıktılar ve okunuşu</h2>
+  <div class="grid3">
+    <div class="kpi r"><div class="l">Koordinasyonsuzluğun bedeli</div><div class="v">316 ₺/da</div><div class="s">yıllık kâr farkı; ayrıca 132 m³/da fazla su</div></div>
+    <div class="kpi b"><div class="l">Suyun gölge fiyatı</div><div class="v">9,54 ₺/m³</div><div class="s">1 m³ ek suyun havzaya marjinal değeri</div></div>
+    <div class="kpi y"><div class="l">Su bütçesi</div><div class="v">%65</div><div class="s">bugünkü çekimin yüzdesi (kaydırıcı)</div></div>
+  </div>
+  <p style="margin-top:0.7em">Koordineli plan bugünkü desenden daha az kâr eder (2.623 vs 3.241 ₺/da) çünkü suyu %35 azaltmak zorundadır; bu fark akiferi korumanın bedelidir. Ama aynı su kısıtı olmadan herkes kendi başına karar verdiğinde hem su bütçesi aşılır (410 m³/da) hem de fiyat dalgalanması yüzünden kâr koordineli plandan bile düşük kalır (2.307 ₺/da). <b>Koordinasyon, akiferi korumanın en ucuz yoludur.</b></p>
+  <p>Gölge fiyat eğrisi, su bütçesi daraldıkça son metreküpün değerinin nasıl arttığını gösterir; 9,54 ₺/m³, varsayılan pompaj maliyetinin (2,5 ₺/m³) yaklaşık dört katıdır. Bu, damla sulama ve su tasarrufu yatırımının havza açısından değerini okumanın bir yoludur.</p>
+  <div class="box warn"><div class="t">Sınır</div><p>Çiftlik tipleri, alanları ve talep esneklikleri <b>temsilidir</b>. Model mekanizmayı (koordinasyon kazancı, gölge fiyat, fiyat döngüsü) gösterir; Konya için resmî bir havza planı değildir. Ekranda "Temsili model" uyarısı bunu söyler.</p></div>
+  <h2>8.2 Ulusal ticaret bağlamı</h2>
+  <p>Havza sayfasının altındaki tablo her ürünün pazarını, modeldeki fiyatını, kaynaklı ticaret bilgisini ve <b>modelin kendi hesapladığı</b> kuyu suyunu (m³/da ve m³/ton) gösterir. Örnekler (kaynaklı): Türkiye 10+ yıldır dünyanın en büyük un ihracatçısı (2025'te 2,34 milyon ton); mısırda tüketim ~12 milyon ton, üretim ~8,5 milyon ton, 2024 ithalatı ~4,4 milyon ton; ayçiçeğinde yeterlilik 2024/25'te %63. Bu bilgi ürün kararına "ulusal ihtiyaç" penceresi açar ama <b>hesaba girmez</b>.</p>
+  <div class="box info"><div class="t">m³/ton yanıltabilir</div><p>Ton başına su, verimi yüksek ürünlerde (pancar) düşük görünür. Akifer için asıl ölçü dekar başına çekilen sudur; tabloda ikisi yan yana durur.</p></div>
+</section>

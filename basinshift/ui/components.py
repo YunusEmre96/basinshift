@@ -675,8 +675,16 @@ def calendar_chart(cal: pd.DataFrame, crops, risk: pd.DataFrame, lang: str) -> g
         fig.add_trace(go.Scatter(x=[r["frost_start"], r["frost_end"]], y=[c.name(lang)] * 2, mode="lines",
                                  line=dict(color=INK, width=4, dash="dot"), showlegend=False,
                                  hovertemplate=("Dona hassas" if lang == "tr" else "Frost-sensitive") + "<extra></extra>"))
-    fig.update_yaxes(autorange="reversed", showgrid=False)
-    return _layout(fig, 80 + 44 * max(1, cal["crop"].nunique()))
+    fig.update_yaxes(autorange="reversed", showgrid=False, ticksuffix="   ")
+    starts = pd.to_datetime(cal["start"].dropna())
+    ends = pd.to_datetime(cal["end"].dropna())
+    if len(starts) and len(ends):
+        months = ("Oca Şub Mar Nis May Haz Tem Ağu Eyl Eki Kas Ara" if lang == "tr"
+                  else "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec").split()
+        ticks = pd.date_range(starts.min().to_period("M").to_timestamp(), ends.max() + pd.offsets.MonthBegin(1), freq="6MS")
+        fig.update_xaxes(tickmode="array", tickvals=list(ticks),
+                         ticktext=[f"{months[d.month - 1]} {d.year}" for d in ticks])
+    return _layout(fig, 110 + 52 * max(1, cal["crop"].nunique()))
 
 
 def band_chart(details: list[tuple[str, dict, str]], key: str, years: list[int], factor: float, ytitle: str) -> go.Figure:

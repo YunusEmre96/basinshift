@@ -1,0 +1,423 @@
+
+<!-- ============================ 09 ============================ -->
+<section class="chapter" data-toc="09|Arayüz turu|Yedi sayfa, her grafik ne söylüyor">
+  <div class="chap-head"><div class="num">09</div><div class="kicker">Görsel rehber</div>
+  <h1>Arayüz turu</h1>
+  <p class="lead">Uygulama yedi sayfadan oluşur; üst menüde soldan sağa bir hikâye anlatır: tarlayı tanıt → iklimini gör → planları karşılaştır → iki geleceği gör → havzaya bak → karneyi al → yönteme bak.</p></div>
+
+  <h2>9.1 Kenar çubuğu ve ortak öğeler</h2>
+  <div class="grid2" style="grid-template-columns: 52mm 1fr;">
+    <figure class="shot" style="margin:0"><img src="img/sidebar.jpg"><figcaption><b>Şekil 9.1</b> · Kenar çubuğu.</figcaption></figure>
+    <div>
+      <ul>
+        <li><b>Dil:</b> Türkçe / English; bütün metinler, grafikler ve PDF karne iki dilde.</li>
+        <li><b>Havza ve tarla konumu:</b> Konya (Çumra, Karapınar, Cihanbeyli), Kaliforniya, Pencap, Murray-Darling. Konum değişince iklim, toprak ve kurallar değişir.</li>
+        <li><b>Alan birimi:</b> dekar ya da hektar; bütün tablo ve grafikler dönüşür.</li>
+        <li><b>Sunum modu:</b> projektör için büyük yazı.</li>
+        <li><b>Ya şöyle olursa?</b> Sıcaklık değişimi (°C), yağış değişimi (%) ve iklim projeksiyonu (Geçmiş iklim / 2040'lar SSP2-4.5). Her değişiklikte bütün planlar yeniden hesaplanır.</li>
+        <li><b>Veri kaynakları:</b> "4 / 8 veri seti gerçek" sayacı, renkli çubuk ve "Veri setleri tek tek" açılır listesi (kaynak, ürün, notlar, uyarılar).</li>
+      </ul>
+      <p>Her sayfanın üstünde, gerçek olmayan veri varsa sarı <b>Veri durumu</b> şeridi; altında "kararın sahibi çiftçi ve yerel ziraat mühendisidir" notu ve veri kaynakları bulunur. Sayfa başlıklarındaki "ADIM 3 / 7" etiketi hikâyedeki yeri gösterir.</p>
+      <div class="box info"><div class="t">Tasarım dili</div><p>Space Apps marka renkleri: koyu lacivert (Deep Blue) zemin, mavi tonlarında paneller, Neon Yellow yalnızca vurgu (önemli rakam, birincil düğme), Rocket Red risk ve ihlal. Kart renkleri ürün renkleridir (pancar mor, mısır turuncu, buğday altın, baklagiller kahve/yeşil). Bütün grafikler aynı şablonu kullanır.</p></div>
+    </div>
+  </div>
+
+  <h2>9.2 Tarla</h2>
+  <figure class="shot"><img src="img/field_hero.jpg"><figcaption><b>Şekil 9.2</b> · Açılış ekranı. Dört adımlık hikâye, veri durumu şeridi ve iki birincil eylem: <b>Örnek tarlayı yükle</b> (demo) ve <b>Planları karşılaştır</b>.</figcaption></figure>
+  <figure class="shot"><img src="img/field_form.jpg"><figcaption><b>Şekil 9.3</b> · Tarla formu. Sol: son iki yılın ürünü (kural kontrolü bunlarla başlar), düşünülen dört yıllık plan, su durumu, çiftçinin koşulları. Sağ: öncelikler (yalnızca Denge kartını etkiler) ve seçenekler.</figcaption></figure>
+  <table>
+    <thead><tr><th style="width:26%">Alan</th><th>Ne işe yarar</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Son iki yılda ne ekildi?</td><td>Kural penceresi geçmişe uzandığı için 2025 ve 2026 ürünleri ihlal hesabına girer (ör. 2026 mısır + 2027 mısır = art arda).</td></tr>
+      <tr><td class="k">Önümüzdeki 4 yıl için plan</td><td>"Mevcut planınız" sütunu; öneri değil, referans.</td></tr>
+      <tr><td class="k">Su</td><td>Sulu/kuru, sulama yöntemi (randıman), su kısıtı ilan edilmiş mi (destek kuralları), kuyu/kanal sınırı (m³/da/yıl; aşan planlar elenir).</td></tr>
+      <tr><td class="k">Koşullarınız</td><td>Erişilebilen ekipman (pancar/patates sökme, silaj, baklagil hasat tablası…), sözleşmeli ürünler (pancar kotası), alıcısı olmayan ve ekilmek istenmeyen ürünler, hayvanlar için en az yem.</td></tr>
+      <tr><td class="k">Seçenekler</td><td>Uygun yıllarda örtü bitkisi; hastalık/zararlı ara verme sürelerine uyma; uygulanacak kural paketleri (Konya 2026, tarımsal tavsiye, AB GAEC 7…).</td></tr>
+      <tr><td class="k">Geçmişini uydudan doğrula</td><td>HLS NDVI'dan her yılın ürün grubu (kışlık/erken, yazlık, nadas) tahmin edilir ve beyanla karşılaştırılır. <b>NDVI şu an sentetik</b>; sayfada bu yazar.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>9.3 İklim geçmişi</h2>
+  <figure class="shot"><img src="img/status_top.jpg"><figcaption><b>Şekil 9.4</b> · Dört özet rakam (veri dönemi, yıllık yağış, ET₀, yıllık açık) ve <b>risk takvimi</b>: son 40+ yılda her ayda ortalama kaç gün don, sert don, sıcak (Tmax &gt; 32 °C), aşırı sıcak (&gt; 35 °C), şiddetli yağış (&gt; 20 mm) yaşandığı ve kurak ay olasılığı.</figcaption></figure>
+  <figure class="shot"><img src="img/status_mid.jpg"><figcaption><b>Şekil 9.5</b> · Aylık yağış (çubuk) ve atmosferin su talebi ET₀ (çizgi) — Haziran–Ağustos arasındaki makas sulamanın kaynağıdır. Sağda Mann-Kendall eğilim testi: Çumra'da yıllık ortalama sıcaklık 10 yılda +0,33 °C, 32 °C üstü gün sayısı 10 yılda +6,25 gün (p &lt; 0,05, anlamlı); yağış eğilimi anlamlı değil.</figcaption></figure>
+  <figure class="shot"><img src="img/status_precip.jpg"><figcaption><b>Şekil 9.6</b> · POWER (gri), IMERG (mavi) ve hesapta kullanılan düzeltilmiş yıllık yağış (sarı çizgi). Altındaki yeşil kutu düzeltmenin özetidir.</figcaption></figure>
+
+  <h2>9.4 Planlar (ana ekran)</h2>
+  <figure class="shot"><img src="img/plans_top.jpg"><figcaption><b>Şekil 9.7</b> · Planlar sayfasının üstü. Tek cümlelik özet (mevcut planın kural durumu + Denge planının su, destek ve kötü dönem farkı), dört KPI kartı ve mevcut planın ihlal ettiği kurallar (yıl + ürün).</figcaption></figure>
+  <figure class="shot"><img src="img/plans_cards.jpg"><figcaption><b>Şekil 9.8</b> · Dört karşılaştırma kartı. Her kartta: rozet (kurallara uygun / sarı / kırmızı kart), yıllara göre renkli ürün şeridi (ihlal yılı kırmızı çerçeve + ünlem), altı gösterge ve güven noktası, toprak sağlığının dört alt skoru, "Neden bu plan?" açılır bölümü.</figcaption></figure>
+  <div class="grid3">
+    <div class="card"><h4>Güven noktaları</h4><p><span style="color:#1E9E5A">●</span> yüksek (su: FAO-56) · <span style="color:#D9A400">●</span> orta (verim, risk, toprak, kurallar) · <span style="color:#E43700">●</span> düşük (gelir: fiyat/maliyet varsayımı). Yöntem sayfasında gerekçeleri.</p></div>
+    <div class="card"><h4>Neden bu plan?</h4><p>Beş başlık: Neden önerildi · Kanıt · Fayda · Bilgi boşlukları · Yerel olarak incelenmesi gereken riskler. Metin hesaplanan değerlerle şablondan üretilir.</p></div>
+    <div class="card"><h4>Elenen ürünler</h4><p>Kartların altında, çiftçinin koşulları nedeniyle elenen ürünler ve nedeni (ör. "Yonca: çok yıllık, 4 yıllık planda tek yıl önerilmez").</p></div>
+  </div>
+  <figure class="shot"><img src="img/plans_violin.jpg"><figcaption><b>Şekil 9.9</b> · Dört yıllık toplam brüt kârın 41 dönemdeki dağılımı (keman + kutu + noktalar). Mevcut planın dağılımı geniş ve aşağı uzanıyor: kötü dönemde çöküyor. Denge planı dar ve yüksek: hangi geçmiş tekrarlanırsa tekrarlansın benzer sonuç.</figcaption></figure>
+  <figure class="shot"><img src="img/plans_why.jpg"><figcaption><b>Şekil 9.10</b> · Denge kartının "Neden bu plan?" bölümü baştan sona (okuma sırası: soldan sağa üç sütun). Mevcut planın aynı bölümü "Bu sizin mevcut planınız; öneri değil, karşılaştırma referansıdır" diye başlar ve kural ihlalini yazar.</figcaption></figure>
+  <figure class="shot"><img src="img/plans_pareto.jpg"><figcaption><b>Şekil 9.11</b> · Mühendis görünümü: x = yıllık sulama suyu, y = ortalama brüt kâr, renk = toprak sağlığı. Gri noktalar kurala uyan 5.324 plan, renkli noktalar 125 Pareto planı; kartlar elmasla işaretli. Mevcut plan (sağda) cephenin çok gerisinde: aynı kârı çok daha az suyla veren planlar var.</figcaption></figure>
+
+  <h2>9.5 İki gelecek</h2>
+  <figure class="shot"><img src="img/futures.jpg"><figcaption><b>Şekil 9.12</b> · Aynı tarla, iki farklı 2027–2030: alışkanlıkla ekim ile seçilen BasinShift planı (Denge/Kâr/Akifer) aynı 41 dönemde. Üç büyük rakam dört yıllık toplam farklardır: −2.296 m³/da su, +4.992 ₺/da destek, +2.050 ₺/da kâr. Bantlar dönemlerin %10–90 aralığı, çizgi ortanca.</figcaption></figure>
+
+  <h2>9.6 Havza</h2>
+  <figure class="shot"><img src="img/basin_top.jpg"><figcaption><b>Şekil 9.13</b> · GRACE/GRACE-FO toplam su deposu anomalisi (cm) ve eğilimi; sağda kaynaklı obruk ve yeraltı suyu bilgileri. Altında sürdürülebilir su bütçesi kaydırıcısı (bugünkü çekimin oranı).</figcaption></figure>
+  <figure class="shot"><img src="img/basin_bars.jpg"><figcaption><b>Şekil 9.14</b> · Üç senaryonun havza ortalaması: brüt kâr ve sulama suyu (kesikli çizgi sürdürülebilir bütçe). Üstte koordinasyonsuzluğun bedeli, suyun gölge fiyatı ve su bütçesi.</figcaption></figure>
+  <figure class="shot"><img src="img/basin_cobweb.jpg"><figcaption><b>Şekil 9.15</b> · Solda örümcek ağı fiyat döngüsü (herkes geçen yılın fiyatına bakınca fiyat endeksleri zikzak çizer); sağda gölge fiyat eğrisi (su bütçesi daraldıkça son metreküpün değeri artar). Altta havzanın ürün deseni üç senaryoda.</figcaption></figure>
+  <figure class="shot"><img src="img/basin_trade.jpg"><figcaption><b>Şekil 9.16</b> · Ürün kararı ve ulusal ticaret dengesi tablosu; kaynak sütunu ve modelin hesapladığı kuyu suyu (m³/da ve m³/ton). Altında dekar başına su çubuk grafiği.</figcaption></figure>
+
+  <h2>9.7 Karne</h2>
+  <figure class="shot"><img src="img/report.jpg"><figcaption><b>Şekil 9.17</b> · Karne sayfası: plan seçimi, çiftçi adı, tarla alanı, <b>Karneyi indir (PDF)</b>. Kartın yanında aynı "Neden bu plan?" metni.</figcaption></figure>
+
+  <h2>9.8 Yöntem ve veriler</h2>
+  <figure class="shot"><img src="img/method.jpg"><figcaption><b>Şekil 9.18</b> · Veri tablosu (durum, ürün, çözünürlük, doğru kullanım ölçeği, notlar) ve sonuçların güven düzeyi. Sayfanın devamında varsayımlar, bilerek kullanılmayan veriler, terim sözlüğü ve gerçek veriye geçiş komutları.</figcaption></figure>
+</section>
+
+<!-- ============================ 10 ============================ -->
+<section class="chapter" data-toc="10|Adım adım örnek ve senaryolar|Mehmet Amca, sıcak ve kurak gelecekler, diğer konumlar">
+  <div class="chap-head"><div class="num">10</div><div class="kicker">Uygulama</div>
+  <h1>Adım adım örnek ve senaryolar</h1>
+  <p class="lead">Bir çiftçi danışmanının uygulamayı nasıl kullandığı ve sonuçların farklı iklim varsayımlarında nasıl değiştiği.</p></div>
+
+  <h2>10.1 Mehmet Amca, Çumra</h2>
+  <div class="step"><div class="i">1</div><div><h4>Tarlayı tanıt</h4><p>Konum Çumra, 120 dekar, sulu, yağmurlama, su kısıtı ilan edilmiş ilçe. 2025 şeker pancarı, 2026 dane mısır. Pancar sözleşmesi var; ekipmanı pancar ve patates sökme, silaj, ot biçme ve baklagil hasat tablası. (Demo için: <b>Örnek tarlayı yükle</b>.)</p></div></div>
+  <div class="step"><div class="i">2</div><div><h4>İklimine bak</h4><p>Düzeltilmiş yağış 316 mm/yıl, ET₀ 1.172 mm. Haziran–Ağustos yağış neredeyse sıfır. Yaz sıcakları anlamlı şekilde artıyor (10 yılda +0,47 °C).</p></div></div>
+  <div class="step"><div class="i">3</div><div><h4>Planları karşılaştır</h4><p>Mevcut plan kırmızı kart riski taşıyor: 2027–2030'da pancar ve mısır 4 yılda 2'den fazla ve art arda. Ayrıca aynı ürün (pancar) önerilen ara vermeden önce tekrar ediyor. Denge planı: nohut → buğday → fiğ → buğday.</p></div></div>
+  <div class="step"><div class="i">4</div><div><h4>Ya şöyle olursa?</h4><p>Yağış −%20, +2 °C ve 2040'lar senaryolarında aynı karşılaştırma tekrar hesaplanır (tablo 10.2).</p></div></div>
+  <div class="step"><div class="i">5</div><div><h4>Havzaya bak, karneyi al</h4><p>Havza sayfasında kendi kararının toplam etkisini görür; Karne sayfasından tek sayfalık PDF'i indirip kooperatife ya da bankaya götürür.</p></div></div>
+
+  <div class="grid2" style="grid-template-columns: 1fr 1fr; align-items:start; margin-top:0.6em">
+    <figure style="margin:0"><img src="img/karne-1.png" style="border-radius:4px"><figcaption><b>Şekil 10.1</b> · Denge planının PDF karnesi (A4, tek sayfa). Başlık bandı, veri uyarısı, plan şeridi, kural durumu, mevcut planla karşılaştırma tablosu, toprak alt skorları, kâr dağılımı ve gerekçeler.</figcaption></figure>
+    <div>
+      <h3 style="margin-top:0">Karnede ne var?</h3>
+      <ul>
+        <li>İşletme, tarih, konum (koordinat), havza, alan</li>
+        <li><b>Veri uyarısı</b>: hangi veri sentetik, hangi değer varsayım</li>
+        <li>Plan şeridi ve kural durumu</li>
+        <li>Bu plan / mevcut plan: kâr, CVaR %5, su (dekar ve tarla toplamı), destek, zarar olasılığı, toprak sağlığı</li>
+        <li>Dört yıllık toplam brüt kâr dağılımı (kutu grafiği, 41 dönem)</li>
+        <li>Neden bu plan + bilgi boşlukları</li>
+        <li>Alt not: veri kaynağı, yöntem, "kararın sahibi çiftçi", "karbon iddiası içermez"</li>
+      </ul>
+      <div class="box info"><div class="t">Kim kullanır?</div><p>Kooperatif ve şeker fabrikası (kural uyumu), banka ve Tarım Kredi (kuraklığa dayanıklılık, CVaR), TARSİM (aşırı olay sıklığı), çiftçinin kendisi (ziraat mühendisiyle konuşurken).</p></div>
+    </div>
+  </div>
+
+  <h2>10.2 İklim senaryolarında aynı tarla</h2>
+  <table>
+    <thead><tr><th>Senaryo</th><th>Plan</th><th class="n">Kâr ₺/da/yıl</th><th class="n">Kötü dönem</th><th class="n">Su m³/da</th></tr></thead>
+    <tbody>
+      <tr><td class="k" rowspan="2">Geçmiş iklim</td><td>Mevcut (pancar/mısır)</td><td class="n">4.263</td><td class="n">2.117</td><td class="n">993</td></tr>
+      <tr><td>Denge (nohut/buğday/fiğ/buğday)</td><td class="n">4.775</td><td class="n">4.192</td><td class="n">419</td></tr>
+      <tr><td class="k" rowspan="2">Yağış −%20</td><td>Mevcut</td><td class="n">4.214</td><td class="n">2.060</td><td class="n">1.015</td></tr>
+      <tr><td>Denge (aynı plan)</td><td class="n">4.695</td><td class="n">4.156</td><td class="n">456</td></tr>
+      <tr><td class="k" rowspan="2">+2 °C</td><td>Mevcut</td><td class="n">2.920</td><td class="n">553</td><td class="n">1.080</td></tr>
+      <tr><td>Denge (aynı plan)</td><td class="n">4.438</td><td class="n">3.941</td><td class="n">494</td></tr>
+      <tr><td class="k" rowspan="2">2040'lar (CMIP6 SSP2-4.5)</td><td>Mevcut</td><td class="n">134</td><td class="n">−3.090</td><td class="n">1.139</td></tr>
+      <tr><td>Denge (aynı plan)</td><td class="n">4.191</td><td class="n">3.681</td><td class="n">509</td></tr>
+    </tbody>
+  </table>
+  <p>Okuma: Denge planı dört senaryonun hepsinde aynı kalıyor ve kötü dönem geliri 3.700–4.200 ₺/da bandında. Mevcut plan ısınmaya çok duyarlı: +2 °C'de kötü dönem geliri 2.117'den 553'e, 2040'lar senaryosunda ortalama kâr neredeyse sıfıra iniyor. Neden: pancar ve mısır yaz sıcağında hem daha çok su istiyor (sulama maliyeti) hem de hassas dönemde sıcak stresi yaşıyor.</p>
+  <div class="box warn"><div class="t">Dikkat</div><p>2040'lar senaryosu <b>tek bir iklim modeline</b> (ACCESS-CM2) ve tek senaryoya (SSP2-4.5) dayanır; model belirsizliği gösterilmez. Fiyat ve maliyetler 2026 sabit tutulur. Bu tablo "ne olacak" değil, "bu plan böyle bir iklime ne kadar dayanır" sorusunun cevabıdır.</p></div>
+
+  <h2>10.3 Aynı plan, farklı tarlalar</h2>
+  <table>
+    <thead><tr><th>Konum</th><th>Toprak verisi</th><th>Kâr kartı</th><th>Akifer kartı</th><th>Denge kartı</th><th class="n">Pancar suyu</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Çumra (sulu, yağmurlama)</td><td>Varsayım</td><td>Ayçiçeği → Nohut → Pancar → Buğday</td><td>Fiğ → Buğday → Nadas → Buğday</td><td>Nohut → Buğday → Fiğ → Buğday</td><td class="n">1.095 m³/da</td></tr>
+      <tr><td class="k">Karapınar (sulu)</td><td>SoilGrids</td><td>Ayçiçeği → Nohut → Pancar → Buğday</td><td>Fiğ → Buğday → Nohut → Fiğ</td><td>Nohut → Buğday → Fiğ → Buğday</td><td class="n">918 m³/da</td></tr>
+      <tr><td class="k">Cihanbeyli (kuru tarım)</td><td>SoilGrids</td><td>Fiğ → Buğday → Nohut → Buğday</td><td>Nohut → Buğday → Fiğ → Buğday</td><td>%70 / %30 tarla bölme</td><td class="n">—</td></tr>
+    </tbody>
+  </table>
+  <p class="small">Mevcut plan ön ayarı (pancar/mısır) üç konumda da aynı; kuru tarım Cihanbeyli'de sulama suyu sıfırdır ve sulu-arazi münavebe kuralı uygulanmaz. Kuru tarımda yalnızca kuru koşulda yetişebilen ürünler (ör. pancar ve mısır hariç) önerilir; Akifer kartı burada "kötü dönem geliri en yüksek" plandır.</p>
+
+  <h2>10.4 Diğer havzalar</h2>
+  <p>Kaliforniya Central Valley (buğday, domates, pamuk, yonca, mısır…), Pencap (çeltik–buğday; 2009 dikim tarihi yasası takvimde, çeltik çeşitlendirme hedefi) ve Murray-Darling (yıllık 700 m³/da su tahsisi) aynı motorla çalışır. Bu havzaların iklim verisi de POWER'dan gelir; kural paketleri ve çiftlik tipleri <b>temsilidir</b>. AB'deki bir tarla için Tarla sayfasında "AB GAEC 7" paketi eklenebilir (aynı ana ürün en fazla 3 yıl üst üste, sadeleştirilmiş).</p>
+</section>
+
+<!-- ============================ 11 ============================ -->
+<section class="chapter" data-toc="11|Kurulum ve çalıştırma|Windows çift tıklama, Linux/macOS, sorun giderme">
+  <div class="chap-head"><div class="num">11</div><div class="kicker">Kurulum</div>
+  <h1>Kurulum ve çalıştırma</h1>
+  <p class="lead">Python 3.11+ gerekir. İnternet yalnızca kurulumda ve ilk veri indirmede lazım; sonrası çevrimdışı çalışır.</p></div>
+  <h2>11.1 Windows (çift tıklama)</h2>
+  <table>
+    <thead><tr><th style="width:26%">Dosya</th><th>Ne yapar</th></tr></thead>
+    <tbody>
+      <tr><td class="k"><code>kur.bat</code></td><td>Sanal ortamı (<code>.venv</code>) kurar, <code>requirements.txt</code>'i yükler, testleri çalıştırır. Bir kez.</td></tr>
+      <tr><td class="k"><code>calistir.bat</code></td><td>Uygulamayı açar → <code>http://localhost:8501</code>. Kapatmak için pencerede Ctrl+C.</td></tr>
+      <tr><td class="k"><code>veri_indir.bat</code></td><td>Gerçek veriyi indirir (POWER + SoilGrids anahtarsız), birim kontrolünden geçirir, başarılı veri setleri için <code>config.yaml</code>'ı günceller, rapor yazar (<code>data/veri_raporu.txt</code>). <code>--earthdata</code> ve <code>--datasets climate_deltas</code> seçenekleri.</td></tr>
+      <tr><td class="k"><code>nasa_ek_paketler.bat</code></td><td>GRACE ve CMIP6 için NetCDF paketleri (xarray, netCDF4…), <code>requirements-nasa.txt</code>.</td></tr>
+      <tr><td class="k"><code>test.bat</code></td><td>68 testi çalıştırır.</td></tr>
+      <tr><td class="k"><code>yedek_al.bat</code></td><td>Testler + sürüm etiketi + <code>data/cache</code> dahil çevrimdışı zip (<code>dist/</code>). Sunumdan önce mutlaka.</td></tr>
+    </tbody>
+  </table>
+  <h2>11.2 Linux / macOS</h2>
+<pre>python -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+streamlit run app.py
+python scripts/setup_real_data.py      <span class="c"># gerçek NASA verisi (POWER + SoilGrids; anahtar gerekmez)</span>
+python -m pytest -q                    <span class="c"># 68 test</span></pre>
+  <h2>11.3 Ayar dosyası: <code>config.yaml</code></h2>
+<pre><span class="k">data:</span>
+  sources:                       <span class="c"># her veri seti için kaynak sırası; ilk başarılı kullanılır</span>
+    climate_daily: [files, nasa, synthetic]
+    soil_moisture: [files, synthetic]
+    ...
+  precip_correction: <span class="s">imerg_monthly</span>   <span class="c"># POWER yağışını IMERG aylık oranıyla düzelt (kapatmak: none)</span>
+<span class="k">settings:</span>
+  plan_start_year: 2027
+  horizon: 4</pre>
+  <h2>11.4 Sorun giderme</h2>
+  <table>
+    <thead><tr><th style="width:34%">Belirti</th><th>Çözüm</th></tr></thead>
+    <tbody>
+      <tr><td class="k">"Önce kur.bat çalıştırılmalı"</td><td><code>.venv</code> yok; <code>kur.bat</code>'ı çalıştırın.</td></tr>
+      <tr><td class="k">Kenar çubuğunda "doğrulanmamış" veri</td><td><code>data/external/</code>'a kökeni yazılmamış dosya kondu; <code>KAYNAK.yaml</code>'a satır ekleyin (Bölüm 12).</td></tr>
+      <tr><td class="k">"Kurallara ve kısıtlara uyan plan bulunamadı"</td><td>Koşullar çok dar (ör. hiçbir ekipman yok + yüksek yem şartı). Kısıtları gevşetin; mesaj hangi ürünlerin elendiğini söyler.</td></tr>
+      <tr><td class="k">Harita altlığı boş</td><td>İnternet yok; hesaplar etkilenmez.</td></tr>
+      <tr><td class="k">Türkçe karakterler bozuk (konsol)</td><td>.bat dosyaları <code>PYTHONUTF8=1</code> ayarlar; elle çalıştırıyorsanız siz de ayarlayın.</td></tr>
+      <tr><td class="k">GRACE / CMIP6 indirilemiyor</td><td><code>nasa_ek_paketler.bat</code> ve <code>.env</code>'de Earthdata hesabı gerekli.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ 12 ============================ -->
+<section class="chapter" data-toc="12|Gerçek veri bağlama|Earthdata, AppEEARS, KAYNAK.yaml">
+  <div class="chap-head"><div class="num">12</div><div class="kicker">Veri</div>
+  <h1>Gerçek veri bağlama</h1>
+  <p class="lead">Eksik dört veri setini (SMAP, HLS/MODIS, SRTM, Çumra toprağı) gerçeğe çevirmek için yapılacaklar.</p></div>
+  <h2>12.1 Earthdata hesabı (güvenli)</h2>
+  <p>SMAP, HLS/MODIS, SRTM ve GRACE NASA Earthdata hesabı ister. <code>.env.example</code>'ı <code>.env</code> adıyla kopyalayıp doldurun. <b><code>.env</code> git'e girmez</b> (<code>.gitignore</code>); kullanıcı adı ve şifre hiçbir koda, belgeye ya da ekran görüntüsüne yazılmaz.</p>
+<pre>EARTHDATA_USERNAME=<span class="s">kullanici_adiniz</span>
+EARTHDATA_PASSWORD=<span class="s">********</span>          <span class="c"># yalnızca .env içinde; asla paylaşmayın</span></pre>
+  <h2>12.2 AppEEARS ile SMAP, HLS/MODIS, SRTM</h2>
+  <div class="step"><div class="i">1</div><div><h4>Görevi gönder</h4><p><code>veri_indir.bat --earthdata</code> AppEEARS'a nokta görevleri gönderir (SPL4SMGP kök bölgesi nemi, HLS NDVI, MOD13Q1, SRTMGL1). Görevler sunucuda dakikalar–saatler sürer.</p></div></div>
+  <div class="step"><div class="i">2</div><div><h4>Durumu izle ve indir</h4><p>Görevler tamamlanınca aynı komut sonuçları indirip <code>data/cache/nasa/</code>'ya ve dönüştürülmüş CSV'leri <code>data/external/&lt;veri seti&gt;/&lt;konum&gt;.csv</code>'ye yazar. AppEEARS web arayüzünden elle indirdiyseniz CSV'yi aynı yere koyun; şema <code>basinshift/data/schema.py</code>'dedir.</p></div></div>
+  <div class="step"><div class="i">3</div><div><h4>Kökeni beyan et</h4><p><code>data/external/KAYNAK.yaml</code>'da ilgili satırı değiştirin:</p>
+<pre><span class="k">soil_moisture:</span>
+  default: {origin: <span class="s">nasa</span>, product: "SMAP L4 SPL4SMGP v7 (AppEEARS)"}</pre></div></div>
+  <div class="step"><div class="i y">4</div><div><h4>Kontrol et</h4><p>Uygulamayı yenileyin. Kenar çubuğu 5/8, 6/8… olmalı; SMAP gerçekse ekim nemi otomatik olarak su dengesine girer, NDVI gerçekse "Geçmişini uydudan doğrula" tablosu gerçek doğrulama olur ve sarı uyarı kalkar. <code>python -m pytest -q</code> ile testleri çalıştırın.</p></div></div>
+  <div class="box bad"><div class="t">Asla yapmayın</div><p>Sentetik ya da elle üretilmiş bir dosyaya <code>origin: nasa</code> yazmayın. Bu, önceki sürümdeki "8/8" hatasının aynısıdır ve jüri <code>export_synthetic</code> çıktısıyla karşılaştırarak kolayca yakalar.</p></div>
+  <h2>12.3 Tabloları güncelleme</h2>
+  <p>Bütün katsayılar koddan ayrıdır; güncellemek için Python bilmek gerekmez:</p>
+  <table>
+    <thead><tr><th style="width:32%">Dosya</th><th>İçerik</th></tr></thead>
+    <tbody>
+      <tr><td><code>tables/crops.csv</code></td><td>Ürün agronomisi: Kc, dönem uzunlukları, kök derinliği, Ky, sıcak/don eşikleri, ara verme süresi, yem, ekipman, yerel riskler</td></tr>
+      <tr><td><code>tables/basin_economics.csv</code></td><td>Havza × ürün: fiyat, verim, değişken maliyet, destek, ekim tarihi, sezon ölçeği, talep esnekliği</td></tr>
+      <tr><td><code>tables/rotation_effects.csv</code></td><td>Önceki ürün → sonraki ürün verim ve maliyet etkisi</td></tr>
+      <tr><td><code>tables/rules/*.yaml</code></td><td>Kural paketleri (yasal / tavsiye; sarı-kırmızı kart cezaları)</td></tr>
+      <tr><td><code>tables/farm_types.csv</code></td><td>Havza modeli çiftlik tipleri (temsili)</td></tr>
+      <tr><td><code>tables/commodity_trade.csv</code></td><td>Kaynaklı ulusal ticaret bilgisi (kaynak sütunu zorunlu)</td></tr>
+      <tr><td><code>tables/basins.yaml</code></td><td>Havzalar, konumlar, kaynaklı bilgiler, sentetik iklim parametreleri</td></tr>
+      <tr><td><code>tables/glossary.yaml</code></td><td>Yöntem sayfasındaki sözlük (TR/EN)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ 13 ============================ -->
+<section class="chapter" data-toc="13|Kod mimarisi|Klasörler, modüller, veri akışı">
+  <div class="chap-head"><div class="num">13</div><div class="kicker">Geliştirici</div>
+  <h1>Kod mimarisi</h1>
+  <p class="lead">Yaklaşık 7.000 satır Python. Hesap motoru arayüzden bağımsızdır; Streamlit yalnızca <code>ui/</code> katmanındadır.</p></div>
+  <figure>{{ARCH_SVG}}<figcaption><b>Şekil 13.1</b> · Katmanlar. Oklar bağımlılık yönüdür; alt katmanlar üst katmanları bilmez.</figcaption></figure>
+<pre>basinshift/
+  data/        hub.py (DataHub, Provenance, köken)  basins.py  schema.py
+    providers/ nasa_power.py  nasa.py (GRACE, CMIP6, IMERG)  appeears.py  files.py (KAYNAK.yaml)  synthetic.py  http.py
+  engine/      et0.py  solar.py  calendar.py  water.py  risk.py  soil.py  rotation.py  scenarios.py
+               trends.py (Mann-Kendall)  crop_detect.py (NDVI → ürün grubu)  field.py (FieldContext)  pipeline.py
+  knowledge/   tables.py (CSV yükleyiciler)  rules.py (YAML kural motoru)
+  optimizer/   pareto.py  search.py (kartlar, karışımlar)
+  basin/       model.py (LP, cobweb, gölge fiyat)
+  explain/     why.py (Neden bu plan?)  headline.py  confidence.py  fmt.py (TR/EN sayı biçimi)
+  report/      scorecard.py (fpdf2 PDF karne)
+  ui/          app akışı: pages.py  components.py (tema, kartlar, grafikler)  state.py  i18n.py  assets/
+app.py         Streamlit girişi (st.navigation, 7 sayfa)
+scripts/       setup_real_data.py  fetch_data.py  export_synthetic.py  capture_all.py  freeze.py
+tables/        bütün katsayılar ve kurallar          tests/   68 test
+docs/          METHODS, DATA_SWAP, ARCHITECTURE, VERIFICATION_LOG, QA_PREP, DEMO_SCRIPT, PROJECT_PAGE_EN …</pre>
+  <h2>13.1 Önemli tasarım kararları</h2>
+  <ul>
+    <li><b>Ürün × yıl bir kez simüle edilir.</b> Su dengesi pahalıdır; 12 ürün × 44 yıl tablosu bir kez kurulur, 20.736 plan bu tablodan NumPy indekslemeyle birleştirilir. Bir tarla için toplam ~1,5–2 s.</li>
+    <li><b>Köken her yerde.</b> Her veri çağrısı Provenance üretir; arayüz, açıklama metni ve PDF aynı kayıttan okur. Dürüstlük tek yerde yönetilir.</li>
+    <li><b>Kurallar veri, motor genel.</b> Kural türleri (<code>group_max_in_window</code>, <code>group_no_consecutive</code>, <code>water_cap</code>, <code>allowed_crops</code>, <code>crop_max_consecutive</code>, <code>crop_min_gap_from_table</code>, <code>family_no_consecutive</code>) kodda; hangi ürüne nasıl uygulanacağı YAML'da.</li>
+    <li><b>Önbellek.</b> Streamlit <code>st.cache_resource</code> ile site verisi, bağlam ve sonuçlar senaryo anahtarına göre saklanır; kaydırıcı geri alınınca anında döner.</li>
+    <li><b>Grafikler tek şablonda.</b> <code>ui.chart()</code> Plotly'ye Streamlit temasını kapatıp <code>basinshift</code> şablonunu uygular (koyu zemin, marka renkleri, otomatik kenar boşluğu).</li>
+    <li><b>İki dil.</b> Bütün metinler <code>i18n.py</code>'de; sayı biçimi <code>fmt.num</code> ile (TR: 20.736 · 4,5; EN: 20,736 · 4.5).</li>
+  </ul>
+</section>
+
+<!-- ============================ 14 ============================ -->
+<section class="chapter" data-toc="14|Doğrulama ve sınırlamalar|Testler, akla yatkınlık, bilinen eksikler">
+  <div class="chap-head"><div class="num">14</div><div class="kicker">Güven</div>
+  <h1>Doğrulama, testler ve sınırlamalar</h1>
+  <p class="lead">Neye güvenebilirsiniz, neye temkinle bakmalısınız?</p></div>
+  <h2>14.1 Otomatik testler (68)</h2>
+  <table>
+    <thead><tr><th style="width:34%">Dosya</th><th class="n" style="width:8%">Test</th><th>Ne doğrular</th></tr></thead>
+    <tbody>
+      <tr><td><code>test_et0.py</code></td><td class="n">3</td><td>FAO-56 Örnek 18 (Uccle, 3,88 mm/gün; kitap 3,9) ve Örnek 8 (dünya dışı radyasyon), radyasyon eksikliğinde Hargreaves yedeği</td></tr>
+      <tr><td><code>test_engine.py</code></td><td class="n">12</td><td>CVaR, Mann-Kendall, ürün-yıl tablosunun fiziksel tutarlılığı, su tavanı, kurak senaryoda daha çok su, CMIP6 katsayıları, nadasın suyu saklaması, toprak skorları, risk takvimi, NDVI'dan ürün grubu, ısınmanın sıcak stresini artırması, eksik yılların atılması</td></tr>
+      <tr><td><code>test_rules.py</code></td><td class="n">11</td><td>Mehmet planı kırmızı kart, tek ihlal sarı, uyumlu plan yeşil; kural kuru tarıma ve kısıtsız ilçeye uygulanmaz; vektörel = tekil sonuç; pancar ara verme; destek cezaları; su kısıtı desteği; dane mısır/patatese destek yok; su tavanları; AB GAEC 7</td></tr>
+      <tr><td><code>test_optimizer_basin_report.py</code></td><td class="n">7</td><td>Pareto maskesi, kartların kurala uyması, kısıtların ürün elemesi, açıklamanın beş başlığı, havza LP modeli, PDF karne, çok yıllık ürünün önerilmemesi</td></tr>
+      <tr><td><code>test_data_layer.py</code></td><td class="n">16</td><td>Sentetik verinin şemaya uyması ve tekrarlanabilirliği, her veri setinin köken kaydı, POWER JSON/CSV ayrıştırıcıları, dosya sağlayıcı, sentetiğe düşüşte uyarı, şema ve birim kontrolleri, SoilGrids birimleri, bozuk önbelleğin silinmesi, varsayılan değer etiketi, ticaret tablosu</td></tr>
+      <tr><td><code>test_edge_cases.py</code></td><td class="n">14</td><td>20.736 plan sayısı, Mehmet hikâyesinin tutması, sulama suyunun akla yatkınlığı, damla tasarrufu, uç senaryo, imkânsız kısıtta açık hata, bütün havzalar ve özel koordinat, İngilizce metinde Türkçe sızıntı olmaması, iki dilli mesajlar, veri betiğinin yalnızca istenen kaynağı değiştirmesi, <b>depoda kimlik bilgisi olmaması</b></td></tr>
+      <tr><td><code>test_provenance_precip.py</code></td><td class="n">5</td><td>KAYNAK.yaml köken etiketleri (gerçek/sentetik/varsayım/doğrulanmamış), IMERG oranı ve düzeltme, kırpma ve yetersiz örtüşme</td></tr>
+    </tbody>
+  </table>
+  <h2>14.2 Akla yatkınlık kontrolleri</h2>
+  <table>
+    <thead><tr><th>Kontrol</th><th>Beklenen</th><th>Modelde</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Yıllık yağış, Çumra</td><td>İstasyon normali ≈ 320–330 mm</td><td>316 mm (IMERG düzeltmeli)</td></tr>
+      <tr><td class="k">Pancar sulaması, yağmurlama</td><td>700–1.000 m³/da (bölge pratiği)</td><td>1.095 (Çumra) · 918 (Karapınar) m³/da — üst uçta, tam sulama varsayımı</td></tr>
+      <tr><td class="k">Dane mısır sulaması</td><td>≈ 700–900 m³/da</td><td>885 (Çumra) · 740 (Karapınar)</td></tr>
+      <tr><td class="k">Damla tasarrufu</td><td>%23–26 (FAO Konya rehberi)</td><td>%16,7 (yalnızca randıman farkı) — temkinli</td></tr>
+      <tr><td class="k">Sıcaklık eğilimi</td><td>Türkiye'de ısınma ≈ 0,3–0,5 °C/10 yıl</td><td>+0,33 °C/10 yıl (yıllık), +0,47 (yaz Tmax), anlamlı</td></tr>
+    </tbody>
+  </table>
+  <h2>14.3 Bilinen sınırlamalar</h2>
+  <table>
+    <thead><tr><th style="width:26%">Konu</th><th>Etkisi</th><th style="width:28%">Ne yapılmalı</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Fiyat ve maliyet varsayımı</td><td>Mutlak kâr düşük güvenli; Kâr kartı fiyata en duyarlı kart.</td><td>Konya Ticaret Borsası, ziraat odası maliyet cetveli</td></tr>
+      <tr><td class="k">Tam sulama varsayımı</td><td>Buğday (~536 m³/da, Çumra) gibi ürünlerde sahadaki 1–2 destek sulamasından yüksek; mutlak su "üst sınır". Planlar arası sıralama aynı kuralla yapıldığı için etkilenmez.</td><td>Kısıntılı sulama seçeneği (gelecek iş)</td></tr>
+      <tr><td class="k">IMERG kış oranları</td><td>Ocak–Şubat oranı 0,30 sınırında; kış yağışı ve ilkbahar toprak suyu düşük olabilir.</td><td>Konya MGM istasyon verisiyle aylık kalibrasyon</td></tr>
+      <tr><td class="k">SMAP, NDVI sentetik</td><td>Başlangıç nemi yağıştan tahmin; uydu doğrulaması yöntem gösterimi.</td><td>AppEEARS çıktısını bağlamak (Bölüm 12)</td></tr>
+      <tr><td class="k">Tek iklim modeli</td><td>2040'lar sonucu model belirsizliğini içermez.</td><td>Birkaç CMIP6 modeli ve SSP5-8.5</td></tr>
+      <tr><td class="k">Temsili havza</td><td>Havza rakamları mekanizma gösterimi.</td><td>ÇKS / kooperatif verisi</td></tr>
+      <tr><td class="k">Kural yorumu</td><td>Sarı kart yılında destek kesilmesi ve su kısıtı desteği tutarlarının bir kısmı türetilmiş.</td><td>BÜGEM PDF ve İl Müdürlüğü teyidi</td></tr>
+      <tr><td class="k">İklim çözünürlüğü</td><td>0,5° hücre tarla içi farkları göstermez.</td><td>Toprak ve yönetim girdileri farkı taşır</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ 15 ============================ -->
+<section class="chapter" data-toc="15|Sunum, demo ve jüri soruları|3 dakikalık akış ve hazır cevaplar">
+  <div class="chap-head"><div class="num">15</div><div class="kicker">Sahne</div>
+  <h1>Sunum, demo ve jüri soruları</h1>
+  <p class="lead">Ayrıntılı metin <code>docs/DEMO_SCRIPT.md</code> ve <code>docs/QA_PREP.md</code>'de. Burada özeti.</p></div>
+  <h2>15.1 Üç dakikalık demo</h2>
+  <table>
+    <thead><tr><th style="width:13%">Süre</th><th style="width:17%">Ekran</th><th>Ne söylenir / yapılır</th></tr></thead>
+    <tbody>
+      <tr><td>0:00–0:25</td><td class="k">Havza</td><td>"Konya'da 739 obruk. 2025'te 244 mm yağış. Yeraltı suyu 30 m düştü. Bu grafik havzanın toplam su deposu (GRACE)."</td></tr>
+      <tr><td>0:25–0:40</td><td class="k">Tarla</td><td><b>Örnek tarlayı yükle</b>: "Mehmet Amca, Çumra, 120 dekar; pancar–mısır sürdürmek istiyor."</td></tr>
+      <tr><td>0:40–1:30</td><td class="k">Planlar</td><td>Özet cümle: "Mevcut plan kırmızı kart riski taşıyor. Denge planı yılda 574 m³/da daha az su, 1.248 ₺ destek." Kartlar, Neden bu plan?, keman grafiği.</td></tr>
+      <tr><td>1:30–1:45</td><td class="k">Ya şöyle olursa?</td><td>Sıcaklığı +2 °C yapın: mevcut planın kötü dönem geliri çöker, Denge yerinde kalır.</td></tr>
+      <tr><td>1:45–2:05</td><td class="k">İki gelecek</td><td>"Aynı tarla, iki farklı 2027–2030." Üç büyük rakam.</td></tr>
+      <tr><td>2:05–2:25</td><td class="k">Havza</td><td>"Bir çiftçi için doğru olan, bin çiftçi yapınca obruk olabilir." Koordinasyonsuzluğun bedeli, gölge fiyat. "Çiftlik tipleri temsili."</td></tr>
+      <tr><td>2:25–2:40</td><td class="k">Karne</td><td>PDF'i indirin; basılı örneği jüriye verin.</td></tr>
+      <tr><td>2:40–3:00</td><td class="k">Yöntem</td><td>"Hangi veri gerçek, hangisi değil, hepsi burada: 4 / 8. GRACE'i tarla için kullanmıyoruz." Kapanış: "Bankalara stres testi yapılıyor. Artık tarlalara da."</td></tr>
+    </tbody>
+  </table>
+  <h2>15.2 Hazır cevaplar</h2>
+  <div class="grid2">
+    <div class="card"><h4>"Bu veri gerçek mi?"</h4><p>Dört veri seti gerçek NASA verisi: POWER, IMERG, GRACE, CMIP6. SoilGrids iki konumda gerçek. SMAP ve NDVI sentetik yer tutucu, hesaba girmiyor ya da yalnızca grafik. Her dosyanın kökeni KAYNAK.yaml'da; uygulama ve karne bunu yazıyor.</p></div>
+    <div class="card"><h4>"POWER Konya için iyi mi?"</h4><p>Sıcaklık ve radyasyon için iyi; yağış için değil — %60 fazla. Bu yüzden IMERG aylık oranıyla düzeltiyoruz; sonuç istasyon normaline (≈320–330 mm) uyuyor.</p></div>
+    <div class="card"><h4>"Neden yapay zekâ yok?"</h4><p>Karar yolunda açıklanabilirlik şart: FAO-56, FAO-33 ve şeffaf optimizasyon. Her sayı izlenebilir. Gerekçe metinleri şablondan, hesaplanan değerlerle.</p></div>
+    <div class="card"><h4>"Kârlar doğru mu?"</h4><p>Fiyatların bir kısmı kaynaklı (TMO, TÜRKŞEKER), maliyetler varsayım; ekranda kırmızı güven noktası var. Su ve kural farkları fiyattan bağımsız; asıl mesaj o.</p></div>
+    <div class="card"><h4>"Çiftçi bunu kullanır mı?"</h4><p>Çiftçi danışmanla ya da kooperatifte kullanır; karne tek sayfa ve Türkçe. İş modeli: çiftçiye ücretsiz; kooperatif, şeker fabrikası, banka ve sigorta öder.</p></div>
+    <div class="card"><h4>"Başka yerde çalışır mı?"</h4><p>Havza menüsünden Pencap'a geçin: iklim, ürünler ve kural paketi değişir, motor aynı. AB için GAEC 7 paketi.</p></div>
+  </div>
+  <div class="box bad"><div class="t">Söylemeyin</div><ul><li>"8/8 gerçek NASA verisi", "%100 gerçek veri"</li><li>"Sharpe oranı", "CBOT/Euronext", "sanal su ihracatı hesabı"</li><li>"GRACE ile tarlanın suyunu ölçüyoruz"</li><li>"Uydudan çiftçinin beyanını doğruluyoruz" (NDVI gerçek bağlanana kadar)</li></ul></div>
+</section>
+
+<!-- ============================ EK A ============================ -->
+<section class="chapter" data-toc="Ek A|Sözlük|Kısaltmalar ve terimler">
+  <div class="chap-head"><div class="num">A</div><div class="kicker">Ek</div><h1>Sözlük</h1></div>
+  <table>
+    <thead><tr><th style="width:24%">Terim</th><th>Anlamı</th></tr></thead>
+    <tbody>
+      <tr><td class="k">AppEEARS</td><td>NASA LP DAAC'ın nokta/alan bazlı veri çıkarma servisi (SMAP, HLS, MODIS, SRTM).</td></tr>
+      <tr><td class="k">CMIP6 / NEX-GDDP-CMIP6</td><td>Küresel iklim modeli karşılaştırma projesi; NASA'nın 0,25°'ye ölçek küçültülmüş günlük ürünü.</td></tr>
+      <tr><td class="k">CVaR %5</td><td>Koşullu riske maruz değer: en kötü %5'lik dilimin ortalaması. "Kötü dönem geliri".</td></tr>
+      <tr><td class="k">ÇKS</td><td>Çiftçi Kayıt Sistemi; destek ödemelerinin ve münavebe kontrolünün temeli.</td></tr>
+      <tr><td class="k">Dekar (da)</td><td>1.000 m². 1 ha = 10 da. 1 mm su = 1 m³/da.</td></tr>
+      <tr><td class="k">ET₀ / ETc / ETa</td><td>Referans / ürün / gerçekleşen buharlaşma-terleme (mm).</td></tr>
+      <tr><td class="k">FAO-56 / FAO-33</td><td>FAO'nun ürün su ihtiyacı (1998) ve verim tepkisi (1979) yayınları.</td></tr>
+      <tr><td class="k">GRACE / GRACE-FO</td><td>Yerçekimi ölçen uydu çiftleri; toplam su deposu değişimi (~300 km).</td></tr>
+      <tr><td class="k">HLS</td><td>Harmonized Landsat Sentinel-2: 30 m yüzey yansıtımı; NDVI hesabı.</td></tr>
+      <tr><td class="k">IMERG</td><td>GPM uydu takımının birleştirilmiş yağış ürünü (0,1°, yarım saatlik → günlük).</td></tr>
+      <tr><td class="k">Kc / Ky</td><td>Ürün katsayısı (ETc/ET₀) / verim tepki faktörü (FAO-33).</td></tr>
+      <tr><td class="k">Kırmızı / sarı kart</td><td>2026 münavebe kuralı ihlalinde uyarı / destekten mahrumiyet.</td></tr>
+      <tr><td class="k">LP (doğrusal programlama)</td><td>Doğrusal kısıtlar altında doğrusal amacı en iyileyen yöntem; havza modelinde HiGHS çözücüsü.</td></tr>
+      <tr><td class="k">Mann-Kendall / Sen eğimi</td><td>Dağılım varsaymayan eğilim testi / eğilimin büyüklüğü.</td></tr>
+      <tr><td class="k">MERRA-2</td><td>NASA'nın atmosferik yeniden analizi; POWER'ın meteoroloji kaynağı.</td></tr>
+      <tr><td class="k">Münavebe</td><td>Ekim nöbeti; ürünlerin yıllara göre sırası.</td></tr>
+      <tr><td class="k">NDVI</td><td>Normalize fark bitki örtüsü indeksi (0–1; yeşillik).</td></tr>
+      <tr><td class="k">Pareto cephesi</td><td>Hiçbir göstergede başka bir plan tarafından geçilmeyen planlar.</td></tr>
+      <tr><td class="k">POWER</td><td>NASA Prediction Of Worldwide Energy Resources; günlük agroklimatoloji API'si.</td></tr>
+      <tr><td class="k">Provenance (köken)</td><td>Bir verinin nereden geldiğinin kaydı; uygulamada her veri setinin durumu.</td></tr>
+      <tr><td class="k">SMAP L4</td><td>Soil Moisture Active Passive uydusu, model destekli 9 km kök bölgesi nemi.</td></tr>
+      <tr><td class="k">SoilGrids</td><td>ISRIC'in 250 m küresel toprak özellikleri haritası (NASA dışı).</td></tr>
+      <tr><td class="k">SRTM</td><td>Shuttle Radar Topography Mission; 30 m yükseklik modeli.</td></tr>
+      <tr><td class="k">SSP2-4.5</td><td>Orta yol sosyoekonomik senaryo, 2100'de 4,5 W/m² ışınım zorlaması.</td></tr>
+      <tr><td class="k">TAW / RAW</td><td>Toplam / kolay kullanılabilir toprak suyu (mm).</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ EK B ============================ -->
+<section class="chapter" data-toc="Ek B|Rakam teyit tablosu|Her rakamın etiketi: kaynaklı, türetilmiş, varsayım, model">
+  <div class="chap-head"><div class="num">B</div><div class="kicker">Ek</div><h1>Rakam teyit tablosu</h1>
+  <p class="lead">Etiketler: <span class="tag src">KAYNAKLI</span> yayımlanmış kaynakta var · <span class="tag der">TÜRETİLMİŞ</span> kaynaklı rakamdan hesap · <span class="tag ass">VARSAYIM</span> kaynak yok · <span class="tag real">MODEL</span> uygulama çıktısı. Ayrıntı: <code>docs/VERIFICATION_LOG.md</code>.</p></div>
+  <table>
+    <thead><tr><th style="width:38%">Rakam</th><th style="width:14%">Etiket</th><th>Dayanak</th></tr></thead>
+    <tbody>
+      <tr><td>Konya Kapalı Havzası'nda 739 obruk, 702'si Konya'da; 2020'den beri 126, 2024'te 32</td><td><span class="tag src">KAYNAKLI</span></td><td>AFAD Obruk Duyarlılık Haritası, haberler</td></tr>
+      <tr><td>2025 yağışı 244 mm, 25 havza içinde en düşük</td><td><span class="tag src">KAYNAKLI</span></td><td>Haber kaynakları (slaytta kaynak yazın)</td></tr>
+      <tr><td>Yeraltı suyu 1980'lerden beri ≈30 m düştü</td><td><span class="tag src">KAYNAKLI</span></td><td>Daloğlu Çetinkaya vd., 2025</td></tr>
+      <tr><td>Münavebe: 4 yılda en fazla 2, art arda değil; 19 ilçe; sarı/kırmızı kart</td><td><span class="tag src">KAYNAKLI</span></td><td>2026 destekleme tebliği haberleri; Konya İl Müdürlüğü açıklaması</td></tr>
+      <tr><td>Sarı kart yılında o yılın desteği sıfır</td><td><span class="tag ass">YORUM</span></td><td>Tebliğ metninde açık değil; teyit edilmeli</td></tr>
+      <tr><td>Destek katsayısı 310 → 367 ₺/da (Eylül 2026)</td><td><span class="tag src">KAYNAKLI</span></td><td>Alomaliye, Bloomberg HT, Dünya (8 Eylül 2026)</td></tr>
+      <tr><td>Buğday/arpa temel destek 954 ₺/da; su kısıtı desteği 514</td><td><span class="tag src">954</span> <span class="tag der">514</span></td><td>514 = eski 434 ÷ 310 × 367</td></tr>
+      <tr><td>Buğday 16,50 · arpa 12,75 ₺/kg (TMO 2026)</td><td><span class="tag src">KAYNAKLI</span></td><td>TMO, 2 Haziran 2026</td></tr>
+      <tr><td>Şeker pancarı 3,72 ₺/kg (2026-27)</td><td><span class="tag src">KAYNAKLI</span></td><td>TÜRKŞEKER, 13 Ekim 2026</td></tr>
+      <tr><td>Ayçiçeği 34,00 ₺/kg</td><td><span class="tag src">KAYNAKLI</span></td><td>2026 ön alım, aralığın alt ucu</td></tr>
+      <tr><td>Dane mısır 11,00 ₺/kg; bütün maliyetler; nohut, mercimek, fiğ… fiyatları</td><td><span class="tag ass">VARSAYIM</span></td><td>Borsa bülteni ve maliyet cetveliyle güncellenmeli</td></tr>
+      <tr><td>Un ihracatında dünya birincisi; 2025'te 2,34 milyon t</td><td><span class="tag src">KAYNAKLI</span></td><td>Un sanayicileri açıklamaları (Ekim 2026)</td></tr>
+      <tr><td>Mısır tüketimi ~12 Mt, üretim ~8,5 Mt, 2024 ithalatı ~4,4 Mt</td><td><span class="tag src">KAYNAKLI</span></td><td>Türkiye Tarım Birliği / TÜİK</td></tr>
+      <tr><td>Ayçiçeğinde yeterlilik %63 (2024/25)</td><td><span class="tag src">KAYNAKLI</span></td><td>TÜİK denge tabloları</td></tr>
+      <tr><td>POWER 539 / IMERG 327 mm/yıl (Çumra, örtüşen yıllar)</td><td><span class="tag real">MODEL</span></td><td>Uygulama hesabı, gerçek NASA verisi</td></tr>
+      <tr><td>Denge: −574 m³/da/yıl (%58), +1.248 ₺/da destek, +2.075 ₺/da kötü dönem</td><td><span class="tag real">MODEL</span></td><td>Uygulama, 14.11.2026, Çumra örnek tarla</td></tr>
+      <tr><td>Koordinasyonsuzluğun bedeli 316 ₺/da; gölge fiyat 9,54 ₺/m³</td><td><span class="tag real">MODEL</span></td><td>Temsili çiftlik tipleriyle; mekanizma gösterimi</td></tr>
+      <tr><td>GRACE eğilimi ≈ −1,0 cm/yıl</td><td><span class="tag real">MODEL</span></td><td>JPL mascon RL06.3, havza kutusu ortalaması</td></tr>
+      <tr><td>Pompaj maliyeti 2,5 ₺/m³; sürdürülebilir çekim %65; iklim stresi katsayıları</td><td><span class="tag ass">VARSAYIM</span></td><td><code>tables/basins.yaml</code>, METHODS.md</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ EK C ============================ -->
+<section class="chapter" data-toc="Ek C|Kaynakça|Yöntem, veri ve politika kaynakları">
+  <div class="chap-head"><div class="num">C</div><div class="kicker">Ek</div><h1>Kaynakça</h1></div>
+  <h3>Yöntem</h3>
+  <ul>
+    <li>Allen, R.G., Pereira, L.S., Raes, D., Smith, M. (1998). <i>Crop evapotranspiration — Guidelines for computing crop water requirements.</i> FAO Irrigation and Drainage Paper 56.</li>
+    <li>Doorenbos, J., Kassam, A.H. (1979). <i>Yield response to water.</i> FAO Irrigation and Drainage Paper 33.</li>
+    <li>Hargreaves, G.H., Samani, Z.A. (1985). Reference crop evapotranspiration from temperature. <i>Applied Engineering in Agriculture</i> 1(2).</li>
+    <li>Rockafellar, R.T., Uryasev, S. (2000). Optimization of conditional value-at-risk. <i>Journal of Risk</i> 2(3).</li>
+    <li>Mann, H.B. (1945); Kendall, M.G. (1975); Sen, P.K. (1968) — eğilim testi ve eğim kestirimi.</li>
+    <li>Ezekiel, M. (1938). The cobweb theorem. <i>Quarterly Journal of Economics</i> 52(2).</li>
+    <li>Huangfu, Q., Hall, J.A.J. (2018). Parallelizing the dual revised simplex method. <i>Mathematical Programming Computation</i> (HiGHS).</li>
+  </ul>
+  <h3>Veri</h3>
+  <ul>
+    <li>NASA POWER — power.larc.nasa.gov (Agroclimatology, günlük; IMERG_PRECTOT parametresi).</li>
+    <li>Huffman, G.J. vd. GPM IMERG Final Precipitation, NASA GES DISC.</li>
+    <li>Watkins, M.M. vd. (2015); Wiese, D.N. vd. JPL GRACE/GRACE-FO Mascon RL06.3 v04 CRI, PO.DAAC.</li>
+    <li>Thrasher, B. vd. (2022). NASA Earth Exchange Global Daily Downscaled Projections (NEX-GDDP-CMIP6). <i>Scientific Data</i>.</li>
+    <li>Reichle, R. vd. SMAP L4 Global 3-hourly 9 km Surface and Root Zone Soil Moisture (SPL4SMGP), NSIDC DAAC.</li>
+    <li>Claverie, M. vd. (2018). The Harmonized Landsat and Sentinel-2 surface reflectance data set. <i>Remote Sensing of Environment</i>.</li>
+    <li>Didan, K. MOD13Q1 MODIS/Terra Vegetation Indices 16-Day L3 250 m, LP DAAC.</li>
+    <li>NASA JPL SRTM GL1 (2013), LP DAAC.</li>
+    <li>Poggio, L. vd. (2021). SoilGrids 2.0. <i>SOIL</i> 7.</li>
+  </ul>
+  <h3>Politika ve fiyat</h3>
+  <ul>
+    <li>T.C. Tarım ve Orman Bakanlığı, BÜGEM — 2026 Yılı Destekleme Birim Fiyatları; Tarımsal Üretim Planlaması belgeleri.</li>
+    <li>Konya İl Tarım ve Orman Müdürlüğü açıklamaları (münavebe, 19 ilçe, sarı/kırmızı kart).</li>
+    <li>TMO 2026 hububat alım fiyatları (2 Haziran 2026); TÜRKŞEKER 2026-27 pancar fiyatı (13 Ekim 2026).</li>
+    <li>AFAD Obruk Duyarlılık Haritası; Daloğlu Çetinkaya vd. (2025) Konya yeraltı suyu.</li>
+    <li>NASA Space Apps Challenge 2026 — Field Shift görev metni; Space Apps marka rehberi.</li>
+  </ul>
+  <div class="box dark" style="margin-top:1.6em"><div class="t">Son söz</div><p><b>BasinShift seçenekleri ve gerekçelerini gösterir; kararın sahibi çiftçi ve yerel ziraat mühendisidir.</b> Tahminler model çıktısıdır; fiyatlar 2026 varsayımıdır; karbon iddiası içermez.</p></div>
+</section>

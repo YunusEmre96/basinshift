@@ -1,0 +1,180 @@
+
+<section class="toc-page">
+  <div class="chap-head" style="border:0">
+    <div class="kicker">Kılavuz · Sürüm 3.0</div>
+    <div class="toc-title">İçindekiler</div>
+    <p class="lead">Çiftçi ve danışman: 1, 9, 10 · Jüri ve sunum: 0–5, 15 · Geliştirici: 6–8, 11–14 · Rakam kaynakları: Ek B</p>
+  </div>
+  <div class="toc">{{TOC}}</div>
+</section>
+
+<!-- ============================ 00 ============================ -->
+<section class="chapter" data-toc="00|Bu sürümde düzeltilenler|Önceki kılavuz ve koddaki hatalar, açıkça">
+  <div class="chap-head"><div class="num">00</div><div class="kicker">Önce dürüstlük</div>
+  <h1>Bu sürümde düzeltilenler</h1>
+  <p class="lead">Önceki kılavuz (Sürüm 2.0, 65 sayfa) ve uygulamanın bir önceki hali bazı yanlış ve doğrulanamaz iddialar içeriyordu. Jüri bunları sorarsa ekip zor durumda kalırdı. Hepsi aşağıda; her biri kodda ya da metinde düzeltildi.</p></div>
+
+  <table>
+    <thead><tr><th style="width:30%">Eski iddia / durum</th><th style="width:40%">Gerçek</th><th>Ne yapıldı</th></tr></thead>
+    <tbody>
+    <tr><td class="k">"8/8 veri seti gerçek NASA verisi", "%100 gerçek veri", "sentetik veri dönemi bitti"</td>
+      <td><code>data/external/</code> içindeki SMAP ve NDVI dosyaları sentetik üreticinin çıktısıyla birebir aynıydı (korelasyon 0,99). Uygulama, klasörde dosya olmasını "gerçek" sayıyordu. Gerçek durum: <b>4 / 8</b>.</td>
+      <td><span class="tag fix">KOD</span> <code>KAYNAK.yaml</code> köken beyanı; kökeni yazılmayan dosya "doğrulanmamış" görünür. Kenar çubuğu, Yöntem sayfası ve PDF karne artık doğruyu söylüyor.</td></tr>
+    <tr><td class="k">PDF karnede sentetik veri uyarısı yoktu</td><td>Uyarı kod değişikliğiyle kaldırılmıştı.</td><td><span class="tag fix">KOD</span> Uyarı geri geldi; okunur veri seti adlarıyla.</td></tr>
+    <tr><td class="k">Konya yağışı NASA POWER'dan olduğu gibi kullanılıyordu</td><td>POWER (MERRA-2 tabanlı) Çumra'da ≈539 mm/yıl veriyor; GPM IMERG ≈327 mm, Konya istasyon normali ≈320–330 mm. Model %60 fazla yağışla çalışıyordu.</td><td><span class="tag fix">KOD</span> IMERG aylık oran düzeltmesi (Bölüm 5.4). Su ihtiyacı ve kârlar yeniden hesaplandı.</td></tr>
+    <tr><td class="k">Denge kartı "en yüksek Sharpe oranı"</td><td>Kodda Sharpe oranı yok. Denge = Pareto cephesinde ağırlıklı normalize skor en yüksek plan (ve tarla bölme karışımları).</td><td><span class="tag fix">METİN</span> Bölüm 7 doğru algoritmayı anlatıyor.</td></tr>
+    <tr><td class="k">"CBOT/Euronext emtia paritesi", "sanal su ihracatı" hesapları, <code>test_trade.py</code></td><td>Kodda borsa verisi, sanal su hesabı ya da böyle bir test yok. Ticaret tablosundaki sanal su ve dünya fiyatı sütunları kaynaksızdı ve birbiriyle çelişiyordu.</td><td><span class="tag fix">KOD+METİN</span> Tablo yalnızca kaynaklı ticaret bilgisiyle yeniden yazıldı; su değerleri modelin kendi FAO-56 hesabından.</td></tr>
+    <tr><td class="k">"AquaCrop mantığı", "kuyu derinliği ve elektrik pompaj maliyeti" girdisi</td><td>AquaCrop kullanılmıyor (FAO-56 + FAO-33). Kuyu derinliği girdisi yok; pompaj sabit 2,5 ₺/m³ varsayımı.</td><td><span class="tag fix">METİN</span> Kaldırıldı.</td></tr>
+    <tr><td class="k">"GRACE ile binlerce çiftçinin su çekimi ilişkilendiriliyor"</td><td>GRACE ~300 km çözünürlüklü; yalnızca havza bağlamı olarak gösteriliyor. Havza modeli temsili çiftlik tipleriyle çalışıyor.</td><td><span class="tag fix">METİN</span> Ölçek sınırı açıkça yazıldı.</td></tr>
+    <tr><td class="k">"SMAP ekimde başlangıç nemini veriyor", "HLS ile uydu doğrulaması yapılıyor"</td><td>Bu iki veri şu an sentetik yer tutucu. SMAP sentetikse hesaba hiç girmiyor (yağış göstergesi kullanılıyor); NDVI yalnızca yöntemi gösteren grafik.</td><td><span class="tag fix">KOD</span> Arayüzde "SENTETİK" etiketi ve uyarı; hesap SMAP yer tutucusunu yok sayıyor.</td></tr>
+    <tr><td class="k">Sezon sonu sulaması toprağı boşuna dolduruyordu</td><td>Hasattan hemen önce toprak TAW'a kadar doldurulup su "harcanmış" sayılıyordu.</td><td><span class="tag fix">KOD</span> Son sulama kalan sezon ihtiyacıyla sınırlandı.</td></tr>
+    <tr><td class="k">Grafiklerde siyah zemin, kesik eksen etiketleri, eksik GRACE çizgisi, "20,736" gibi İngilizce sayı biçimi</td><td>Streamlit teması Plotly şablonunu eziyordu; GRACE ay ortası tarihleri yeniden örneklemede kayboluyordu.</td><td><span class="tag fix">KOD</span> <code>ui.chart(theme=None)</code>, otomatik kenar boşluğu, aylık yeniden örnekleme, Türkçe sayı biçimi.</td></tr>
+    </tbody>
+  </table>
+  <div class="box warn"><div class="t">Hâlâ açık olanlar (saklanmıyor)</div>
+  <ul>
+    <li>SMAP, HLS/MODIS ve SRTM için AppEEARS siparişleri indirilip <code>data/external/</code>'a konmadı. Konduğunda tek satırlık köken beyanı yeter (Bölüm 12).</li>
+    <li>Fiyatların bir kısmı ve <b>bütün maliyetler varsayım</b>; mutlak kâr rakamları düşük güvenli (ekranda kırmızı nokta). Planlar arası su ve kural farkları fiyattan bağımsızdır.</li>
+    <li>Model "tam sulama" varsayar; buğday suyu sahadaki 1–2 destek sulamasından yüksektir (Bölüm 14.3).</li>
+    <li>IMERG'in kış aylarında yağışı az ölçtüğü bilinir; aylık oranlar Ocak–Şubat'ta alt sınıra (0,30) dayanıyor (Bölüm 5.4).</li>
+  </ul></div>
+</section>
+
+<!-- ============================ 01 ============================ -->
+<section class="chapter" data-toc="01|Tek bakışta BasinShift|Ne yapar, kimin için, neden farklı">
+  <div class="chap-head"><div class="num">01</div><div class="kicker">Yönetici özeti</div>
+  <h1>Tek bakışta BasinShift</h1>
+  <p class="lead">Bu bölümü okuyan biri projeyi tek cümleyle anlatabilir ve kılavuzun geri kalanında nereye bakacağını bilir.</p></div>
+
+  
+  <div class="box info"><div class="t">Bu kılavuzu okurken</div>
+  <p>Ekran görüntüleri 14 Kasım 2026'da uygulamanın teslim sürümünden alındı (gerçek NASA POWER iklimi + GPM IMERG yağış düzeltmesi, Çumra, "Mehmet Amca" örnek tarlası). Rakamlar uygulamanın o anki çıktısıdır; veri ya da katsayı değişirse ekrandaki rakam değişir — <b>sunumda daima ekrandan okuyun.</b> Para birimleri ₺/da (dekar = 1.000 m²), su m³/da'dır; 1 mm su = 1 m³/da.</p></div>
+  <div class="quote">Bankalara stres testi yapılıyor. BasinShift aynısını tarlaya yapıyor: çiftçinin dört yıllık ekim planını geçmişin her kurak dizisinde ve 2040'ların ikliminde oynatıyor, kurala uyan daha iyi planları gerekçesiyle gösteriyor ve "herkes böyle yaparsa havzanın suyuna ne olur?" sorusunu aynı ekranda cevaplıyor.</div>
+
+  <p>Adın iki parçası projenin iki ölçeğini anlatır: <b>Basin</b> (havza: aynı yeraltı suyunu paylaşan alan) ve <b>Shift</b> (kaydırmak: ekim desenini azalan suya ve değişen iklime göre kaydırmak). Görevin adı da "Field Shift"tir.</p>
+
+  <figure>
+  <svg viewBox="0 0 700 215" xmlns="http://www.w3.org/2000/svg" font-family="Inter">
+    <defs><linearGradient id="l1" x1="0" x2="1"><stop offset="0" stop-color="#0960E1"/><stop offset="1" stop-color="#0042A6"/></linearGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#0042A6"/></marker></defs>
+    <g>
+      <rect x="6" y="18" width="210" height="182" rx="14" fill="#F2F6FD" stroke="#C7D3EA"/>
+      <rect x="6" y="18" width="210" height="38" rx="14" fill="url(#l1)"/><rect x="6" y="40" width="210" height="16" fill="#0042A6"/>
+      <text x="22" y="43" fill="#EAFE07" font-weight="900" font-size="12">1 · TARLA</text><text x="96" y="43" fill="#fff" font-weight="700" font-size="11">Planını sına</text>
+      <text x="22" y="80" font-size="10.5" fill="#0B1633">• Son iki yıl + 4 yıllık plan</text>
+      <text x="22" y="98" font-size="10.5" fill="#0B1633">• Su, ekipman, sözleşme, alıcı</text>
+      <text x="22" y="116" font-size="10.5" fill="#0B1633">• 41 geçmiş dönemde oynat</text>
+      <text x="22" y="134" font-size="10.5" fill="#0B1633">• Kural ihlali: sarı/kırmızı kart</text>
+      <text x="22" y="160" font-size="9.5" fill="#4B5A78">Sayfalar: Tarla, İklim geçmişi</text>
+      <text x="22" y="176" font-size="9.5" fill="#4B5A78">Veri: POWER, IMERG, SoilGrids</text>
+    </g>
+    <line x1="220" y1="109" x2="242" y2="109" stroke="#0042A6" stroke-width="2" marker-end="url(#ar)"/>
+    <g>
+      <rect x="245" y="18" width="210" height="182" rx="14" fill="#F2F6FD" stroke="#C7D3EA"/>
+      <rect x="245" y="18" width="210" height="38" rx="14" fill="url(#l1)"/><rect x="245" y="40" width="210" height="16" fill="#0042A6"/>
+      <text x="261" y="43" fill="#EAFE07" font-weight="900" font-size="12">2 · ÖNERİ</text><text x="334" y="43" fill="#fff" font-weight="700" font-size="11">Daha iyisini bul</text>
+      <text x="261" y="80" font-size="10.5" fill="#0B1633">• 20.736 planın hepsi taranır</text>
+      <text x="261" y="98" font-size="10.5" fill="#0B1633">• Kurala uyanlar → Pareto</text>
+      <text x="261" y="116" font-size="10.5" fill="#0B1633">• Kâr · Akifer · Denge kartları</text>
+      <text x="261" y="134" font-size="10.5" fill="#0B1633">• "Neden bu plan?" + PDF karne</text>
+      <text x="261" y="160" font-size="9.5" fill="#4B5A78">Sayfalar: Planlar, İki gelecek, Karne</text>
+      <text x="261" y="176" font-size="9.5" fill="#4B5A78">Veri: + NEX-GDDP-CMIP6</text>
+    </g>
+    <line x1="459" y1="109" x2="481" y2="109" stroke="#0042A6" stroke-width="2" marker-end="url(#ar)"/>
+    <g>
+      <rect x="484" y="18" width="210" height="182" rx="14" fill="#F2F6FD" stroke="#C7D3EA"/>
+      <rect x="484" y="18" width="210" height="38" rx="14" fill="#07173F"/><rect x="484" y="40" width="210" height="16" fill="#07173F"/>
+      <text x="500" y="43" fill="#EAFE07" font-weight="900" font-size="12">3 · HAVZA</text><text x="574" y="43" fill="#fff" font-weight="700" font-size="11">Herkes yaparsa?</text>
+      <text x="500" y="80" font-size="10.5" fill="#0B1633">• Temsili çiftlik tipleri</text>
+      <text x="500" y="98" font-size="10.5" fill="#0B1633">• Bugün / kendi başına / koordineli</text>
+      <text x="500" y="116" font-size="10.5" fill="#0B1633">• Suyun gölge fiyatı (LP)</text>
+      <text x="500" y="134" font-size="10.5" fill="#0B1633">• Örümcek ağı fiyat döngüsü</text>
+      <text x="500" y="160" font-size="9.5" fill="#4B5A78">Sayfa: Havza</text>
+      <text x="500" y="176" font-size="9.5" fill="#4B5A78">Veri: GRACE/GRACE-FO (bağlam)</text>
+    </g>
+  </svg>
+  <figcaption><b>Şekil 1.1</b> · Üç ölçek. Tarla katmanı tek bir tarlanın riskini ölçer, öneri katmanı daha iyi planları bulur, havza katmanı bireysel kararların toplam etkisini gösterir. Karar her zaman çiftçinin ve yerel ziraat mühendisinindir.</figcaption>
+  </figure>
+
+  <h2>Örnek tarlada sonuç (Çumra, 120 da, yağmurlama, su kısıtı ilan edilmiş)</h2>
+  <p>Mehmet Amca 2025'te şeker pancarı, 2026'da dane mısır ekti ve aynı nöbeti (pancar → mısır → pancar → mısır) sürdürmek istiyor. BasinShift'in ilk ekranı şunu söylüyor:</p>
+  <div class="grid4">
+    <div class="kpi b"><div class="l">Yılda daha az su</div><div class="v">574 m³/da</div><div class="s">Denge planı, mevcut plana göre (−%58)</div></div>
+    <div class="kpi g"><div class="l">Destek farkı</div><div class="v">+1.248 ₺/da</div><div class="s">yıllık; kural uyumu sayesinde</div></div>
+    <div class="kpi y"><div class="l">Kötü dönem geliri</div><div class="v">+2.075 ₺/da</div><div class="s">en kötü %5 dönemin ortalaması</div></div>
+    <div class="kpi"><div class="l">Toprak sağlığı</div><div class="v">41 → 82</div><div class="s">0–100 kural tabanlı puan</div></div>
+  </div>
+  <p style="margin-top:0.8em">Mevcut plan <b>kırmızı kart riski</b> taşıyor: mısır (dane/silaj), patates ve şeker pancarı sulu arazide 4 üretim yılında en fazla 2 kez ve art arda olmamak üzere ekilebiliyor. Denge planı (nohut → buğday → fiğ → buğday) kurala uyuyor, ortalama kârı da biraz yüksek (4.775 vs 4.263 ₺/da/yıl) ama asıl farkı <b>kötü yıllarda çökmemesi</b>: en kötü %5 dönemin ortalaması 4.192 ₺/da, mevcut planda 2.117 ₺/da.</p>
+
+  <h2>Neden farklı?</h2>
+  <div class="grid2">
+    <div class="card"><h4>Ortalama değil, kötü yıl</h4><p>Tek bir "ortalama yıl" yerine planı 41 gerçek dört yıllık geçmiş dönemde oynatır; art arda gelen kurak yıllar (2007–2008 gibi) olduğu gibi korunur. Risk ölçüsü CVaR %5'tir.</p></div>
+    <div class="card"><h4>Kurallar kod olarak</h4><p>2026 Konya su kısıtı ve münavebe kuralı YAML dosyasıdır; ihlal yılı ve destek kaybı ekranda görünür. Başka ülkenin kuralı yeni bir dosyayla eklenir (AB GAEC 7, Pencap, Murray-Darling örnekleri var).</p></div>
+    <div class="card"><h4>Tarla + havza aynı ekranda</h4><p>Bir çiftçi için doğru olan, bin çiftçi yapınca yanlış olabilir. Havza sayfası koordinasyonsuzluğun bedelini ve 1 m³ ek suyun havzaya değerini (gölge fiyat) hesaplar.</p></div>
+    <div class="card"><h4>Kendi verisi hakkında dürüst</h4><p>Her veri setinin durumu (gerçek / sentetik / varsayım / doğrulanmamış) kenar çubuğunda, her grafikte ve PDF karnede yazar. Her sonucun yanında güven noktası vardır.</p></div>
+  </div>
+
+  <h2>Kimin için?</h2>
+  <table>
+    <thead><tr><th>Kullanıcı</th><th>Sorusu</th><th>BasinShift'teki karşılığı</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Çiftçi</td><td>Önümüzdeki 4 yıl ne ekersem desteğimi kaybetmem, kötü yılda ayakta kalırım?</td><td>Planlar sayfasındaki dört sütun, kart rozetleri, PDF karne</td></tr>
+      <tr><td class="k">Ziraat mühendisi / danışman</td><td>Hangi plan, hangi varsayımla, ne kadar suyla?</td><td>"Neden bu plan?", mühendis görünümü (Pareto), Yöntem sayfası</td></tr>
+      <tr><td class="k">Kooperatif, şeker fabrikası, banka, sigorta</td><td>Bu üreticinin planı kurala uygun ve kuraklığa dayanıklı mı?</td><td>Tek sayfalık Risk ve Su Karnesi (CVaR, zarar olasılığı, su)</td></tr>
+      <tr><td class="k">İl Müdürlüğü, DSİ, havza planlayıcısı</td><td>Desen nasıl kayarsa akifer dengelenir; bunun bedeli ne?</td><td>Havza sayfası: üç senaryo, gölge fiyat eğrisi, ürün deseni</td></tr>
+      <tr><td class="k">Jüri</td><td>NASA verisi gerçek bir sorunu bilimsel olarak çözüyor mu?</td><td>İklim geçmişi, Yöntem ve veriler sayfası, bu kılavuz</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================ 02 ============================ -->
+<section class="chapter" data-toc="02|Yarışma ve görev|Field Shift: istenen ve karşılığı">
+  <div class="chap-head"><div class="num">02</div><div class="kicker">Bağlam</div>
+  <h1>Yarışma ve görev</h1>
+  <p class="lead">NASA Space Apps Challenge, NASA'nın açık verisiyle iki günde çözüm geliştirilen uluslararası hackathon'dur. BasinShift, 14–15 Kasım 2026 Konya yerel etkinliğinde "Field Shift" görevi için geliştirildi.</p></div>
+
+  <h2>Görevin istediği</h2>
+  <p>"Field Shift: Adapting Farms with NASA Data" görevi, bir çiftçinin ekim kararını NASA yer gözlemleri ve yerel bilgiyle desteklemeyi ister. Görev metnindeki temel beklentiler ve BasinShift'teki karşılıkları:</p>
+  <table>
+    <thead><tr><th style="width:34%">Görev beklentisi</th><th style="width:12%">Durum</th><th>BasinShift'te nerede</th></tr></thead>
+    <tbody>
+      <tr><td class="k">Mevcut uygulama dahil en az üç stratejiyi karşılaştırmak</td><td><span class="tag real">VAR</span></td><td>Planlar sayfası: Mevcut planınız + Kâr + Akifer + Denge, aynı göstergelerle yan yana.</td></tr>
+      <tr><td class="k">Her strateji için gerekçe, kanıt, fayda, bilgi boşlukları, yerel riskler</td><td><span class="tag real">VAR</span></td><td>"Neden bu plan?" beş başlık: Neden önerildi · Kanıt · Fayda · Bilgi boşlukları · Yerel olarak incelenmesi gereken riskler.</td></tr>
+      <tr><td class="k">NASA yer gözlemi verisi</td><td><span class="tag syn">KISMEN</span></td><td>POWER, IMERG, GRACE, CMIP6 gerçek; SMAP, HLS/MODIS, SRTM için veri yolu hazır, dosyalar yer tutucu.</td></tr>
+      <tr><td class="k">Yerel bilgi ve kurallar</td><td><span class="tag real">VAR</span></td><td>2026 Konya münavebe/su kısıtı kuralı, 2026 destek birim fiyatları, TMO/TÜRKŞEKER fiyatları, çiftçinin ekipman/sözleşme/alıcı koşulları.</td></tr>
+      <tr><td class="k">Belirsizliği göstermek</td><td><span class="tag real">VAR</span></td><td>Kutu/keman grafikleri (41 dönem), %10–90 bantları, CVaR, zarar olasılığı, güven noktaları, "Ya şöyle olursa?" kaydırıcıları.</td></tr>
+      <tr><td class="k">Kararı çiftçiye bırakmak</td><td><span class="tag real">VAR</span></td><td>Her sayfanın altında: "BasinShift seçenekleri ve gerekçelerini gösterir; kararın sahibi çiftçi ve yerel ziraat mühendisidir."</td></tr>
+      <tr><td class="k">Ölçeklenebilirlik</td><td><span class="tag real">VAR</span></td><td>Dört havza (Konya, Kaliforniya Central Valley, Pencap, Murray-Darling) aynı motorla; kural paketleri değiştirilebilir.</td></tr>
+      <tr><td class="k">ECOSTRESS gibi termal ET ürünleri</td><td><span class="tag def">YOK</span></td><td>Bilerek dışarıda; FAO-56 su dengesi kullanıldı. OpenET Türkiye'yi kapsamıyor.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Takvim ve teslim</h2>
+  <p>Proje sayfası, 30 saniyelik video/sunum ve depo bağlantısı 15 Kasım 23:59'a kadar teslim edilir. İngilizce proje sayfası taslağı <code>docs/PROJECT_PAGE_EN.md</code>, altyazı <code>docs/VIDEO_SUBTITLES_EN.srt</code>, sunum paketi <code>docs/SUNUM_PAKETI.md</code>'dedir.</p>
+  <div class="box info"><div class="t">Marka kuralı</div><p>Space Apps marka rehberine uyulur: Space Apps logosu ve renkleri (Blue Yonder #2E96F5, Electric Blue #0042A6, Deep Blue #07173F, Neon Yellow #EAFE07 yalnızca vurgu, Rocket Red #E43700). <b>NASA'nın resmî logosu ve "meatball" amblemi kullanılmaz</b>; NASA adı yalnızca veri kaynağı olarak geçer.</p></div>
+</section>
+
+<!-- ============================ 03 ============================ -->
+<section class="chapter" data-toc="03|Sorun: Konya Kapalı Havzası|Obruklar, düşen yeraltı suyu, kurak 2025">
+  <div class="chap-head"><div class="num">03</div><div class="kicker">Neden önemli</div>
+  <h1>Sorun: Konya Kapalı Havzası</h1>
+  <p class="lead">Türkiye'nin tahıl ambarı aynı zamanda en derin yeraltı suyu krizini yaşayan havzası. Sorun tek bir tarlada başlamıyor ama tek tek tarlalardaki kararlarla büyüyor.</p></div>
+
+  <div class="grid4">
+    <div class="kpi r"><div class="l">Kayıtlı obruk</div><div class="v">739</div><div class="s">Konya Kapalı Havzası; 702'si Konya'da</div></div>
+    <div class="kpi r"><div class="l">2020'den beri yeni</div><div class="v">126</div><div class="s">yalnızca 2024'te 32</div></div>
+    <div class="kpi y"><div class="l">2025 yağışı</div><div class="v">244 mm</div><div class="s">Türkiye'nin 25 havzası içinde en düşük</div></div>
+    <div class="kpi b"><div class="l">Yeraltı suyu</div><div class="v">≈ −30 m</div><div class="s">1980'lerden bu yana</div></div>
+  </div>
+  <p class="small" style="margin-top:0.4em">Kaynaklar: AFAD Obruk Duyarlılık Haritası ve haberler (obruk sayıları); Daloğlu Çetinkaya vd., 2025 (yeraltı suyu düşüşü). Bunlar haber/literatür rakamıdır, uygulama hesaplamaz; <code>tables/basins.yaml → facts_tr</code>'de kaynaklı tutulur.</p>
+
+  <h2>Mekanizma</h2>
+  <p>Kapalı havzada su denize akmaz; yağış, buharlaşma ve yeraltı suyu çekimi arasındaki denge her şeydir. Sulu tarımda su tüketimi yüksek ürünler (şeker pancarı, dane mısır, patates) kâr getirir ama akiferi boşaltır. Yeraltı suyu düştükçe kuyular derinleşir, pompaj maliyeti artar, karstik boşluklar desteğini kaybeder ve obruklar açılır.</p>
+  <p>Devlet 2026'da bunu teşvikle değiştirmeye çalışıyor: su kısıtlı ilçelerde mısır, patates ve pancarın sıklığı sınırlandı, kurala uymayana önce sarı kart, sonra kırmızı kart ve destekten mahrumiyet getirildi; buğday, arpa, baklagil ve ayçiçeğine su kısıtı desteği eklendi. Çiftçinin sorusu ise basit: <b>"Ne ekersem hem desteğimi kaybetmem hem de kötü yılda batmam?"</b></p>
+
+  <h2>GRACE ne gösteriyor?</h2>
+  <p>GRACE/GRACE-FO uyduları yerçekimindeki değişimden toplam su deposunu (yüzey + toprak + yeraltı suyu) ölçer. Uygulamanın Havza sayfasındaki seri, JPL mascon RL06.3 ürününden Konya havza kutusunun kosinüs ağırlıklı ortalamasıdır ve <b>yaklaşık −1,0 cm/yıl</b> eğilim gösterir (2002–2026, 2017–2018 GRACE → GRACE-FO geçiş boşluğu dahil). Çözünürlük ~300 km olduğu için bu bilgi <b>yalnızca havza bağlamıdır</b>; hiçbir tarla kararında girdi olarak kullanılmaz.</p>
+
+  <h2>Neden Konya'dan dünyaya?</h2>
+  <p>Aynı örüntü — kâr getiren susuz olmayan ürünler, ortak akifer, düşen su tablası — Kaliforniya Central Valley'de, Hindistan Pencap'ta ve Avustralya Murray-Darling'de de var. BasinShift bu dört havzayı aynı motorla çalıştırır; değişen yalnızca iklim verisi, ürün listesi, ekonomi tablosu ve kural paketidir. Diğer üç havzanın kural ve çiftlik verisi <b>temsilidir</b> (gösterim amaçlı).</p>
+</section>
