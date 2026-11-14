@@ -35,6 +35,7 @@ lang = st.session_state.get("lang") or "tr"
 PAGES = [
     ("field", "page_field", "🌾", pages.page_field),
     ("status", "page_status", "🌦️", pages.page_status),
+    ("crops", "page_crops", "🌱", pages.page_crops),
     ("plans", "page_plans", "📊", pages.page_plans),
     ("futures", "page_futures", "🔮", pages.page_futures),
     ("basin", "page_basin", "🗺️", pages.page_basin),

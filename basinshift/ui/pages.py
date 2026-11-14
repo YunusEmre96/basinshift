@@ -84,7 +84,7 @@ def ds_names(lang: str) -> dict[str, str]:
 
 
 def step_label(i: int) -> str:
-    return (f"Adım {i} / 7" if L() == "tr" else f"Step {i} of 7")
+    return (f"Adım {i} / 8" if L() == "tr" else f"Step {i} of 8")
 
 
 # ---------------------------------------------------------------------------
@@ -481,7 +481,7 @@ def page_plans() -> None:
     cur = res.options.get("current")
     if st.session_state.pop("demo_loaded", False):
         st.success(t("demo_loaded", lang))
-    ui.page_intro(step_label(3), t("plans_title", lang),
+    ui.page_intro(step_label(4), t("plans_title", lang),
                   t("plans_intro", lang, n=f"{res.n_total:,}".replace(",", "." if lang == "tr" else ","),
                     w=len(ctx.windows()), f=f"{len(res.feasible):,}".replace(",", "." if lang == "tr" else ",")),
                   [(ctx.site.name, ""), (f"{ctx.table.years.min()}–{ctx.table.years.max()}", "")])
@@ -623,7 +623,7 @@ def page_futures() -> None:
     ctx, res = _get_result()
     if res is None or "current" not in res.options:
         return
-    ui.page_intro(step_label(4), t("futures_title", lang), t("futures_intro", lang))
+    ui.page_intro(step_label(5), t("futures_title", lang), t("futures_intro", lang))
     pick = st.radio(t("futures_pick", lang), ["balance", "profit", "aquifer"], horizontal=True,
                     format_func=lambda k: card_title(k, ctx.settings.irrigated)[0], key="fut_pick")
     cur, new = res.options["current"], res.options[pick]
@@ -666,6 +666,112 @@ def page_futures() -> None:
 
 
 # ---------------------------------------------------------------------------
+# Ürün uygunluğu
+# ---------------------------------------------------------------------------
+VERDICT_COLOR = {"green": ui.GREEN, "yellow": "#FFC83D", "red": ui.ROCKET}
+
+
+def _verdict_chip(v: str, lang: str) -> str:
+    return f'<span class="bs-chip v-{v}"><i></i>{ui.esc(t("crops_k_" + v, lang))}</span>'
+
+
+def page_crops() -> None:
+    lang = L()
+    site = state.current_site()
+    b = state.current_basin()
+    ui.page_intro(step_label(3), t("crops_title", lang), t("crops_intro", lang, site=site.name))
+    with st.spinner("…"):
+        res = state.suitability_result()
+    if not res:
+        ui.callout(ui.esc("—"), "warn")
+        return
+    crops = load_crops()
+    irrigated = bool(st.session_state["irrigated"])
+    cnt = {v: sum(r.verdict == v for r in res) for v in ("green", "yellow", "red")}
+    new = [r for r in res if not r.native and r.verdict == "green"]
+    n = len(res)
+    ui.kpi_grid([
+        {"label": t("crops_k_green", lang), "value": str(cnt["green"]), "sub": t("crops_k_sub", lang, n=n), "tone": ui.GREEN},
+        {"label": t("crops_k_yellow", lang), "value": str(cnt["yellow"]), "sub": t("crops_k_sub", lang, n=n), "tone": "#FFC83D"},
+        {"label": t("crops_k_red", lang), "value": str(cnt["red"]), "sub": t("crops_k_sub", lang, n=n), "tone": ui.ROCKET},
+        {"label": t("crops_k_new", lang),
+         "value": ", ".join(crops[r.crop_id].name(lang) for r in new) if new else "—",
+         "sub": t("crops_k_new_sub", lang), "tone": ui.NEON_YELLOW},
+    ])
+    if not state.scenario().is_baseline:
+        ui.callout(ui.esc(t("crops_scen", lang)), "")
+
+    months = ui.month_names(lang)
+    bs = state.basins()
+    home_name = {}
+    for bid, bas in bs.items():
+        for s_ in bas.sites:
+            home_name[s_.id] = s_.name
+    rows = []
+    for r in res:
+        if r.native:
+            heat = t("crops_heat_native", lang, d=int(r.season_days))
+        elif not np.isfinite(r.days_needed) or r.days_needed > 330:
+            heat = t("crops_never", lang)
+        else:
+            heat = t("crops_heat_fmt", lang, need=int(r.days_needed), win=int(r.window_days))
+        ok = r.matures
+        y_irr = f"{num(r.yield_med, lang, 2)} / {num(r.yield_p10, lang, 2)}" if ok else "—"
+        y_rf = num(r.rainfed_med, lang, 2) if ok else "—"
+        if ok:
+            ref = f" ({num(r.home_water_mm, lang)})" if (not r.native and np.isfinite(r.home_water_mm)) else ""
+            irr = num(r.water_mm, lang) + ref
+        else:
+            irr = "—"
+        why = " ".join(t("r_" + k, lang) for k in r.reasons) if r.reasons else t("r_ok", lang)
+        rows.append({
+            t("col_crop", lang): crops[r.crop_id].name(lang),
+            t("col_verdict", lang): _verdict_chip(r.verdict, lang),
+            t("col_in_basin", lang): t("crops_yes", lang) if r.native else t("crops_no", lang, home=home_name.get(r.home_site, r.home_site)),
+            t("col_plant", lang): f"{r.plant_md[1]} {months[r.plant_md[0] - 1]}",
+            t("col_heat", lang): heat,
+            t("col_yield_irr" if irrigated else "col_yield_rf", lang): y_irr if irrigated else y_rf,
+            **({t("col_yield_rf", lang): y_rf} if irrigated else {}),
+            **({t("col_irr", lang): irr} if irrigated else {}),
+            t("col_reason", lang): why,
+        })
+    ui.section(t("crops_table", lang), t("crops_table_help", lang))
+    df = pd.DataFrame(rows)
+    num_cols = tuple(c for c in (t("col_yield_irr", lang), t("col_yield_rf", lang), t("col_irr", lang)) if c in df.columns)
+    ui.html_table(df, num_cols=num_cols, small_cols=(t("col_reason", lang), t("col_in_basin", lang)),
+                  html_cols=(t("col_verdict", lang),))
+
+    pts = [r for r in res if r.matures]
+    if pts and irrigated:
+        ui.section(t("crops_chart", lang), t("crops_chart_help", lang))
+        fig = go.Figure()
+        order_x = sorted(pts, key=lambda r: r.water_mm)
+        pos = {r.crop_id: ("top center" if i % 2 == 0 else "bottom center") for i, r in enumerate(order_x)}
+        for v in ("green", "yellow", "red"):
+            sel = [r for r in pts if r.verdict == v]
+            if not sel:
+                continue
+            fig.add_scatter(
+                x=[r.water_mm for r in sel], y=[r.yield_med for r in sel], mode="markers+text",
+                text=[crops[r.crop_id].name(lang) for r in sel], textposition=[pos[r.crop_id] for r in sel],
+                textfont=dict(size=11),
+                marker=dict(size=[16 if not r.native else 11 for r in sel], color=VERDICT_COLOR[v],
+                            symbol=["diamond" if not r.native else "circle" for r in sel],
+                            line=dict(width=1, color=ui.GROUND)),
+                name=t("crops_k_" + v, lang),
+                hovertemplate="%{text}<br>%{x:.0f} m³/da · %{y:.2f}<extra></extra>",
+            )
+        fig.update_xaxes(title=("Net sulama (m³/da)" if lang == "tr" else "Net irrigation (m³/da)"))
+        lo = max(0.0, min(r.yield_med for r in pts) - 0.08)
+        fig.update_yaxes(title=("Verim oranı (ortanca)" if lang == "tr" else "Yield ratio (median)"), range=[lo, 1.04])
+        ui.chart(ui._layout(fig, 420))
+        st.caption("◆ " + ("havzada ekilmeyen ürün" if lang == "tr" else "crop not grown in the basin")
+                   + " · ● " + ("havzada ekilen ürün" if lang == "tr" else "crop grown in the basin"))
+    with st.expander(t("crops_how", lang)):
+        st.markdown(t("crops_method", lang))
+
+
+# ---------------------------------------------------------------------------
 # Havza
 # ---------------------------------------------------------------------------
 def page_basin() -> None:
@@ -674,7 +780,7 @@ def page_basin() -> None:
     b = state.current_basin()
     hub = state.get_hub()
     f = area_factor(unit)
-    ui.page_intro(step_label(5), t("basin_title", lang), t("basin_intro", lang))
+    ui.page_intro(step_label(6), t("basin_title", lang), t("basin_intro", lang))
 
     c1, c2 = st.columns([3, 2], gap="large")
     with c1:
@@ -853,7 +959,7 @@ def page_report() -> None:
     ctx, res = _get_result()
     if res is None:
         return
-    ui.page_intro(step_label(6), t("report_title", lang), t("report_help", lang))
+    ui.page_intro(step_label(7), t("report_title", lang), t("report_help", lang))
     keys = [k for k in ("balance", "profit", "aquifer", "current") if k in res.options]
     pick = st.radio(t("report_pick", lang), keys, horizontal=True,
                     format_func=lambda k: card_title(k, ctx.settings.irrigated)[0], key="rep_pick")
@@ -883,7 +989,7 @@ def page_report() -> None:
 def page_method() -> None:
     lang = L()
     hub = state.get_hub()
-    ui.page_intro(step_label(7), t("method_title", lang), t("method_intro", lang))
+    ui.page_intro(step_label(8), t("method_title", lang), t("method_intro", lang))
     prov = all_prov()
     rows = []
     for ds, spec in SPECS.items():

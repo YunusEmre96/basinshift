@@ -195,6 +195,9 @@ span[data-baseweb="tag"] {{ background: rgba(46,150,245,0.18) !important; border
 .bs-chip.default i, .bs-chip.unverified i {{ background: var(--bs-muted); }}
 .bs-chip.missing {{ border-color: rgba(228,55,0,0.55); background: rgba(228,55,0,0.12); }} .bs-chip.missing i {{ background: var(--bs-red); }}
 .bs-chip.yellow {{ color: #06102A; background: var(--bs-yellow); border-color: var(--bs-yellow); }}
+.bs-chip.v-green {{ border-color: rgba(43,214,123,0.55); background: rgba(43,214,123,0.12); }} .bs-chip.v-green i {{ background: var(--bs-green); }}
+.bs-chip.v-yellow {{ border-color: rgba(255,200,61,0.6); background: rgba(255,200,61,0.12); }} .bs-chip.v-yellow i {{ background: #FFC83D; }}
+.bs-chip.v-red {{ border-color: rgba(228,55,0,0.6); background: rgba(228,55,0,0.14); }} .bs-chip.v-red i {{ background: var(--bs-red); }}
 
 /* ---------- Veri durumu (kenar çubuğu) ---------- */
 .bs-data {{ background: rgba(10,26,61,0.7); border:1px solid var(--bs-line); border-radius: 12px; padding: 0.7rem 0.8rem; }}

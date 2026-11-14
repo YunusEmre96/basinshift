@@ -156,3 +156,18 @@ def basin_crops(basin_id: str) -> list[str]:
     """Havzada ekonomik verisi tanımlı ürünler (sıralı)."""
     crops = load_crops()
     return [c for c in load_economics(basin_id) if c in crops]
+
+
+@lru_cache(maxsize=1)
+def load_crop_suitability() -> pd.DataFrame:
+    """Ürün uygunluk taraması için taban sıcaklık ve referans (ürünün yetiştiği) bölge."""
+    return pd.read_csv(TABLES_DIR / "crop_suitability.csv", comment="#", keep_default_na=False).set_index("crop_id")
+
+
+@lru_cache(maxsize=1)
+def load_price_risk() -> pd.DataFrame:
+    """Ürün pazarı ve yıllık reel fiyat oynaklığı (varsayım; borsa bülteniyle kalibre edilmeli)."""
+    path = TABLES_DIR / "price_risk.csv"
+    if not path.exists():
+        return pd.DataFrame(columns=["basin", "crop_id", "price_cv", "market_tr", "market_en", "note"])
+    return pd.read_csv(path, keep_default_na=False)

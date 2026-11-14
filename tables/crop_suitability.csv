@@ -1,0 +1,19 @@
+# Ürün uygunluk taraması. tbase_c: büyüme taban sıcaklığı; gdd_req: ekimden olgunluğa yaklaşık büyüme derece-günü
+# (°C·gün, literatürdeki tipik orta değerler; çeşide göre ±%20 değişir — VARSAYIM). home_*: ürünün yetiştiği referans bölge.
+crop_id,tbase_c,gdd_req,home_basin,home_site,note
+wheat,0,2000,konya,cumra,Taban sıcaklık: kışlık tahıllar için yaygın 0 °C
+barley,0,1700,konya,cumra,Taban sıcaklık 0 °C
+sugar_beet,3,2400,konya,cumra,Taban sıcaklık ~3 °C (literatür aralığı 1–5 °C)
+maize_grain,10,1500,konya,cumra,Taban sıcaklık 10 °C (mısır için standart)
+maize_silage,10,1250,konya,cumra,Taban sıcaklık 10 °C
+sunflower,6,1500,konya,cumra,Taban sıcaklık ~6 °C (literatür 4–8 °C)
+chickpea,0,1500,konya,cumra,Taban sıcaklık ~0 °C (serin iklim baklagili)
+lentil,0,1400,konya,cumra,Taban sıcaklık ~0 °C
+safflower,5,1600,konya,cumra,Taban sıcaklık ~5 °C
+vetch,0,1300,konya,cumra,Taban sıcaklık ~0 °C
+potato,7,1100,konya,cumra,Taban sıcaklık ~7 °C
+alfalfa,5,0,konya,cumra,Taban sıcaklık ~5 °C
+rice,10,1600,punjab,ludhiana,Taban sıcaklık 10 °C; referans: Pencap (Ludhiana) muson çeltiği
+cotton,15.6,1300,central_valley,fresno,"Taban 15,6 °C (60 °F); ~1.300 °C·gün ≈ 2.400 °F·gün DD60; referans: Kaliforniya (Fresno)"
+tomato,10,1300,central_valley,fresno,Taban sıcaklık 10 °C; referans: Kaliforniya (Fresno) sanayi domatesi
+canola,5,1600,punjab,ludhiana,Taban sıcaklık ~5 °C; referans: Pencap (Ludhiana) kışlık hardal/kanola

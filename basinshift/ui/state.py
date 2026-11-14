@@ -298,3 +298,37 @@ def load_demo() -> None:
     sync_plan_widgets()
     ss["demo_loaded"] = True
     goto("plans")          # demo akışı: doğrudan Planlar sayfası
+
+
+# ---------------------------------------------------------------------------
+# Ürün uygunluk taraması (başka bölgelerin ürünleri)
+# ---------------------------------------------------------------------------
+@st.cache_resource(show_spinner=False, max_entries=12)
+def _suitability(site_key: tuple, irrigated: bool, scen: tuple):
+    from ..engine.et0 import et0_from_climate
+    from ..engine.scenarios import apply_scenario
+    from ..engine.suitability import home_sites, screen_crops
+    from ..knowledge.tables import load_economics
+
+    bs = basins()
+    homes = {}
+    for bid, sid in home_sites():
+        if bid not in bs:
+            continue
+        hs = bs[bid].site(sid)
+        sd = _site_data(_site_key(hs))
+        homes[sid] = {"clim": sd.climate, "et0": sd.et0, "basin": bs[bid], "econ": load_economics(bid),
+                      "taw": float(sd.soil_props.get("taw_mm_per_m", 150.0))}
+    site = _site_from_key(site_key)
+    sd = _site_data(site_key)
+    sc = Scenario(*scen)
+    clim = apply_scenario(sd.climate, sc, sd.deltas)
+    et0 = sd.et0 if sc.is_baseline else et0_from_climate(clim, site.lat, site.elevation_m)
+    return screen_crops(clim, et0, bs[site.basin_id], float(sd.soil_props.get("taw_mm_per_m", 150.0)),
+                        homes, irrigated)
+
+
+def suitability_result():
+    sc = scenario()
+    return _suitability(_site_key(current_site()), bool(st.session_state["irrigated"]),
+                        (sc.d_temp_c, sc.precip_pct, sc.cmip6))
