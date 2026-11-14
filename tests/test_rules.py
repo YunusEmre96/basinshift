@@ -61,7 +61,22 @@ def test_support_penalties():
     ev = evaluate_plans(arr, hist, IDS, CROPS, KONYA, True, True)
     sup = support_matrix(arr, ev["legal_viol"], IDS, KONYA, True, True)
     assert sup[0].sum() == 0                         # kırmızı kart → destek yok
-    assert sup[1, 0] == 806 + 434                    # buğday: temel + su kısıtı desteği
+    assert sup[1, 0] == 954 + 514                    # buğday: temel+planlı + su kısıtı desteği
+    assert sup[1, 1] == 734 + 294                    # nohut: 1. kategori su kısıtı katsayısı (0,8)
+
+
+def test_water_restriction_bonus_only_when_restricted_and_irrigated():
+    arr = idx(["wheat", "chickpea", "safflower", "barley"])
+    no_viol = np.zeros_like(arr, dtype=bool)
+    assert support_matrix(arr, no_viol, IDS, KONYA, True, False)[0, 0] == 954     # kısıt yok → bonus yok
+    assert support_matrix(arr, no_viol, IDS, KONYA, False, True)[0, 0] == 954     # kuru tarım → bonus yok
+
+
+def test_no_support_for_grain_maize_and_potato_in_restricted_basin():
+    arr = idx(["maize_grain", "wheat", "potato", "wheat"])
+    no_viol = np.zeros_like(arr, dtype=bool)
+    sup = support_matrix(arr, no_viol, IDS, KONYA, True, True)
+    assert sup[0, 0] == 0 and sup[0, 2] == 0
 
 
 def test_water_caps():

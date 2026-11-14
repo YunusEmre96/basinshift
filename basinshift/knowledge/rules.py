@@ -261,11 +261,17 @@ def support_matrix(plans: np.ndarray, legal_viol: np.ndarray, crop_ids: list[str
         for c in sup.get("no_support", []) or []:
             if c in crop_ids:
                 base[crop_ids.index(c)] = 0.0
-        b = float(sup.get("water_restriction_bonus_per_da", 0) or 0)
-        if b and water_restricted and (irrigated or not sup.get("water_restriction_bonus_irrigated_only", True)):
-            for c in sup.get("water_restriction_bonus_crops", []) or []:
+        # Yeraltı su kısıtı desteği: ürün bazında tutar (kategori katsayısı × destek katsayı değeri).
+        # Eski biçim (tek tutar + ürün listesi) geriye dönük uyumluluk için hâlâ okunur.
+        if water_restricted and (irrigated or not sup.get("water_restriction_bonus_irrigated_only", True)):
+            b = float(sup.get("water_restriction_bonus_per_da", 0) or 0)
+            if b:
+                for c in sup.get("water_restriction_bonus_crops", []) or []:
+                    if c in crop_ids:
+                        bonus[crop_ids.index(c)] = b
+            for c, v in (sup.get("water_restriction_bonus_by_crop") or {}).items():
                 if c in crop_ids:
-                    bonus[crop_ids.index(c)] = b
+                    bonus[crop_ids.index(c)] = float(v)
         if pk.applies(irrigated, water_restricted):
             yellow_loses |= bool(pk.penalties.get("yellow_loses_support_that_year"))
             red_loses |= bool(pk.penalties.get("red_loses_all_support_from_then"))

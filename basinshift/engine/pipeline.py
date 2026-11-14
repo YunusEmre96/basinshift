@@ -12,6 +12,7 @@ from ..data.basins import Basin, Site
 from ..data.hub import DataHub, Provenance
 from ..knowledge.rules import load_rule_pack
 from ..knowledge.tables import basin_crops, load_crops, load_economics
+from ..textutil import bi
 from .et0 import et0_from_climate
 from .field import FieldContext, FieldSettings
 from .scenarios import Scenario, apply_scenario
@@ -74,7 +75,10 @@ def build_context(hub: DataHub, site: Site, basin: Basin, settings: FieldSetting
     if table.dropped_years:
         cp = ctx.provenance.get("climate_daily")
         if cp is not None:
-            cp.warnings.append(
-                f"Sezonunda verinin %5'inden fazlası eksik olduğu için stres testinden çıkarılan yıllar: {table.dropped_years}"
+            msg = bi(
+                f"Sezonunda verinin %5'inden fazlası eksik olduğu için stres testinden çıkarılan yıllar: {table.dropped_years}",
+                f"Years dropped from the stress test because more than 5% of in-season data is missing: {table.dropped_years}",
             )
+            if msg not in cp.warnings:
+                cp.warnings.append(msg)
     return ctx

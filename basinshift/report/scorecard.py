@@ -237,7 +237,7 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
     pdf.set_font("DejaVu", "", 7.5)
     pdf.set_text_color(*MUTED)
     yrs = ctx.table.years
-    pdf.multi_cell(0, 3.8, f"{L['data']}: {cp.product if cp else ''} ({cp.label(lang) if cp else ''}), "
+    pdf.multi_cell(0, 3.8, f"{L['data']}: {cp.product_text(lang) if cp else ''} ({cp.label(lang) if cp else ''}), "
                            f"{yrs[0]}–{yrs[-1]} {L['years']}; FAO-56 / FAO-33. " + L["disclaimer"],
                    new_x="LMARGIN", new_y="NEXT")
     return bytes(pdf.output())

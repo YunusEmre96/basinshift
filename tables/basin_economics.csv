@@ -1,12 +1,12 @@
 basin,crop_id,plant_month,plant_day,ym_kg_da,price_per_kg,var_cost_per_da,rainfed_ok,rainfed_cost_factor,demand_elasticity,season_scale,note
-konya,wheat,10,15,700,15.0,6500,1,0.7,-4.0,1.0,Fiyat/maliyet 2026 varsayımı; TMO/TÜİK ile güncelleyin
-konya,barley,10,20,650,12.5,6000,1,0.7,-3.0,1.0,2026 varsayımı
-konya,sugar_beet,4,1,8000,3.6,18000,0,1.0,-0.3,1.0,Fiyat: Konya Şeker alım fiyatı varsayımı; kota ile sınırlı
-konya,maize_grain,5,1,1300,11.0,10000,0,1.0,-3.0,1.0,2026 varsayımı
+konya,wheat,10,15,700,16.5,6500,1,0.7,-4.0,1.0,Fiyat: TMO 2026 2. grup ekmeklik/makarnalık alım fiyatı 16.500 TL/ton (2 Haz 2026); maliyet varsayım
+konya,barley,10,20,650,12.75,6000,1,0.7,-3.0,1.0,Fiyat: TMO 2026 arpa alım fiyatı 12.750 TL/ton (2 Haz 2026); maliyet varsayım
+konya,sugar_beet,4,1,8000,3.72,18000,0,1.0,-0.3,1.0,Fiyat: TÜRKŞEKER 2026-27 alım fiyatı 3.720 TL/ton kota tamamlama primi dahil (13 Eki 2026); Konya Şeker fiyatı farklı olabilir; kota ile sınırlı
+konya,maize_grain,5,1,1300,11.0,10000,0,1.0,-3.0,1.0,VARSAYIM: TMO 2026 mısır alım fiyatı açıklamadı (piyasa fiyatı üreticiden yana); borsa fiyatıyla güncelleyin
 konya,maize_silage,5,10,6500,2.2,11000,0,1.0,-0.8,1.0,Yerel yem pazarı
-konya,sunflower,4,25,380,24.0,5500,1,0.75,-2.5,1.0,2026 varsayımı
-konya,chickpea,3,25,260,42.0,6000,1,0.75,-0.8,1.0,Yerel/ulusal pazar; fiyat dalgalı
-konya,lentil,3,20,220,40.0,5500,1,0.75,-0.8,1.0,2026 varsayımı
+konya,sunflower,4,25,380,34.0,5500,1,0.75,-2.5,1.0,Fiyat: 2026 ön alım fiyatları 34.000 (Karadenizbirlik) – 37.000 (Trakya Birlik %44 yağ) TL/ton; alt uç alındı; Konya Şeker fiyatıyla teyit edin
+konya,chickpea,3,25,260,42.0,6000,1,0.75,-0.8,1.0,VARSAYIM: yerel/ulusal pazar; fiyat dalgalı; borsa fiyatıyla güncelleyin
+konya,lentil,3,20,220,40.0,5500,1,0.75,-0.8,1.0,VARSAYIM (2026)
 konya,safflower,3,25,300,22.0,4500,1,0.75,-0.7,1.0,Alıcı sayısı sınırlı
 konya,vetch,10,20,600,8.0,3500,1,0.8,-0.8,1.0,Kuru ot; yerel yem pazarı
 konya,potato,4,15,4500,9.0,28000,0,1.0,-0.6,1.0,2026 Konya'da destek yok

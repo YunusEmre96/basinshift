@@ -14,6 +14,7 @@ from __future__ import annotations
 from ..data.hub import Provenance
 from ..engine.field import FieldContext
 from ..optimizer.search import PlanOption
+from ..textutil import loc
 from .fmt import money, num, water
 
 CARD_GOAL = {
@@ -95,9 +96,9 @@ def explain(option: PlanOption, current: PlanOption | None, ctx: FieldContext,
     n_windows = len(years) - ctx.settings.horizon + 1
     clim_label = cp.label(lang) if cp else "?"
     out["evidence"].append(
-        (f"İklim: {cp.product if cp else ''} — kaynak: {clim_label}; {years[0]}–{years[-1]} hasat yılları, "
+        (f"İklim: {cp.product_text(lang) if cp else ''} — kaynak: {clim_label}; {years[0]}–{years[-1]} hasat yılları, "
          f"{n_windows} farklı 4 yıllık dönemde yeniden oynatıldı.") if tr else
-        (f"Climate: {cp.product if cp else ''} — source: {clim_label}; harvest years {years[0]}–{years[-1]}, "
+        (f"Climate: {cp.product_text(lang) if cp else ''} — source: {clim_label}; harvest years {years[0]}–{years[-1]}, "
          f"replayed over {n_windows} different 4-year periods.")
     )
     out["evidence"].append(
@@ -109,7 +110,7 @@ def explain(option: PlanOption, current: PlanOption | None, ctx: FieldContext,
     out["evidence"].append(
         (f"Ekimdeki toprak nemi: {ctx.table.wetness_source}"
          + (f" (SMAP kaynağı: {sm.label(lang)})" if sm and sm.actual else "") + ".") if tr else
-        (f"Soil moisture at planting: {ctx.table.wetness_source}"
+        (f"Soil moisture at planting: {loc(ctx.table.wetness_source, lang)}"
          + (f" (SMAP source: {sm.label(lang)})" if sm and sm.actual else "") + ".")
     )
     out["evidence"].append(
@@ -175,8 +176,8 @@ def explain(option: PlanOption, current: PlanOption | None, ctx: FieldContext,
         "Previous-crop effects (e.g. wheat after legumes) are literature averages; calibrate with local trials."
     )
     out["gaps"].append(
-        (f"İklim verisi {cp.resolution if cp else ''} çözünürlükte; tarla içi farklılıkları (toprak, eğim) göstermez.") if tr else
-        (f"Climate data is at {cp.resolution if cp else ''}; it does not capture within-field differences.")
+        (f"İklim verisi {cp.resolution_text(lang) if cp else ''} çözünürlükte; tarla içi farklılıkları (toprak, eğim) göstermez.") if tr else
+        (f"Climate data is at {cp.resolution_text(lang) if cp else ''}; it does not capture within-field differences.")
     )
     for pk in ctx.packs:
         if pk.status(lang):

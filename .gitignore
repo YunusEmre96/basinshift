@@ -11,3 +11,6 @@ data/external/*
 .env
 *.log
 .streamlit/secrets.toml
+data/veri_raporu.txt
+data/external_example/
+dist/

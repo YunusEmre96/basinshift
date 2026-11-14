@@ -44,12 +44,22 @@ def _wrap(fn, key):
     return run
 
 
-nav_pages = [
-    st.Page(_wrap(fn, key), title=t(title_key, lang), icon=icon, url_path=key, default=(key == "field"))
+page_objs = {
+    key: st.Page(_wrap(fn, key), title=t(title_key, lang), icon=icon, url_path=key, default=(key == "field"))
     for key, title_key, icon, fn in PAGES
-]
+}
+state.register_pages(page_objs)
+nav_pages = list(page_objs.values())
 try:
     nav = st.navigation(nav_pages, position="top")
 except TypeError:  # eski Streamlit sürümleri
     nav = st.navigation(nav_pages)
+
+# Bir düğme "şu sayfaya geç" dediyse (ör. örnek tarla yüklendi → Planlar) önce oraya git
+_target = st.session_state.pop("_goto", None)
+if _target in page_objs:
+    try:
+        st.switch_page(page_objs[_target])
+    except Exception:  # noqa: BLE001 — geçiş desteklenmiyorsa bulunduğu sayfada kalır
+        pass
 nav.run()

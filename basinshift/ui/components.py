@@ -73,14 +73,42 @@ h2, h3 { font-weight: 600; }
 .bs-big { font-family: 'Barlow Semi Condensed', sans-serif; font-size: 2.3rem; font-weight: 700; line-height: 1.05; color: #1F2A24; }
 .bs-big.water { color: #1C5D7A; }
 .bs-big-label { color: #4A5750; font-size: 0.92rem; margin-bottom: 0.8rem; }
+.bs-headline { font-family: 'Barlow Semi Condensed', sans-serif; font-size: 1.45rem; font-weight: 600; line-height: 1.3;
+  padding: 0.7rem 1rem; margin: 0.2rem 0 1rem 0; border-left: 6px solid #2E7D4F; background: #EAF1EA; color: #1F2A24; }
+.bs-headline.yellow { border-left-color: #E3B505; background: #FBF6DF; }
+.bs-headline.red { border-left-color: #B3392F; background: #F7E9E7; }
+.bs-realcount { font-size: 0.9rem; color: #4A5750; margin: 0.6rem 0 0.2rem 0; }
 .bs-fact { padding: 0.35rem 0 0.35rem 0.8rem; border-left: 3px solid #1C5D7A; margin: 0.25rem 0; color: #2E3A33; }
 @media (max-width: 760px) { .bs-strip { grid-template-columns: repeat(2, 1fr); } .bs-big { font-size: 1.8rem; } }
 </style>
 """
 
 
+# Sunum modu: projektörde arka sıradan okunabilsin diye her şeyi ~%22 büyütür
+# (1920×1080 projektör; Streamlit ölçüleri rem tabanlı olduğu için kök yazı boyutu yeter).
+PRESENT_CSS = """
+<style>
+html { font-size: 19.5px !important; }
+.block-container { max-width: 1760px; padding-top: 1.2rem; }
+.bs-metric { font-size: 1.02rem; }
+.bs-tile { font-size: 0.95rem; }
+.bs-col-sub, .bs-soil-k, .bs-big-label, .bs-disclaimer { font-size: 0.95rem; }
+[data-testid="stCaptionContainer"] { font-size: 0.95rem; }
+</style>
+"""
+
+
+def presenting() -> bool:
+    try:
+        return bool(st.session_state.get("present", False))
+    except Exception:  # noqa: BLE001 — Streamlit oturumu dışında (testler)
+        return False
+
+
 def inject_css() -> None:
     st.markdown(CSS, unsafe_allow_html=True)
+    if presenting():
+        st.markdown(PRESENT_CSS, unsafe_allow_html=True)
 
 
 def _text_on(hex_color: str) -> str:
@@ -193,7 +221,7 @@ def _layout(fig: go.Figure, height: int = 360, **kw) -> go.Figure:
     fig.update_layout(
         height=height, margin=dict(l=10, r=10, t=30, b=10),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Barlow, system-ui, sans-serif", color=INK, size=13),
+        font=dict(family="Barlow, 'Segoe UI', system-ui, sans-serif", color=INK, size=17 if presenting() else 13),
         legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
         **kw,
     )

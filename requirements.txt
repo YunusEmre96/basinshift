@@ -6,8 +6,8 @@ pyyaml>=6.0
 requests>=2.31       # NASA POWER / AppEEARS / CMR API istemcileri
 
 # Arayüz
-streamlit>=1.38
-plotly>=5.20
+streamlit>=1.50      # üst menü (st.navigation position=top) ve width="stretch" için
+plotly>=5.24         # go.Scattermap için
 
 # Rapor (PDF karne) — matplotlib, Türkçe karakterli DejaVu fontunu da sağlar
 fpdf2>=2.7

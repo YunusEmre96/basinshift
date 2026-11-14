@@ -31,6 +31,7 @@ import pandas as pd
 import requests
 
 from ..config import load_config, source_for
+from ..textutil import bi, loc
 from .basins import Basin, Site
 from .providers.base import DataProvider, NotAvailable
 from .providers.files import FilesProvider
@@ -83,6 +84,21 @@ class Provenance:
 
     def label(self, lang: str) -> str:
         return self.label_tr if lang == "tr" else self.label_en
+
+    def product_text(self, lang: str) -> str:
+        return loc(self.product, lang)
+
+    def resolution_text(self, lang: str) -> str:
+        return loc(self.resolution, lang)
+
+    def messages(self, lang: str, last: int | None = None) -> list[str]:
+        """Notlar + uyarılar, istenen dilde (arayüz ve PDF bunu kullanır)."""
+        out = [loc(m, lang) for m in (self.notes + self.warnings)]
+        return out[-last:] if last else out
+
+    def warning_texts(self, lang: str, last: int | None = None) -> list[str]:
+        out = [loc(m, lang) for m in self.warnings]
+        return out[-last:] if last else out
 
 
 def any_synthetic(prov: dict[str, Provenance]) -> bool:
@@ -179,7 +195,8 @@ class DataHub:
                 last_error = exc
                 log.exception("Beklenmeyen hata: %s / %s", dataset, source)
                 prov.warnings.append(
-                    f"{source}: BEKLENMEYEN HATA (yazılım hatası olabilir; günlüğe bakın) — {type(exc).__name__}: {exc}"
+                    bi(f"{source}: BEKLENMEYEN HATA (yazılım hatası olabilir; günlüğe bakın) — {type(exc).__name__}: {exc}",
+                       f"{source}: UNEXPECTED ERROR (possibly a software bug; see the log) — {type(exc).__name__}: {exc}")
                 )
         prov.actual = MISSING
         prov.label_tr, prov.label_en = "Veri alınamadı", "Data unavailable"
@@ -198,7 +215,7 @@ class DataHub:
         if prov is not None:
             prov.actual = DEFAULT
             prov.label_tr, prov.label_en = "Varsayılan değer (veri alınamadı)", "Default value (data unavailable)"
-            prov.notes.append(f"Kullanılan varsayılan: {value}")
+            prov.notes.append(bi(f"Kullanılan varsayılan: {value}", f"Default used: {value}"))
             self._store(prov)
         return value
 
@@ -216,14 +233,17 @@ class DataHub:
         prov = self.provenance["climate_daily"]
         rs_cov = completeness(df, "rs")
         if rs_cov < 0.999:
-            prov.notes.append(
+            prov.notes.append(bi(
                 f"Güneş radyasyonu verisinin %{(1 - rs_cov) * 100:.1f}'i eksik (POWER'da Tem 1983 öncesi yok); "
-                "bu günlerde Hargreaves radyasyon tahmini kullanıldı."
-            )
+                "bu günlerde Hargreaves radyasyon tahmini kullanıldı.",
+                f"{(1 - rs_cov) * 100:.1f}% of solar radiation is missing (POWER has none before Jul 1983); "
+                "the Hargreaves radiation estimate was used on those days.",
+            ))
         for col in ("tmax", "tmin", "precip"):
             cov = completeness(df, col)
             if cov < 0.98:
-                prov.warnings.append(f"{col} verisinin %{(1 - cov) * 100:.1f}'i eksik")
+                prov.warnings.append(bi(f"{col} verisinin %{(1 - cov) * 100:.1f}'i eksik",
+                                        f"{(1 - cov) * 100:.1f}% of {col} is missing"))
         return df
 
     def soil_moisture(self, site: Site, basin: Basin) -> pd.DataFrame | None:

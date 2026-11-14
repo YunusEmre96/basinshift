@@ -41,6 +41,7 @@ from ..data.hub import DataHub
 from ..engine.field import FieldContext, FieldSettings
 from ..engine.pipeline import SiteData, build_context, load_site_data
 from ..engine.scenarios import Scenario
+from ..textutil import bi
 from ..knowledge.rules import support_matrix
 from ..knowledge.tables import load_farm_types_df
 
@@ -279,7 +280,8 @@ def run_basin(hub: DataHub, basin: Basin, scenario: Scenario = Scenario(),
     coord, res, shadow = solve(margin_ref, True)
     lp_status = res.message if res.status != 0 else "optimal"
     if res.status != 0:
-        notes.append("Koordineli LP çözülemedi (kısıtlar fazla sıkı olabilir); su bütçesini gevşetin.")
+        notes.append(bi("Koordineli LP çözülemedi (kısıtlar fazla sıkı olabilir); su bütçesini gevşetin.",
+                        "The coordinated LP could not be solved (constraints may be too tight); relax the water budget."))
         coord = cur.copy()
         shadow = float("nan")
 

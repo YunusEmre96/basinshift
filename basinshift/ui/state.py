@@ -20,6 +20,23 @@ from ..optimizer.search import Constraints, search
 PLAN_START = 2027
 HORIZON = 4
 
+#: app.py'nin kaydettiği sayfa nesneleri (sayfalar arası geçiş düğmeleri için)
+_PAGES: dict = {}
+
+
+def register_pages(pages: dict) -> None:
+    _PAGES.clear()
+    _PAGES.update(pages)
+
+
+def page(key: str):
+    return _PAGES.get(key)
+
+
+def goto(key: str) -> None:
+    """Bir sonraki çalıştırmada verilen sayfaya geç (geri çağırma içinden güvenle çağrılır)."""
+    st.session_state["_goto"] = key
+
 
 @st.cache_resource(show_spinner=False)
 def get_hub() -> DataHub:
@@ -55,7 +72,7 @@ def _site_from_key(key: tuple) -> Site:
     return b.site(site_id)
 
 
-@st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner="Veri yükleniyor… / Loading data…")
 def _site_data(site_key: tuple):
     site = _site_from_key(site_key)
     return load_site_data(get_hub(), site, basins()[site.basin_id])
@@ -227,6 +244,8 @@ def init_state(cfg: dict) -> None:
     for k, v in {"income": 3.0, "risk": 3.0, "water": 3.0, "soil": 2.0, "forage": 0.0}.items():
         ss[f"w_{k}"] = v
     ss["d_temp"], ss["d_precip"], ss["cmip6"] = 0.0, 0.0, ""
+    ss["present"] = False
+    ss["farmer_name"] = ""
     reset_field_defaults()
     ss["_init"] = True
 
@@ -236,6 +255,7 @@ PERSISTENT_WIDGETS = (
     "irrigated", "method", "restricted", "cap_unlimited", "cap_val",
     "equipment", "contracts", "no_buyer", "excluded", "min_forage",
     "w_income", "w_risk", "w_water", "w_soil", "w_forage", "cover", "breaks", "packs",
+    "farmer_name", "field_area",
 )
 
 
@@ -264,5 +284,9 @@ def load_demo() -> None:
     ss["cap_unlimited"] = True
     ss["min_forage"] = 0.0
     ss["d_temp"], ss["d_precip"], ss["cmip6"] = 0.0, 0.0, ""
+    ss["unit"] = "da"
+    ss["farmer_name"] = "Mehmet Amca"
+    ss["field_area"] = 120.0
     sync_plan_widgets()
     ss["demo_loaded"] = True
+    goto("plans")          # demo akışı: doğrudan Planlar sayfası

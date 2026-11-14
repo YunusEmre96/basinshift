@@ -16,10 +16,12 @@ from ..engine.risk import bare_soil_by_month, monthly_climate_risk, plan_calenda
 from ..engine.trends import climate_trends
 from ..explain.confidence import METHOD_CONFIDENCE, label as conf_label
 from ..explain.fmt import area_factor, money, num, option_text, water
+from ..explain.headline import headline
 from ..explain.why import explain
 from ..knowledge.rules import check_plan, list_rule_packs, load_rule_pack
 from ..knowledge.tables import basin_crops, load_crops, load_economics, load_glossary
 from ..optimizer.search import NoFeasiblePlan, PlanOption
+from ..textutil import loc
 from . import components as ui
 from . import state
 from .i18n import t
@@ -44,6 +46,22 @@ def crop_label(cid: str) -> str:
 def site_prov() -> dict:
     """Seçili noktanın veri kaynak kaydı (oturumlar arası paylaşılan 'son kayıt' değil)."""
     return state.site_data().provenance
+
+
+def all_prov() -> dict:
+    """Nokta veri setleri + havza ölçeğindeki GRACE kaydı (kenar çubuğu ve yöntem tablosu için)."""
+    prov = dict(site_prov())
+    hub = state.get_hub()
+    b = state.current_basin()
+    if ("water_storage", b.id) not in hub.records:
+        try:
+            hub.water_storage(b)
+        except Exception:  # noqa: BLE001 — havza verisi alınamazsa kayıt 'missing' olarak kalır
+            pass
+    wp = hub.records.get(("water_storage", b.id))
+    if wp is not None:
+        prov["water_storage"] = wp
+    return prov
 
 
 def src_tag(ds: str) -> str:
@@ -91,6 +109,7 @@ def sidebar() -> None:
             c1.number_input(t("latitude", lang), -90.0, 90.0, key="lat", format="%.3f", step=0.01)
             c2.number_input(t("longitude", lang), -180.0, 180.0, key="lon", format="%.3f", step=0.01)
         st.radio(t("area_unit", lang), ["da", "ha"], key="unit", horizontal=True)
+        st.toggle(t("present_mode", lang), key="present", help=t("present_mode_help", lang))
 
         st.markdown(f"#### {t('scenario', lang)}")
         st.slider(t("d_temp", lang), -1.0, 4.0, step=0.5, key="d_temp")
@@ -98,12 +117,16 @@ def sidebar() -> None:
         st.selectbox(t("cmip6", lang), ["", "ssp245", "ssp585"], key="cmip6",
                      format_func=lambda x: t("cmip6_none", lang) if not x else t(f"cmip6_{x}", lang))
 
+        prov = all_prov()
+        n_real = sum(1 for p in prov.values() if p.is_real)
+        st.markdown(f'<div class="bs-realcount">{t("real_count", lang, n=n_real, total=len(prov))}</div>',
+                    unsafe_allow_html=True)
         with st.expander(t("data_sources", lang)):
-            prov = site_prov()
             for ds, p in prov.items():
                 mark = "🟢" if p.is_real and not p.fell_back else ("🟡" if p.is_synthetic and not p.fell_back else "🟠")
-                st.markdown(f"{mark} **{ds}** · {p.label(lang)}" + (" · cache" if p.from_cache else ""))
-                for w in p.warnings[-2:]:
+                st.markdown(f"{mark} **{t('ds_' + ds, lang)}** · {p.label(lang)}"
+                            + ((" · önbellek" if lang == "tr" else " · cached") if p.from_cache else ""))
+                for w in p.warning_texts(lang, 2):
                     st.caption(w[:220])
 
 
@@ -131,9 +154,9 @@ def banners() -> None:
         st.markdown(f'<div class="bs-banner">{t("synthetic_banner", lang)}</div>', unsafe_allow_html=True)
     for ds, p in prov.items():
         if p.requested != "synthetic" and p.is_synthetic:
-            st.warning(t("fallback_warning", lang, dataset=ds, requested=p.requested))
+            st.warning(t("fallback_warning", lang, dataset=t("ds_" + ds, lang), requested=p.requested))
         elif p.is_default:
-            st.warning(t("default_warning", lang, dataset=ds, label=p.label(lang)))
+            st.warning(t("default_warning", lang, dataset=t("ds_" + ds, lang), label=p.label(lang)))
 
 
 def footer() -> None:
@@ -150,7 +173,12 @@ def page_field() -> None:
     crops = load_crops()
     ids = basin_crops(b.id)
 
-    st.button(t("demo_button", lang), on_click=state.load_demo, type="primary")
+    b1, b2, _ = st.columns([2, 1.2, 3])
+    b1.button(t("demo_button", lang), on_click=state.load_demo, type="primary")
+    if b2.button(t("go_plans", lang) + " →"):
+        target = state.page("plans")
+        if target is not None:
+            st.switch_page(target)
     if ss.pop("demo_loaded", False):
         st.success(t("demo_loaded", lang))
 
@@ -349,7 +377,7 @@ def page_status() -> None:
         st.caption(g["text"])
     else:
         p = site_prov().get("precip_satellite")
-        st.caption(p.warnings[-1] if p and p.warnings else "—")
+        st.caption(p.warning_texts(lang, 1)[0] if p and p.warnings else "—")
 
 
 # ---------------------------------------------------------------------------
@@ -365,7 +393,7 @@ def _get_result():
         try:
             return ctx, state.search_result()
         except NoFeasiblePlan as exc:
-            st.error(t("no_plan", L()) + f"  ({exc})")
+            st.error(t("no_plan", L()) + (f"  ({exc})" if L() == "tr" else ""))
             return ctx, None
 
 
@@ -378,6 +406,15 @@ def page_plans() -> None:
     syn = any_synthetic(ctx.provenance)
     crops = ctx.crops
     cur = res.options.get("current")
+    if st.session_state.pop("demo_loaded", False):
+        st.success(t("demo_loaded", lang))
+
+    best = res.options.get("balance")
+    if cur is not None and best is not None:
+        txt = headline(cur, best, card_title("balance", ctx.settings.irrigated)[0], ctx.basin.currency_symbol,
+                       ctx.settings.irrigated, lang, unit)
+        cls = cur.detail["status"]
+        st.markdown(f'<div class="bs-headline {cls}">{txt}</div>', unsafe_allow_html=True)
 
     if cur is not None:
         chk = check_plan(list(cur.parts[0][0]), ctx.settings.plan_years, ctx.settings.history, ctx.crop_ids,
@@ -547,7 +584,7 @@ def page_basin() -> None:
         wp = hub.records.get(("water_storage", b.id))
         if wp is not None and not wp.is_real:
             st.caption(("Kaynak: " if lang == "tr" else "Source: ") + wp.label(lang)
-                       + (" — " + wp.warnings[-1][:200] if wp.warnings else ""))
+                       + (" — " + wp.warning_texts(lang, 1)[0][:200] if wp.warnings else ""))
         if ws is not None and not ws.empty:
             full = ws.reindex(pd.date_range(ws.index.min(), ws.index.max(), freq="MS"))
             fig = go.Figure()
@@ -615,7 +652,7 @@ def page_basin() -> None:
             st.markdown(f'<div class="bs-big water">{num(r.shadow_price_water, lang, 2)} {sym}/m³</div>', unsafe_allow_html=True)
             st.markdown(t("shadow_text", lang, v=f"{num(r.shadow_price_water, lang, 2)} {sym}"))
         for n in r.notes:
-            st.warning(n)
+            st.warning(loc(n, lang))
 
     h1, h2 = st.columns(2, gap="large")
     with h1:
@@ -673,9 +710,10 @@ def page_report() -> None:
     pick = st.radio(t("report_pick", lang), keys, horizontal=True,
                     format_func=lambda k: card_title(k, ctx.settings.irrigated)[0], key="rep_pick")
     c1, c2 = st.columns(2)
+    st.session_state.setdefault("farmer_name", "")
+    st.session_state.setdefault("field_area", 120.0 if unit == "da" else 12.0)
     name = c1.text_input(t("farmer_name", lang), key="farmer_name", max_chars=60)
-    area = c2.number_input(t("field_area", lang) + f" ({unit})", 1.0, 100000.0, value=120.0 if unit == "da" else 12.0,
-                           step=1.0, key="field_area")
+    area = c2.number_input(t("field_area", lang) + f" ({unit})", 1.0, 100000.0, step=1.0, key="field_area")
     opt = res.options[pick]
     expl = explain(opt, res.options.get("current"), ctx, ctx.provenance, lang, unit)
     pdf = build_scorecard_pdf(opt, res.options.get("current"), ctx, expl, ctx.provenance, lang, unit,
@@ -693,20 +731,17 @@ def page_method() -> None:
     lang = L()
     hub = state.get_hub()
     st.markdown(f"## {t('method_title', lang)}")
-    prov = dict(site_prov())
-    wp = hub.records.get(("water_storage", state.current_basin().id))
-    if wp is not None:
-        prov["water_storage"] = wp
+    prov = all_prov()
     rows = []
     for ds, spec in SPECS.items():
         p = prov.get(ds)
         rows.append({
-            t("col_dataset", lang): ds,
-            t("col_product", lang): spec.product,
-            t("col_resolution", lang): spec.resolution,
+            t("col_dataset", lang): t("ds_" + ds, lang),
+            t("col_product", lang): loc(spec.product, lang),
+            t("col_resolution", lang): loc(spec.resolution, lang),
             t("col_source", lang): (p.label(lang) + (" (cache)" if p.from_cache else "")) if p else "—",
             t("col_scale", lang): spec.use_scale_tr if lang == "tr" else spec.use_scale_en,
-            t("col_notes", lang): " ".join((p.notes + p.warnings)[-2:]) if p else "",
+            t("col_notes", lang): " ".join(p.messages(lang, 2)) if p else "",
         })
     st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
 
@@ -748,9 +783,12 @@ def page_method() -> None:
             st.write(e["text"])
 
     st.markdown(f"### {t('how_switch', lang)}")
-    st.code("BASINSHIFT_DATA=nasa streamlit run app.py\n# " + ("veya config.yaml → data.default_source: nasa" if lang == "tr" else "or config.yaml → data.default_source: nasa")
-            + "\n# " + ("ayrıntı: docs/DATA_SWAP.md" if lang == "tr" else "details: docs/DATA_SWAP.md"), language="bash")
+    st.code(("veri_indir.bat        # Windows: gerçek NASA verisini indirir, kontrol eder, config.yaml'ı günceller\n"
+             "python scripts/setup_real_data.py   # aynı işin komut satırı hali\n# ayrıntı: docs/DATA_SWAP.md") if lang == "tr" else
+            ("veri_indir.bat        # Windows: downloads real NASA data, checks it, updates config.yaml\n"
+             "python scripts/setup_real_data.py   # the same from the command line\n# details: docs/DATA_SWAP.md"),
+            language="bash")
     readme = ROOT / "docs" / "DATA_SWAP.md"
-    if readme.exists():
+    if lang == "tr" and readme.exists():
         with st.expander("docs/DATA_SWAP.md"):
             st.markdown(readme.read_text(encoding="utf-8"))

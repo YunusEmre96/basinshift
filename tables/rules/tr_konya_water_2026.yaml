@@ -2,8 +2,22 @@ id: tr_konya_water_2026
 kind: legal
 name_tr: "Türkiye — Konya su kısıtı ve münavebe (2026)"
 name_en: "Türkiye — Konya water restriction & rotation (2026)"
-status_tr: "Yerel haberlere dayanır; resmi Bakanlık / İl Tarım ve Orman Müdürlüğü metniyle TEYİT EDİLMELİDİR."
-status_en: "Based on local news reports; MUST be verified against the official Ministry text."
+status_tr: "Kural, Resmî Gazete'de yayımlanan destekleme tebliğinin basındaki özetine ve İl Tarım ve Orman Müdürlüğü açıklamalarına dayanır (14.11.2026'da kontrol edildi). Destek tutarlarının bir kısmı katsayıdan türetilmiştir; ödeme öncesi İl Müdürlüğü ile teyit edin."
+status_en: "Rule follows press summaries of the official support communiqué and Provincial Directorate statements (checked 14 Nov 2026). Some support amounts are derived from coefficients; confirm with the Provincial Directorate."
+# Kaynaklar (14.11.2026):
+#   Kural: "Sulu tarım arazilerinde dörtlü münavebe: mısır (dane/silaj), patates, şeker pancarı,
+#           domates ve havuç 4 üretim yılında art arda gelmemek şartıyla en fazla iki kez" —
+#           tebliğ haberleri (Ülke TV, Bigpara, 1 Ocak 2026'da yürürlük); Tarım ve Orman Bakanlığı
+#           "Tarımsal Üretim Planlaması" belgesi. Başlangıç: 2024 üretim yılı ÇKS kaydı.
+#   Su kısıtı ilçeleri (Konya, 19): Akören, Akşehir, Altınekin, Cihanbeyli, Çumra, Derbent,
+#           Doğanhisar, Emirgazi, Ereğli, Güneysınır, Halkapınar, Kadınhanı, Karapınar, Karatay,
+#           Kulu, Meram, Sarayönü, Selçuklu, Tuzlukçu (Konya İl Müdürlüğü açıklaması, tarimdanhaber.com).
+#           Türkiye geneli: 11 il, 52 ilçe.
+#   Kart: ilk yıl sarı kart (uyarı), ikinci yıl da uyulmazsa kırmızı kart ve tüm desteklerden
+#           mahrumiyet (aynı açıklama).
+#   Destek: Eylül 2026 kararıyla destek katsayı değeri 310 → 367 TL/da (Alomaliye, Bloomberg HT,
+#           8 Eylül 2026). 2026 Yılı Destekleme Birim Fiyatları (BÜGEM).
+districts_tr: [Akören, Akşehir, Altınekin, Cihanbeyli, Çumra, Derbent, Doğanhisar, Emirgazi, Ereğli, Güneysınır, Halkapınar, Kadınhanı, Karapınar, Karatay, Kulu, Meram, Sarayönü, Selçuklu, Tuzlukçu]
 applies_when:
   water_restricted: true     # yalnızca su kısıtı ilan edilmiş ilçelerde
   irrigated: true            # yalnızca sulu arazide
@@ -13,9 +27,9 @@ rules:
     crops: [maize_grain, maize_silage, potato, sugar_beet]
     window: 4
     max: 2
-    text_tr: "Mısır, patates ve şeker pancarı 4 yılda en fazla 2 kez ekilebilir."
-    text_en: "Maize, potato and sugar beet: at most 2 times in any 4 years."
-    note_tr: "Silajlık mısırın kapsamda olup olmadığı teyit edilmeli."
+    text_tr: "Mısır (dane/silaj), patates ve şeker pancarı 4 üretim yılında en fazla 2 kez ekilebilir."
+    text_en: "Maize (grain/silage), potato and sugar beet: at most 2 times in any 4 production years."
+    note_tr: "Tebliğ metni silajlık mısırı açıkça kapsar (\"mısır (dane/silaj)\"). Domates ve havuç da kapsamdadır; Konya ürün listemizde yoklar."
   - id: restricted_no_consecutive
     type: group_no_consecutive
     crops: [maize_grain, maize_silage, potato, sugar_beet]
@@ -28,27 +42,43 @@ rules:
     text_en: "Crop must be on the 2026 basin crop pattern list."
     note_tr: "Liste temsili; resmi desenle karşılaştırın."
 penalties:
-  # Kural ihlali takibi: ilk ihlal yılı sarı kart, ihlal sonraki yıl da sürerse kırmızı kart
+  # İlk ihlal yılı sarı kart, ihlal sonraki yıl da sürerse kırmızı kart.
+  # Destek "planlı üretime ve münavebeye uygun üreten" çiftçiye ödendiği için sarı kart yılında
+  # o yılın desteği sıfır sayılır (yorum; İl Müdürlüğü ile teyit edin).
   yellow_loses_support_that_year: true
   red_loses_all_support_from_then: true
 supports:
   currency: TRY
-  note_tr: "Buğday tutarları haberlerden (806 + 434 TL/da); diğerleri VARSAYIM."
+  coefficient_value_per_da: 367
+  note_tr: "Temel + planlı üretim desteği toplamı (TL/da), Eylül 2026 güncellemesi. KAYNAKLI: buğday/arpa 954, nohut/mercimek 734, aspir 734, yağlık ayçiçeği 1101. VARSAYIM: fiğ 734 (yem bitkisi), silajlık mısır 477, şeker pancarı 367, yonca 367."
+  note_en: "Base + planned-production support (TRY/da), September 2026 update. SOURCED: wheat/barley 954, chickpea/lentil 734, safflower 734, oil sunflower 1101. ASSUMED: vetch 734, silage maize 477, sugar beet 367, alfalfa 367."
   base_per_da:
-    wheat: 806
-    barley: 700
-    chickpea: 900
-    lentil: 900
-    safflower: 700
-    sunflower: 700
-    vetch: 600
-    maize_silage: 500
-    sugar_beet: 500
-    alfalfa: 400
+    wheat: 954
+    barley: 954
+    chickpea: 734
+    lentil: 734
+    safflower: 734
+    sunflower: 1101
+    vetch: 734
+    maize_silage: 477
+    sugar_beet: 367
+    alfalfa: 367
     potato: 0
     maize_grain: 0
     fallow: 0
+  # Su kısıtı olan havzalarda dane mısır ve patatese temel, planlı üretim ve üretimi geliştirme
+  # desteği ödenmez (2026 Birim Fiyatları dipnotu).
   no_support: [potato, maize_grain]
-  water_restriction_bonus_per_da: 434
-  water_restriction_bonus_crops: [wheat, barley, chickpea, lentil, safflower, vetch, sunflower]
+  # Yeraltı su kısıtı desteği = kategori katsayısı × 367.
+  #   KAYNAKLI katsayı: 1. kategori (aspir, fiğ, mercimek, nohut, yem bezelyesi) 0,8 → 294 TL/da.
+  #   TÜRETİLMİŞ: buğday/arpa 1,4 (310 TL iken 434 TL ödendi) → 514; ayçiçeği 1,2 (toplam ~1.300 TL
+  #   haberinden) → 440. Eylül zammının su kısıtı desteğine de yansıdığı VARSAYILDI.
+  water_restriction_bonus_by_crop:
+    wheat: 514
+    barley: 514
+    sunflower: 440
+    chickpea: 294
+    lentil: 294
+    safflower: 294
+    vetch: 294
   water_restriction_bonus_irrigated_only: true
