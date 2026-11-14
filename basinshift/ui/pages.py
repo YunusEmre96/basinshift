@@ -721,9 +721,10 @@ def _price_risk_section(res, ctx, crops, lang: str, unit: str, order) -> None:
             })
         ui.html_table(pd.DataFrame(rows), num_cols=(t("pr_col_mean", lang), t("pr_col_cvar", lang), t("pr_col_loss", lang)))
         if worst is not None:
-            ui.callout(ui.esc(t("pr_insight", lang, plan=worst[0], v=money(worst[2], sym, unit, lang),
-                                pct=(f"%{worst[1] * 100:.0f}" if lang == "tr" else f"{worst[1] * 100:.0f}%"))
-                       + " " + ui.esc(t("pr_best", lang, plan=best[0], v=money(best[1], sym, unit, lang))), "")
+            pct_s = f"%{worst[1] * 100:.0f}" if lang == "tr" else f"{worst[1] * 100:.0f}%"
+            msg = (ui.esc(t("pr_insight", lang, plan=worst[0], v=money(worst[2], sym, unit, lang), pct=pct_s))
+                   + " " + ui.esc(t("pr_best", lang, plan=best[0], v=money(best[1], sym, unit, lang))))
+            ui.callout(msg, "")
         st.caption(t("pr_note", lang))
 
 
