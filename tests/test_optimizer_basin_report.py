@@ -71,3 +71,16 @@ def test_perennials_not_suggested(cumra_ctx):
     for k in ("profit", "aquifer", "balance"):
         for plan, _ in res.options[k].parts:
             assert "alfalfa" not in plan
+
+
+def test_cooperative_sharing_is_budget_neutral(hub, konya):
+    from basinshift.basin.model import cooperative_sharing, run_basin
+    res = run_basin(hub, konya)
+    tt = cooperative_sharing(res)
+    assert abs(tt["transfer"].sum()) < 1e-6 * max(1.0, tt["income_coordinated"].abs().sum())
+    # paylaşım sonrası toplam = koordineli toplam
+    assert abs(tt["income_after"].sum() - tt["income_coordinated"].sum()) < 1e-3 * abs(tt["income_coordinated"].sum())
+    # her üye aynı dekar başı ek kazancı alır; fazla pozitifse kimse kendi başına durumdan kötü değil
+    assert np.allclose(tt["gain_per_da"], tt["gain_per_da"].iloc[0])
+    if tt.attrs["surplus"] > 0:
+        assert (tt["income_after"] >= tt["income_uncoordinated"] - 1e-6).all()

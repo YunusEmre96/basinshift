@@ -895,7 +895,64 @@ def page_basin() -> None:
     fig.update_layout(barmode="stack", bargap=0.35)
     fig.update_xaxes(title="%")
     ui.chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
+    _coop_section(r, lang, unit, sym, f)
     _trade_section(b, lang, unit)
+
+
+def _coop_section(r, lang: str, unit: str, sym: str, f: float) -> None:
+    """Kooperatif görünümü: koordineli planın ek kazancının üyeler arasında paylaşımı."""
+    from ..basin.model import cooperative_sharing
+
+    tt = cooperative_sharing(r)
+    if tt.empty:
+        return
+    ui.section(t("coop_title", lang), t("coop_help", lang))
+    total_a = float(tt["area_da"].sum())
+    surplus = tt.attrs["surplus"] / total_a
+    pay = tt[tt["transfer"] > 0]
+    ui.kpi_grid([
+        {"label": t("coop_k_surplus", lang), "value": money(surplus, sym, unit, lang),
+         "sub": t("coop_k_surplus_sub", lang), "tone": ui.GREEN},
+        {"label": t("coop_k_fund", lang), "value": money(float(pay["transfer"].sum()) / total_a, sym, unit, lang),
+         "sub": t("coop_k_fund_sub", lang), "tone": ui.NEON_YELLOW},
+        {"label": t("coop_k_water", lang),
+         "value": water(float((tt["water_uncoordinated"] - tt["water_coordinated"]).sum()) / total_a, unit, lang),
+         "sub": t("coop_k_water_sub", lang), "tone": ui.YONDER},
+    ])
+    if surplus <= 0:
+        ui.callout(ui.esc(t("coop_negative", lang)), "warn")
+    names = {ft.id: ft.name(lang) for ft in r.farm_types}
+    rows = []
+    for tid, row in tt.iterrows():
+        tr_v = row["transfer_per_da"] * f
+        rows.append({
+            t("coop_col_type", lang): names.get(tid, tid),
+            t("coop_col_area", lang): (f"{num(row['area_da'] / (1000 if unit == 'da' else 10000), lang)} "
+                                       f"{'bin' if lang == 'tr' else 'k'} {unit}"),
+            t("coop_col_alone", lang): money(row["income_uncoordinated_per_da"], sym, unit, lang),
+            t("coop_col_coord", lang): money(row["income_coordinated_per_da"], sym, unit, lang),
+            t("coop_col_transfer", lang): f'<span style="color:{ui.GREEN if tr_v >= 0 else ui.ROCKET};font-weight:800">'
+                                         f'{"+" if tr_v >= 0 else "−"}{num(abs(tr_v), lang)} {sym}/{unit}</span>',
+            t("coop_col_after", lang): money(row["income_after_per_da"], sym, unit, lang),
+            t("coop_col_water", lang): water(row["water_saved_per_da"], unit, lang),
+        })
+    num_cols = (t("coop_col_alone", lang), t("coop_col_coord", lang), t("coop_col_transfer", lang),
+                t("coop_col_after", lang), t("coop_col_water", lang))
+    ui.html_table(pd.DataFrame(rows), num_cols=num_cols, html_cols=(t("coop_col_transfer", lang),))
+    c1, c2 = st.columns([3, 2], gap="large")
+    with c1:
+        fig = go.Figure()
+        x = [names.get(i, i) for i in tt.index]
+        fig.add_bar(x=x, y=tt["income_uncoordinated_per_da"] * f, name=t("coop_col_alone", lang), marker_color=ui.ROCKET)
+        fig.add_bar(x=x, y=tt["income_coordinated_per_da"] * f, name=t("coop_col_coord", lang), marker_color=ui.MUTED)
+        fig.add_bar(x=x, y=tt["income_after_per_da"] * f, name=t("coop_col_after", lang), marker_color=ui.GREEN)
+        fig.update_layout(barmode="group", bargap=0.25)
+        fig.update_yaxes(title=f"{sym}/{unit}/{'yıl' if lang == 'tr' else 'yr'}")
+        ui.chart(ui._layout(fig, 340))
+    with c2:
+        st.markdown(f"**{t('coop_how', lang)}**")
+        st.markdown(t("coop_how_list", lang))
+    st.caption(t("coop_note", lang))
 
 
 def _trade_section(b, lang: str, unit: str) -> None:

@@ -101,6 +101,8 @@ class BasinResult:
     currency_symbol: str
     lp_status: str
     notes: list[str] = field(default_factory=list)
+    #: çiftlik tipi × senaryo: toplam gelir ve su (kooperatif kazanç paylaşımı için)
+    type_table: pd.DataFrame = field(default_factory=pd.DataFrame)
 
 
 def load_farm_types(basin_id: str) -> list[FarmType]:
@@ -218,8 +220,9 @@ def run_basin(hub: DataHub, basin: Basin, scenario: Scenario = Scenario(),
             pidx = _price_index(q, q_ref, eps)
         else:
             pidx = np.divide(prices, price_ref, out=np.ones_like(price_ref), where=price_ref > 0)
-        income = float(((Y * price_ref * pidx + F) * x).sum())
-        return {"income": income, "water": float((Wm * x).sum()), "price_index": pidx, "q": q}
+        by_type = ((Y * price_ref * pidx + F) * x).sum(axis=1)
+        return {"income": float(by_type.sum()), "water": float((Wm * x).sum()), "price_index": pidx, "q": q,
+                "type_income": by_type, "type_water": (Wm * x).sum(axis=1)}
 
     restricted = [_restricted_share(ctx) for ctx in ctxs]
 
@@ -307,6 +310,16 @@ def run_basin(hub: DataHub, basin: Basin, scenario: Scenario = Scenario(),
 
     ev_cur = evaluate(cur, prices=price_ref)
     ev_coord = evaluate(coord)
+    tail = unc_eval[COBWEB_BURN_IN:]
+    type_table = pd.DataFrame({
+        "area_da": A,
+        "income_current": ev_cur["type_income"],
+        "income_uncoordinated": np.mean([e["type_income"] for e in tail], axis=0),
+        "income_coordinated": ev_coord["type_income"],
+        "water_current": ev_cur["type_water"],
+        "water_uncoordinated": np.mean([e["type_water"] for e in tail], axis=0),
+        "water_coordinated": ev_coord["type_water"],
+    }, index=[ft.id for ft in types])
     metrics = pd.DataFrame({
         "current": {"income": ev_cur["income"], "water": ev_cur["water"]},
         "uncoordinated": {"income": unc_income, "water": unc_water},
@@ -333,5 +346,27 @@ def run_basin(hub: DataHub, basin: Basin, scenario: Scenario = Scenario(),
         water_budget_m3=budget, budget_curve=budget_curve,
         price_of_anarchy_income=ev_coord["income"] - unc_income,
         price_of_anarchy_water=unc_water - ev_coord["water"],
-        currency_symbol=basin.currency_symbol, lp_status=lp_status, notes=notes,
+        currency_symbol=basin.currency_symbol, lp_status=lp_status, notes=notes, type_table=type_table,
     )
+
+
+def cooperative_sharing(res: BasinResult) -> pd.DataFrame:
+    """Kooperatif kazanç paylaşımı: koordineli planın getirdiği ek gelir üyelere alan payıyla dağıtılır.
+
+    Her üye (çiftlik tipi) önce "herkes kendi başına" durumundaki gelirini garanti alır; koordinasyonla
+    oluşan toplam fazlanın (koordineli − kendi başına) alan payı kadarını üstüne ekler. Koordineli planda
+    su yoğun üründen vazgeçip gelir kaybeden üye, farkı kooperatiften TRANSFER olarak alır; kazanan üye öder.
+    Transferlerin toplamı sıfırdır. Fazla negatifse (koordinasyon bu su bütçesinde kazandırmıyorsa)
+    paylaşım kayıp paylaşımıdır ve arayüz bunu söyler.
+    """
+    tt = res.type_table.copy()
+    a = tt["area_da"]
+    surplus = float(tt["income_coordinated"].sum() - tt["income_uncoordinated"].sum())
+    tt["income_after"] = tt["income_uncoordinated"] + surplus * a / a.sum()
+    tt["transfer"] = tt["income_after"] - tt["income_coordinated"]
+    for c in ("income_uncoordinated", "income_coordinated", "income_after", "transfer"):
+        tt[c + "_per_da"] = tt[c] / a
+    tt["gain_per_da"] = tt["income_after_per_da"] - tt["income_uncoordinated_per_da"]
+    tt["water_saved_per_da"] = (tt["water_uncoordinated"] - tt["water_coordinated"]) / a
+    tt.attrs["surplus"] = surplus
+    return tt
