@@ -6,7 +6,7 @@ söylenecek cümle yanında.
 
 | NASA beklentisi | Durum | Uygulamada nerede / not |
 |---|---|---|
-| NASA yer gözlemleri + yerel veri | Kısmen | POWER, SMAP, HLS, MODIS, GPM IMERG, GRACE, NEX-GDDP-CMIP6, SRTM + SoilGrids için veri yolu hazır. Hangisinin gerçek, hangisinin sentetik olduğu kenar çubuğunda "N / 8 veri seti gerçek" diye yazar. **ECOSTRESS yok** (aşağıya bakın) |
+| NASA yer gözlemleri + yerel veri | Kısmen | POWER, SMAP, HLS, MODIS, GPM IMERG, GRACE, NEX-GDDP-CMIP6, SRTM + SoilGrids için veri yolu hazır. Teslimde 4/8 gerçek (POWER, IMERG, GRACE, CMIP6); SMAP ve HLS/MODIS sentetik yer tutucu, SRTM ve Çumra toprağı varsayım. Durum `data/external/KAYNAK.yaml`'da beyan edilir ve kenar çubuğunda "N / 8 veri seti gerçek" diye yazar. **ECOSTRESS yok** (aşağıya bakın) |
 | Mevcut rotasyon dahil en az 3 strateji | Var | Planlar: Mevcut plan + Kâr + Akifer + Denge, dört sütun |
 | Neden / kanıt / fayda / bilgi boşluğu / yerel risk | Var | Her kartta "Neden bu plan?" (beş başlık), TR ve EN |
 | Su kullanımı | Var | Sulama suyu m³/da (FAO-56) |

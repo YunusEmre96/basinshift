@@ -18,9 +18,11 @@ Sütun adları ALIASES sözlüğüyle şemaya eşlenir.
 from __future__ import annotations
 
 import io
+from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
+import yaml
 
 from .base import DataProvider, NotAvailable
 
@@ -42,6 +44,33 @@ ALIASES = {
     "Date": "date", "DATE": "date", "time": "date",
 }
 FILL_VALUES = (-999, -999.0, -9999, -9999.0)
+
+#: data/external içindeki her dosyanın GERÇEK kökeni bu dosyada yazılır.
+#: Dosyanın klasörde durması, gerçek NASA verisi olduğu anlamına gelmez.
+MANIFEST_NAME = "KAYNAK.yaml"
+ORIGINS = ("nasa", "external", "synthetic", "assumed", "unknown")
+
+
+@lru_cache(maxsize=8)
+def _load_manifest(path_str: str, mtime: float) -> dict:
+    with open(path_str, encoding="utf-8") as fh:
+        return yaml.safe_load(fh) or {}
+
+
+def file_origin(root: Path, dataset: str, stem: str) -> dict:
+    """(origin, note_tr, note_en, product) — KAYNAK.yaml'da yoksa origin='unknown'."""
+    path = root / MANIFEST_NAME
+    entry: dict = {}
+    if path.exists():
+        man = _load_manifest(str(path), path.stat().st_mtime)
+        ds = man.get(dataset) or {}
+        entry = dict(ds.get("default") or {})
+        entry.update((ds.get("files") or {}).get(stem) or {})
+    origin = str(entry.get("origin", "unknown"))
+    if origin not in ORIGINS:
+        origin = "unknown"
+    return {"origin": origin, "note_tr": entry.get("note_tr", ""), "note_en": entry.get("note_en", ""),
+            "product": entry.get("product", "")}
 
 
 def _read_any_csv(path: Path) -> pd.DataFrame:
@@ -77,14 +106,18 @@ class FilesProvider(DataProvider):
     def __init__(self, cfg: dict):
         super().__init__(cfg)
         self.root = Path(cfg["data"]["files_dir"])
+        #: son okunan dosyanın kökeni (DataHub provenance'a yazar)
+        self.last_origin: dict = {}
 
     def _find(self, dataset: str, keys: list[str]) -> Path:
         for k in keys:
             p = self.root / dataset / f"{k}.csv"
             if p.exists():
+                self.last_origin = file_origin(self.root, dataset, k)
                 return p
         p = self.root / f"{dataset}.csv"
         if p.exists():
+            self.last_origin = file_origin(self.root, dataset, dataset)
             return p
         raise NotAvailable(
             f"'{dataset}' için dosya yok. Beklenen: {self.root / dataset / (keys[0] + '.csv')} "

@@ -35,6 +35,7 @@ TXT = {
         "nitrogen": "Azot", "organic_matter": "Organik madde", "erosion": "Erozyon/çıplak toprak", "pest_cycle": "Zararlı döngüsü",
         "data": "Veri", "years": "hasat yılı",
         "defaults": "Şu veri setleri alınamadı, varsayılan değer kullanıldı: {}.",
+        "placeholders": "Not: Şu veri setleri sentetik yer tutucudur (iklim ve yağış gerçek NASA verisidir): {}.",
     },
     "en": {
         "title": "Risk and Water Scorecard", "farm": "Farm", "site": "Location", "basin": "Basin", "date": "Date",
@@ -48,6 +49,7 @@ TXT = {
         "nitrogen": "Nitrogen", "organic_matter": "Organic matter", "erosion": "Erosion/bare soil", "pest_cycle": "Pest cycle",
         "data": "Data", "years": "harvest years",
         "defaults": "These datasets were unavailable; defaults were used: {}.",
+        "placeholders": "Note: these datasets are synthetic placeholders (climate and rainfall are real NASA data): {}.",
     },
 }
 
@@ -119,8 +121,13 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
     pdf.multi_cell(0, 4.6, "   |   ".join(meta), new_x="LMARGIN", new_y="NEXT")
 
     warn = []
-    # if any(p.is_synthetic for p in provenance.values()):
-    #     warn.append(L["synthetic"])
+    clim = provenance.get("climate_daily")
+    if clim is not None and clim.is_synthetic:
+        warn.append(L["synthetic"])
+    else:
+        ph = [ds for ds, p in provenance.items() if p.is_synthetic]
+        if ph:
+            warn.append(L["placeholders"].format(", ".join(ph)))
     defaults = [ds for ds, p in provenance.items() if p.is_default]
     if defaults:
         warn.append(L["defaults"].format(", ".join(defaults)))

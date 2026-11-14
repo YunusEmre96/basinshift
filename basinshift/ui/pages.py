@@ -16,10 +16,10 @@ from ..engine.risk import bare_soil_by_month, monthly_climate_risk, plan_calenda
 from ..engine.trends import climate_trends
 from ..explain.confidence import METHOD_CONFIDENCE, label as conf_label
 from ..explain.fmt import area_factor, money, num, option_text, water
-from ..explain.headline import headline
+from ..explain.headline import headline, headline_numbers
 from ..explain.why import explain
 from ..knowledge.rules import check_plan, list_rule_packs, load_rule_pack
-from ..knowledge.tables import basin_crops, load_crops, load_economics, load_glossary
+from ..knowledge.tables import basin_crops, load_commodity_trade, load_crops, load_economics, load_glossary
 from ..optimizer.search import NoFeasiblePlan, PlanOption
 from ..textutil import loc
 from . import components as ui
@@ -41,6 +41,12 @@ def card_title(key: str, irrigated: bool) -> tuple[str, str]:
 
 def crop_label(cid: str) -> str:
     return load_crops()[cid].name(L())
+
+
+def core_synthetic(prov: dict) -> bool:
+    """Sonuçların güvenini düşüren çekirdek veri (iklim) sentetik mi?"""
+    p = prov.get("climate_daily")
+    return bool(p is not None and p.is_synthetic)
 
 
 def site_prov() -> dict:
@@ -65,7 +71,20 @@ def all_prov() -> dict:
 
 
 def src_tag(ds: str) -> str:
-    return ""
+    """Grafik açıklamasına eklenen kaynak etiketi: gerçek veride boş, aksi halde açıkça yazar."""
+    p = all_prov().get(ds)
+    if p is None or p.is_real:
+        return ""
+    lang = L()
+    return " · " + ui.STATUS_LABEL[lang][p.status].upper()
+
+
+def ds_names(lang: str) -> dict[str, str]:
+    return {ds: t("ds_" + ds, lang) for ds in SPECS}
+
+
+def step_label(i: int) -> str:
+    return (f"Adım {i} / 7" if L() == "tr" else f"Step {i} of 7")
 
 
 # ---------------------------------------------------------------------------
@@ -92,16 +111,14 @@ def sidebar() -> None:
     with st.sidebar:
         logo_file = ROOT / "basinshift" / "ui" / "assets" / "logos" / "Space Apps Logo Color and White.png"
         if logo_file.exists():
-            st.image(str(logo_file), use_container_width=True)
-        st.markdown(
-            f'<div class="bs-sidebar-title">{t("app_title", L())}</div>'
-            f'<div class="bs-sidebar-sub">NASA Space Apps Challenge 2026</div>',
-            unsafe_allow_html=True,
-        )
+            st.image(str(logo_file), width=210)
+        st.markdown('<div class="bs-side-brand"><span class="n">BASINSHIFT</span>'
+                    '<span class="s">Field Shift · Konya 2026</span></div>', unsafe_allow_html=True)
         st.radio(t("language", L()), ["tr", "en"], key="lang", horizontal=True,
                  format_func=lambda x: "Türkçe" if x == "tr" else "English")
         lang = L()
         bs = state.basins()
+        st.markdown(f'<div class="bs-side-label">{t("side_field", lang)}</div>', unsafe_allow_html=True)
         st.selectbox(t("basin", lang), list(bs), key="basin_id", on_change=_on_basin_change,
                      format_func=lambda b: bs[b].name(lang))
         b = state.current_basin()
@@ -115,50 +132,31 @@ def sidebar() -> None:
         st.radio(t("area_unit", lang), ["da", "ha"], key="unit", horizontal=True)
         st.toggle(t("present_mode", lang), key="present", help=t("present_mode_help", lang))
 
-        st.markdown(f"#### {t('scenario', lang)}")
+        st.markdown(f'<div class="bs-side-label">{t("scenario", lang)}</div>', unsafe_allow_html=True)
         st.slider(t("d_temp", lang), -1.0, 4.0, step=0.5, key="d_temp")
         st.slider(t("d_precip", lang), -40.0, 20.0, step=5.0, key="d_precip")
-        st.selectbox(t("cmip6", lang), ["", "ssp245", "ssp585"], key="cmip6",
-                     format_func=lambda x: t("cmip6_none", lang) if not x else t(f"cmip6_{x}", lang))
+        # Yalnızca verisi olan CMIP6 senaryoları seçilebilir (veride olmayan senaryo hata verirdi)
+        deltas = state.site_data().deltas
+        avail = sorted(set(deltas["scenario"])) if deltas is not None and not deltas.empty else []
+        opts = [""] + [x for x in ("ssp245", "ssp585") if x in avail]
+        if ss.get("cmip6") not in opts:
+            ss["cmip6"] = ""
+        st.selectbox(t("cmip6", lang), opts, key="cmip6",
+                     format_func=lambda x: t("cmip6_none", lang) if not x else t(f"cmip6_{x}", lang),
+                     help=t("cmip6_help", lang))
 
+        st.markdown(f'<div class="bs-side-label">{t("data_sources", lang)}</div>', unsafe_allow_html=True)
         prov = all_prov()
-        n_real = sum(1 for p in prov.values() if p.is_real)
-        st.markdown(f'<div class="bs-realcount">{t("real_count", lang, n=n_real, total=len(prov))}</div>',
-                    unsafe_allow_html=True)
-        with st.expander(t("data_sources", lang)):
-            for ds, p in prov.items():
-                mark = "🟢" if p.is_real and not p.fell_back else ("🟡" if p.is_synthetic and not p.fell_back else "🟠")
-                st.markdown(f"{mark} **{t('ds_' + ds, lang)}** · {p.label(lang)}"
-                            + ((" · önbellek" if lang == "tr" else " · cached") if p.from_cache else ""))
-                for w in p.warning_texts(lang, 2):
-                    st.caption(w[:220])
+        st.markdown(ui.data_status_panel(prov, lang, ds_names(lang)), unsafe_allow_html=True)
+        with st.expander(t("data_details", lang)):
+            st.markdown(ui.dataset_rows(prov, lang, ds_names(lang)), unsafe_allow_html=True)
 
 
 def header(show_tagline: bool = True) -> None:
     lang = L()
     if show_tagline:
-        st.markdown(
-            f"""
-            <div class="bs-hero-banner">
-                <div class="bs-badge-spaceapps">
-                    <span style="font-size:1.05rem;">🛰️</span> NASA International Space Apps Challenge 2026
-                </div>
-                <h1 class="bs-hero-title">{t('app_title', lang)}</h1>
-                <p class="bs-tagline">{t('app_tagline', lang)}</p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    else:
-        st.markdown(
-            f"""
-            <div class="bs-sub-header">
-                <span class="bs-sub-title">{t('app_title', lang)}</span>
-                <span class="bs-sub-badge">NASA Space Apps 2026</span>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        ui.hero("NASA Space Apps Challenge 2026 · Field Shift", "BasinShift", t("app_tagline", lang),
+                [t("hero_step1", lang), t("hero_step2", lang), t("hero_step3", lang), t("hero_step4", lang)])
     sc = state.scenario()
     if not sc.is_baseline:
         parts = []
@@ -168,21 +166,39 @@ def header(show_tagline: bool = True) -> None:
             parts.append(f"{sc.d_temp_c:+.1f} °C")
         if sc.precip_pct:
             parts.append(f"{sc.precip_pct:+.0f}% " + ("yağış" if lang == "tr" else "rain"))
-        st.info(t("scenario_active", lang, txt=", ".join(parts)))
+        st.markdown(f'<div class="bs-scenario">⚡ {ui.esc(t("scenario_active", lang, txt=", ".join(parts)))}</div>',
+                    unsafe_allow_html=True)
+
+
+#: Hesabın çekirdeğine giren veri setleri: bunlar gerçek değilse sonuçlar "yöntem gösterimi"dir
+CORE_DATASETS = ("climate_daily", "soil_properties")
 
 
 def banners() -> None:
-    # Sentetik ve test uyarilari gizlendi
-    pass
+    """Dürüstlük şeridi: gerçek olmayan veri setlerini ve sonuca etkisini tek satırda söyler."""
+    lang = L()
+    prov = site_prov()
+    weak = [(ds, p) for ds, p in prov.items() if not p.is_real]
+    if not weak:
+        return
+    core = [ds for ds, p in weak if ds in CORE_DATASETS and p.is_synthetic]
+    short = {ds: t("ds_" + ds, lang).split(" (")[0] for ds, _ in weak}
+    groups: dict[str, list[str]] = {}
+    for ds, p in weak:
+        groups.setdefault(p.status, []).append(short[ds])
+    names = " · ".join(f"{ui.STATUS_LABEL[lang][st_]}: {', '.join(v)}" for st_, v in groups.items())
+    if core:
+        ui.callout(f"<b>{ui.esc(t('banner_core_title', lang))}</b> {ui.esc(names)}. {ui.esc(t('banner_core_text', lang))}", "bad")
+    else:
+        ui.callout(f"<b>{ui.esc(t('banner_title', lang))}</b> {ui.esc(names)}. {ui.esc(t('banner_text', lang))}", "warn")
 
 
 def footer() -> None:
     lang = L()
     st.markdown(
-        f'<div class="bs-disclaimer">'
-        f'<div>{t("disclaimer", lang)}</div>'
-        f'<div style="margin-top:0.5rem; font-size:0.8rem; color:#8C9BAE;">'
-        f'🚀 Developed for <b>NASA International Space Apps Challenge 2026</b> · Powered by NASA Earth Observation Data (POWER, IMERG, GRACE, Landsat/HLS, SRTM)'
+        f'<div class="bs-disclaimer"><div>{ui.esc(t("disclaimer", lang))}</div>'
+        f'<div class="r">NASA Space Apps Challenge 2026 · Konya · '
+        f'{"Veri: NASA POWER, GPM IMERG, GRACE-FO, NEX-GDDP-CMIP6, ISRIC SoilGrids" if lang == "tr" else "Data: NASA POWER, GPM IMERG, GRACE-FO, NEX-GDDP-CMIP6, ISRIC SoilGrids"}'
         f'</div></div>',
         unsafe_allow_html=True,
     )
@@ -198,8 +214,8 @@ def page_field() -> None:
     crops = load_crops()
     ids = basin_crops(b.id)
 
-    b1, b2 = st.columns([2.5, 1.2])
-    b1.button(t("demo_button", lang), on_click=state.load_demo, type="primary")
+    b1, b2, _sp = st.columns([2.2, 1.6, 3])
+    b1.button("▶ " + t("demo_button", lang), on_click=state.load_demo, type="primary")
     if b2.button(t("go_plans", lang) + " →"):
         target = state.page("plans")
         if target is not None:
@@ -209,6 +225,7 @@ def page_field() -> None:
 
     left, right = st.columns([3, 2], gap="large")
     with left:
+      with st.container(key="bs-panel-hist"):
         st.markdown(f"### {t('history', lang)}")
         hc = st.columns(2)
         for i, y in enumerate((state.PLAN_START - 2, state.PLAN_START - 1)):
@@ -216,11 +233,13 @@ def page_field() -> None:
         ss["history"] = [ss["hist_0"], ss["hist_1"]]
 
         st.markdown(f"### {t('current_plan', lang)}")
+        st.caption(t("current_plan_help", lang))
         pc = st.columns(4)
         for i, y in enumerate(range(state.PLAN_START, state.PLAN_START + state.HORIZON)):
             pc[i].selectbox(str(y), ids, key=f"plan_{i}", format_func=crop_label)
         ss["current_plan"] = [ss[f"plan_{i}"] for i in range(state.HORIZON)]
 
+      with st.container(key="bs-panel-water"):
         st.markdown(f"### {t('water_setup', lang)}")
         w1, w2, w3 = st.columns(3)
         w1.toggle(t("irrigated", lang), key="irrigated")
@@ -234,6 +253,7 @@ def page_field() -> None:
             if not ss["cap_unlimited"]:
                 c2.slider(t("water_cap", lang), 100.0, 1500.0, step=25.0, key="cap_val")
 
+      with st.container(key="bs-panel-cons"):
         st.markdown(f"### {t('constraints', lang)}")
         tags = sorted({crops[c].equipment for c in ids if crops[c].equipment})
         if tags:
@@ -246,18 +266,20 @@ def page_field() -> None:
         st.slider(t("min_forage", lang), 0.0, 1000.0, step=25.0, key="min_forage")
 
     with right:
+      with st.container(key="bs-panel-prio"):
         st.markdown(f"### {t('priorities', lang)}")
+        st.caption(t("priorities_help", lang))
         for k in ("income", "risk", "water", "soil", "forage"):
             st.slider(t(f"prio_{k}", lang), 0.0, 5.0, step=0.5, key=f"w_{k}")
+      with st.container(key="bs-panel-opts"):
         st.markdown(f"### {t('options', lang)}")
         st.toggle(t("cover_crop", lang), key="cover")
         st.toggle(t("respect_breaks", lang), key="breaks")
         st.multiselect(t("rule_packs", lang), list_rule_packs(), key="packs",
                        format_func=lambda p: load_rule_pack(p).name(lang))
-        _location_map(b)
+      _location_map(b)
 
-    st.markdown(f"### {t('verify_history', lang)}")
-    st.caption(t("verify_explain", lang))
+    ui.section(t("verify_history", lang), t("verify_explain", lang))
     _verify_history()
 
 
@@ -282,13 +304,15 @@ def _location_map(b) -> None:
     fig.add_trace(go.Scattermap(
         lat=[s.lat for s in b.sites], lon=[s.lon for s in b.sites], text=[s.name for s in b.sites],
         mode="markers+text", textposition="top right", marker=dict(size=10, color=ui.MUTED), hoverinfo="text",
+        textfont=dict(color=ui.INK, size=13),
     ))
     fig.add_trace(go.Scattermap(lat=[site.lat], lon=[site.lon], mode="markers",
-                                marker=dict(size=16, color=ui.WATER), hoverinfo="skip"))
-    fig.update_layout(map=dict(style="open-street-map", center=dict(lat=b.map_center[0], lon=b.map_center[1]),
+                                marker=dict(size=20, color=ui.NEON_YELLOW), hoverinfo="skip"))
+    fig.update_layout(map=dict(style="carto-darkmatter", center=dict(lat=b.map_center[0], lon=b.map_center[1]),
                                zoom=b.map_zoom - 0.5),
-                      height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False)
-    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
+                      height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False,
+                      paper_bgcolor="rgba(0,0,0,0)", font=dict(color=ui.INK))
+    ui.chart(fig, width="stretch", config={"displayModeBar": False})
 
 
 def _verify_history() -> None:
@@ -312,7 +336,10 @@ def _verify_history() -> None:
             t("detected", lang): t("group_" + got, lang),
             "": ("✅ " + t("match", lang)) if got == exp else ("⚠️ " + t("mismatch", lang) if got != "unknown" else "—"),
         })
-    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+    p = site_prov().get("ndvi")
+    if p is not None and not p.is_real:
+        ui.callout(ui.esc(t("ndvi_not_real", lang)), "warn")
+    ui.html_table(pd.DataFrame(rows))
     del sd
 
 
@@ -335,18 +362,28 @@ def page_status() -> None:
     sd = state.site_data()
     risk, trends = _status_data(state._site_key(site))
     nd = sd.ndvi
-    bare = bare_soil_by_month(nd)
+    nd_real = site_prov().get("ndvi") is not None and site_prov()["ndvi"].is_real
+    bare = bare_soil_by_month(nd) if nd_real else None
+    ui.page_intro(step_label(2), t("status_title", lang), t("status_intro", lang, site=site.name))
+    yrs = f"{sd.climate.index.min().year}–{sd.climate.index.max().year}"
+    p_year = sd.climate["precip"].resample("YS").sum(min_count=330).mean()
+    et_year = sd.et0.resample("YS").sum(min_count=330).mean()
+    ui.kpi_grid([
+        {"label": t("kpi_years", lang), "value": yrs, "sub": "NASA POWER", "tone": ui.YONDER},
+        {"label": t("kpi_rain", lang), "value": f"{num(p_year, lang)} mm", "sub": t("kpi_rain_sub", lang), "tone": ui.YONDER},
+        {"label": "ET₀", "value": f"{num(et_year, lang)} mm", "sub": t("kpi_et0_sub", lang), "tone": ui.NEON_YELLOW},
+        {"label": t("kpi_deficit", lang), "value": f"{num(et_year - p_year, lang)} mm", "sub": t("kpi_deficit_sub", lang), "tone": ui.ROCKET},
+    ])
 
-    st.markdown(f"### {t('risk_calendar', lang)}")
-    st.caption(t("risk_calendar_help", lang))
-    st.plotly_chart(ui.risk_heatmap(risk, bare, lang), width="stretch", config={"displayModeBar": False})
+    ui.section(t("risk_calendar", lang), t("risk_calendar_help", lang))
+    ui.chart(ui.risk_heatmap(risk, bare, lang), width="stretch", config={"displayModeBar": False})
 
     c1, c2 = st.columns(2, gap="large")
     with c1:
-        st.markdown(f"### {t('water_month', lang)}")
-        st.plotly_chart(ui.water_month_chart(risk, lang), width="stretch", config={"displayModeBar": False})
+        ui.section(t("water_month", lang), t("water_month_help", lang))
+        ui.chart(ui.water_month_chart(risk, lang), width="stretch", config={"displayModeBar": False})
     with c2:
-        st.markdown(f"### {t('trends', lang)}")
+        ui.section(t("trends", lang), t("trends_help", lang))
         rows = []
         for tr in trends:
             name = tr.name if lang == "tr" else {
@@ -358,46 +395,57 @@ def page_status() -> None:
                 ("10 yılda değişim" if lang == "tr" else "Change per decade"): f"{tr.slope_per_decade:+.2f} {tr.unit}",
                 ("İlk 10 yıl → son 10 yıl" if lang == "tr" else "First → last 10 yrs"): f"{num(tr.first_mean, lang, 1)} → {num(tr.last_mean, lang, 1)}",
                 "p": f"{tr.p_value:.3f}",
-                "": t("trend_sig", lang) if tr.significant else t("trend_nonsig", lang),
+                "": ("● " + t("trend_sig", lang)) if tr.significant else ("○ " + t("trend_nonsig", lang)),
             })
-        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+        ui.html_table(pd.DataFrame(rows), num_cols=("p",))
 
     c3, c4 = st.columns(2, gap="large")
     with c3:
-        st.markdown(f"### {t('ndvi_series', lang)}")
+        ui.section(t("ndvi_series", lang) + src_tag("ndvi"), t("ndvi_help", lang))
         if nd is not None and not nd.empty:
             recent = nd.loc[nd.index >= nd.index.max() - pd.Timedelta(days=365 * 6)]
             fig = go.Figure()
-            for src, color in (("MODIS", "#AEB8AC"), ("HLS", "#2E7D4F")):
+            for src, color in (("MODIS", ui.MUTED), ("HLS", ui.GREEN)):
                 s = recent[recent["source"] == src]
                 fig.add_scatter(x=s.index, y=s["ndvi"], mode="markers" if src == "HLS" else "lines",
                                 name=f"{src} ({'30 m' if src == 'HLS' else '250 m'}){src_tag('ndvi')}",
                                 marker=dict(size=4, color=color), line=dict(color=color))
-            st.plotly_chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
+            ui.chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
     with c4:
-        st.markdown(f"### {t('soil_moisture_series', lang)}")
+        ui.section(t("soil_moisture_series", lang) + src_tag("soil_moisture"), t("sm_help", lang))
         sm = sd.soil_moisture
         if sm is not None and not sm.empty:
             fig = go.Figure()
             fig.add_scatter(x=sm.index, y=sm["sm_rootzone"], mode="lines", name="0–100 cm" + src_tag("soil_moisture"),
                             line=dict(color=ui.WATER))
             fig.add_scatter(x=sm.index, y=sm["sm_surface"], mode="lines", name="0–5 cm",
-                            line=dict(color="#7FA7B8", width=1))
+                            line=dict(color=ui.MUTED, width=1))
             fig.update_yaxes(title="m³/m³")
-            st.plotly_chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
+            ui.chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
 
-    st.markdown(f"### {t('sat_vs_ground', lang)}")
+    ui.section(t("sat_vs_ground", lang), t("sat_vs_ground_help", lang))
     sat = sd.precip_sat
     if sat is not None and not sat.empty:
-        m_power = sd.climate["precip"].resample("MS").sum()
-        m_sat = sat["precip"].resample("MS").sum()
-        both = pd.concat([m_power.rename("power"), m_sat.rename("imerg")], axis=1).dropna().iloc[-72:]
+        raw = sd.precip_raw if sd.precip_raw is not None else sd.climate["precip"]
+        m_power = raw.resample("MS").sum()
+        m_sat = sat["precip"].astype(float).resample("MS").sum()
+        both = pd.concat([m_power.rename("power"), m_sat.rename("imerg"),
+                          sd.climate["precip"].resample("MS").sum().rename("corr")], axis=1, sort=True).dropna()
+        yearly = both.resample("YS").sum()
+        yearly = yearly[yearly.index.year < both.index.max().year]
         fig = go.Figure()
-        fig.add_bar(x=both.index, y=both["power"], name="NASA POWER (0.5°)" + src_tag("climate_daily"), marker_color="#AEB8AC")
-        fig.add_scatter(x=both.index, y=both["imerg"], name="GPM IMERG (0.1°)" + src_tag("precip_satellite"),
-                        mode="lines", line=dict(color=ui.WATER))
-        fig.update_yaxes(title="mm/ay" if lang == "tr" else "mm/month")
-        st.plotly_chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
+        fig.add_bar(x=yearly.index.year, y=yearly["power"], name="NASA POWER (MERRA-2, 0.5°)" + src_tag("climate_daily"),
+                    marker_color="rgba(154,170,203,0.55)")
+        fig.add_bar(x=yearly.index.year, y=yearly["imerg"], name="GPM IMERG (0.1°)" + src_tag("precip_satellite"),
+                    marker_color=ui.YONDER)
+        if sd.precip_raw is not None:
+            fig.add_scatter(x=yearly.index.year, y=yearly["corr"], name=t("corrected_series", lang), mode="lines+markers",
+                            line=dict(color=ui.NEON_YELLOW, width=3))
+        fig.update_layout(barmode="group")
+        fig.update_yaxes(title="mm/yıl" if lang == "tr" else "mm/yr")
+        ui.chart(ui._layout(fig, 340), width="stretch", config={"displayModeBar": False})
+        if sd.precip_raw is not None and sd.precip_ratio is not None:
+            ui.callout(t("precip_corr_note", lang, a=num(yearly["power"].mean(), lang), b=num(yearly["imerg"].mean(), lang)), "good")
         g = load_glossary()["satellite_vs_ground"][lang]
         st.caption(g["text"])
     else:
@@ -428,18 +476,40 @@ def page_plans() -> None:
     ctx, res = _get_result()
     if res is None:
         return
-    syn = any_synthetic(ctx.provenance)
+    syn = core_synthetic(ctx.provenance)
     crops = ctx.crops
     cur = res.options.get("current")
     if st.session_state.pop("demo_loaded", False):
         st.success(t("demo_loaded", lang))
+    ui.page_intro(step_label(3), t("plans_title", lang),
+                  t("plans_intro", lang, n=f"{res.n_total:,}".replace(",", "." if lang == "tr" else ","),
+                    w=len(ctx.windows()), f=f"{len(res.feasible):,}".replace(",", "." if lang == "tr" else ",")),
+                  [(ctx.site.name, ""), (f"{ctx.table.years.min()}–{ctx.table.years.max()}", "")])
 
     best = res.options.get("balance")
     if cur is not None and best is not None:
         txt = headline(cur, best, card_title("balance", ctx.settings.irrigated)[0], ctx.basin.currency_symbol,
                        ctx.settings.irrigated, lang, unit)
         cls = cur.detail["status"]
-        st.markdown(f'<div class="bs-headline {cls}">{txt}</div>', unsafe_allow_html=True)
+        icon = {"green": "✓", "yellow": "!", "red": "✕"}[cls]
+        st.markdown(f'<div class="bs-headline {cls}"><span class="ic">{icon}</span><span>{ui.esc(txt)}</span></div>',
+                    unsafe_allow_html=True)
+        n = headline_numbers(cur, best)
+        sym = ctx.basin.currency_symbol
+        f = area_factor(unit)
+        items = []
+        if ctx.settings.irrigated:
+            items.append({"label": t("kpi_water_saved", lang), "value": f"{num(n['water_saved'] * f, lang)} m³/{unit}",
+                          "sub": t("kpi_water_saved_sub", lang, pct=f"{n['water_saved_pct']:.0f}"), "tone": ui.YONDER})
+        items += [
+            {"label": t("kpi_support", lang), "value": f"{'+' if n['support_gain'] >= 0 else '−'}{num(abs(n['support_gain']) * f, lang)} {sym}/{unit}",
+             "sub": t("kpi_support_sub", lang), "tone": ui.GREEN},
+            {"label": t("kpi_bad", lang), "value": f"{'+' if n['bad_income_gain'] >= 0 else '−'}{num(abs(n['bad_income_gain']) * f, lang)} {sym}/{unit}",
+             "sub": t("kpi_bad_sub", lang), "tone": ui.NEON_YELLOW},
+            {"label": t("kpi_soil", lang), "value": f"{cur.metrics['soil']:.0f} → {best.metrics['soil']:.0f}",
+             "sub": t("kpi_soil_sub", lang), "tone": ui.GREEN},
+        ]
+        ui.kpi_grid(items)
 
     if cur is not None:
         chk = check_plan(list(cur.parts[0][0]), ctx.settings.plan_years, ctx.settings.history, ctx.crop_ids,
@@ -448,50 +518,52 @@ def page_plans() -> None:
             with st.container(border=True):
                 st.markdown(ui.status_html(chk.status, lang) + f" &nbsp; **{t('card_current', lang)}**",
                             unsafe_allow_html=True)
-                by_year: dict[int, list[str]] = {}
+                by_rule: dict[str, list[int]] = {}
                 for v in chk.legal:
                     rule_txt = v.text(lang).split(": ", 1)[-1]
-                    by_year.setdefault(v.year, [])
-                    if rule_txt not in by_year[v.year]:
-                        by_year[v.year].append(rule_txt)
+                    by_rule.setdefault(rule_txt, [])
+                    if v.year not in by_rule[rule_txt]:
+                        by_rule[rule_txt].append(v.year)
                 plan = list(cur.parts[0][0])
                 st.markdown("\n".join(
-                    f"- **{y} · {crops[plan[ctx.settings.plan_years.index(y)]].name(lang)}** — " + " ".join(rules)
-                    for y, rules in sorted(by_year.items())))
+                    f"- **{', '.join(f'{y} {crops[plan[ctx.settings.plan_years.index(y)]].name(lang)}' for y in sorted(ys))}** — {r}"
+                    for r, ys in by_rule.items()))
 
-    cols = st.columns(4, gap="medium")
+    ui.section(t("cards_title", lang), t("cards_help", lang))
+    cols = st.columns(4, gap="small")
     for col, key in zip(cols, CARD_ORDER):
         opt = res.options.get(key)
         if opt is None:
             continue
         with col:
-            title, sub = card_title(key, ctx.settings.irrigated)
-            if opt.is_mix:
-                sub = f"{sub} · {t('mix_note', lang)}"
-            ui.option_column(opt, title, sub, ctx, lang, unit, syn, current_key=key == "current")
-            with st.expander(t("why_title", lang)):
-                ui.why_panel(explain(opt, cur, ctx, ctx.provenance, lang, unit), lang)
+            with st.container(key=f"bs-card-{key}"):
+                title, sub = card_title(key, ctx.settings.irrigated)
+                if opt.is_mix:
+                    sub = f"{sub} · {t('mix_note', lang)}"
+                ui.option_column(opt, title, sub, ctx, lang, unit, syn, current_key=key == "current",
+                                 key=key, best=(key == "balance"))
+                with st.expander(t("why_title", lang)):
+                    ui.why_panel(explain(opt, cur, ctx, ctx.provenance, lang, unit), lang)
     st.markdown(ui.confidence_legend(lang, syn), unsafe_allow_html=True)
 
     if res.excluded_crops:
         st.caption(t("excluded_crops", lang) + ": " + ", ".join(
             f"{crops[c].name(lang)} ({t('why_' + why, lang)})" for c, why in res.excluded_crops.items()))
 
-    st.markdown(f"### {t('income_spread', lang)}")
-    st.caption(t("income_spread_help", lang))
+    ui.section(t("income_spread", lang), t("income_spread_help", lang))
     order = [(k, card_title(k, ctx.settings.irrigated)[0]) for k in CARD_ORDER]
-    st.plotly_chart(ui.income_box(res.options, crops, ctx, lang, unit, order), width="stretch",
+    ui.chart(ui.income_box(res.options, crops, ctx, lang, unit, order), width="stretch",
                     config={"displayModeBar": False})
 
     c1, c2 = st.columns([3, 2], gap="large")
     with c1:
-        st.markdown(f"### {t('calendar_strip', lang)}")
+        ui.section(t("calendar_strip", lang))
         pick = st.selectbox(" ", [k for k in CARD_ORDER if k in res.options],
                             format_func=lambda k: card_title(k, ctx.settings.irrigated)[0], key="cal_pick",
                             label_visibility="collapsed")
         opt = res.options[pick]
         cal = plan_calendar(list(opt.main_plan), ctx.settings.plan_years, crops, ctx.econ, ctx.basin)
-        st.plotly_chart(ui.calendar_chart(cal, crops, None, lang), width="stretch", config={"displayModeBar": False})
+        ui.chart(ui.calendar_chart(cal, crops, None, lang), width="stretch", config={"displayModeBar": False})
         st.caption(("Kalın şerit: sezon · kırmızı: sıcak stresine hassas dönem · mavi noktalı: dona hassas dönem"
                     if lang == "tr" else "Thick bar: season · red: heat-sensitive stage · blue dotted: frost-sensitive stage"))
         adv = check_plan(list(opt.main_plan), ctx.settings.plan_years, ctx.settings.history, ctx.crop_ids, crops,
@@ -500,24 +572,23 @@ def page_plans() -> None:
             st.markdown(f"**{t('advisories', lang)}**")
             st.markdown("\n".join(f"- {v.text(lang)}" for v in adv))
     with c2:
-        st.markdown(f"### {t('cover_tradeoff', lang)}")
-        st.caption(t("cover_tradeoff_help", lang))
+        ui.section(t("cover_tradeoff", lang), t("cover_tradeoff_help", lang))
         _cover_tradeoff(res.options["balance"], unit)
 
     with st.expander(t("pareto_title", lang)):
         st.caption(t("pareto_help", lang, n=res.n_total, f=len(res.feasible), p=len(res.pareto)))
         labels = {k: card_title(k, ctx.settings.irrigated)[0] for k in res.options}
-        st.plotly_chart(ui.pareto_chart(res, res.options, labels, ctx, unit, lang), width="stretch")
+        ui.chart(ui.pareto_chart(res, res.options, labels, ctx, unit, lang), width="stretch")
         f = area_factor(unit)
-        top = res.pareto.sort_values("score", ascending=False).head(25)
-        st.dataframe(pd.DataFrame({
+        top = res.pareto.sort_values("score", ascending=False).head(15)
+        cols_num = (t("mean_income", lang), t("bad_income", lang), t("water_use", lang), t("soil_health", lang))
+        ui.html_table(pd.DataFrame({
             "Plan": [" → ".join(crops[c].name(lang) for c in p) for p in top["plan"]],
-            t("mean_income", lang): (top["mean_margin"] * f).round(0),
-            t("bad_income", lang): (top["cvar5"] * f).round(0),
-            t("water_use", lang): (top["water_mean"] * f).round(0),
-            t("soil_health", lang): top["soil"].round(0),
-            t("forage", lang): top["forage"].round(0),
-        }), hide_index=True, width="stretch")
+            cols_num[0]: [num(v, lang) for v in top["mean_margin"] * f],
+            cols_num[1]: [num(v, lang) for v in top["cvar5"] * f],
+            cols_num[2]: [num(v, lang) for v in top["water_mean"] * f],
+            cols_num[3]: [f"{v:.0f}" for v in top["soil"]],
+        }), num_cols=cols_num, max_height=520)
 
 
 def _cover_tradeoff(opt: PlanOption, unit: str) -> None:
@@ -539,8 +610,8 @@ def _cover_tradeoff(opt: PlanOption, unit: str) -> None:
         rows.insert(1, (t("water_use", lang), water(a["summary"]["water_mean"], unit, lang), water(c["summary"]["water_mean"], unit, lang)))
     else:
         rows.insert(1, (t("bad_income", lang), money(a["summary"]["cvar5"], sym, unit, lang), money(c["summary"]["cvar5"], sym, unit, lang)))
-    st.dataframe(pd.DataFrame(rows, columns=["", "Örtüsüz" if lang == "tr" else "Without", "Örtülü" if lang == "tr" else "With"]),
-                 hide_index=True, width="stretch")
+    ui.html_table(pd.DataFrame(rows, columns=["", "Örtüsüz" if lang == "tr" else "Without", "Örtülü" if lang == "tr" else "With"]),
+                  num_cols=("Örtüsüz", "Örtülü", "Without", "With"))
 
 
 # ---------------------------------------------------------------------------
@@ -552,7 +623,7 @@ def page_futures() -> None:
     ctx, res = _get_result()
     if res is None or "current" not in res.options:
         return
-    st.markdown(f"## {t('futures_title', lang)}")
+    ui.page_intro(step_label(4), t("futures_title", lang), t("futures_intro", lang))
     pick = st.radio(t("futures_pick", lang), ["balance", "profit", "aquifer"], horizontal=True,
                     format_func=lambda k: card_title(k, ctx.settings.irrigated)[0], key="fut_pick")
     cur, new = res.options["current"], res.options[pick]
@@ -561,9 +632,9 @@ def page_futures() -> None:
     sym = ctx.basin.currency_symbol
 
     c1, c2 = st.columns(2, gap="large")
-    for col, opt, title in ((c1, cur, t("future_habit", lang)), (c2, new, t("future_basinshift", lang))):
-        with col:
-            st.markdown(f"### {title}")
+    for col, opt, title, k in ((c1, cur, t("future_habit", lang), "current"), (c2, new, t("future_basinshift", lang), pick)):
+        with col, st.container(key=f"bs-card-{k}"):
+            st.markdown(ui.card_header(k, title, option_text(opt.parts, ctx.crops, lang)), unsafe_allow_html=True)
             st.markdown(ui.status_html(opt.detail["status"], lang)
                         + ui.strip_html(opt.parts, years, ctx.crops, lang,
                                         [i for i, v in enumerate(opt.detail.get("legal_viol", [])) if v] if not opt.is_mix else []),
@@ -572,22 +643,25 @@ def page_futures() -> None:
     d_water = (new.metrics["water_total"] - cur.metrics["water_total"]) * f
     d_sup = (new.detail["sim"]["support"].sum(axis=1).mean() - cur.detail["sim"]["support"].sum(axis=1).mean()) * f
     d_inc = (new.metrics["mean_margin"] - cur.metrics["mean_margin"]) * 4 * f
-    k1, k2, k3 = st.columns(3)
+    items = []
     if ctx.settings.irrigated:
-        k1.markdown(f'<div class="bs-big water">{d_water:+,.0f} m³/{unit}</div><div class="bs-big-label">{t("water_saved_4y", lang)}</div>'.replace(",", "." if lang == "tr" else ","),
-                    unsafe_allow_html=True)
-    k2.markdown(f'<div class="bs-big">{d_sup:+,.0f} {sym}/{unit}</div><div class="bs-big-label">{t("support_kept", lang)}</div>'.replace(",", "." if lang == "tr" else ","),
-                unsafe_allow_html=True)
-    k3.markdown(f'<div class="bs-big">{d_inc:+,.0f} {sym}/{unit}</div><div class="bs-big-label">{("4 yılda ortalama kâr farkı" if lang == "tr" else "Average margin difference over 4 years")}</div>'.replace(",", "." if lang == "tr" else ","),
-                unsafe_allow_html=True)
+        items.append({"label": t("water_saved_4y", lang), "value": f"{'+' if d_water >= 0 else '−'}{num(abs(d_water), lang)} m³/{unit}",
+                      "sub": t("fut_water_sub", lang), "tone": ui.YONDER})
+    items += [
+        {"label": t("support_kept", lang), "value": f"{'+' if d_sup >= 0 else '−'}{num(abs(d_sup), lang)} {sym}/{unit}",
+         "sub": t("fut_support_sub", lang), "tone": ui.GREEN},
+        {"label": t("fut_margin", lang), "value": f"{'+' if d_inc >= 0 else '−'}{num(abs(d_inc), lang)} {sym}/{unit}",
+         "sub": t("fut_margin_sub", lang), "tone": ui.NEON_YELLOW},
+    ]
+    ui.kpi_grid(items)
 
-    dets = [(t("future_habit", lang), cur.detail, ui.MUTED), (t("future_basinshift", lang), new.detail, "#2E7D4F")]
-    st.markdown(f"### {t('income_band', lang)}")
-    st.plotly_chart(ui.band_chart(dets, "margin", years, f, f"{sym}/{unit}"), width="stretch", config={"displayModeBar": False})
+    dets = [(t("future_habit", lang), cur.detail, ui.MUTED), (t("future_basinshift", lang), new.detail, ui.GREEN)]
+    ui.section(t("income_band", lang), t("band_help", lang))
+    ui.chart(ui.band_chart(dets, "margin", years, f, f"{sym}/{unit}"), width="stretch", config={"displayModeBar": False})
     if ctx.settings.irrigated:
-        st.markdown(f"### {t('water_band', lang)}")
-        dets_w = [(n, d, c if c != "#2E7D4F" else ui.WATER) for n, d, c in dets]
-        st.plotly_chart(ui.band_chart(dets_w, "water_m3", years, f, f"m³/{unit}"), width="stretch", config={"displayModeBar": False})
+        ui.section(t("water_band", lang))
+        dets_w = [(n, d, c if c != ui.GREEN else ui.WATER) for n, d, c in dets]
+        ui.chart(ui.band_chart(dets_w, "water_m3", years, f, f"m³/{unit}"), width="stretch", config={"displayModeBar": False})
     st.caption(t("futures_scenario", lang))
 
 
@@ -600,30 +674,29 @@ def page_basin() -> None:
     b = state.current_basin()
     hub = state.get_hub()
     f = area_factor(unit)
-    st.markdown(f"## {t('basin_title', lang)}")
+    ui.page_intro(step_label(5), t("basin_title", lang), t("basin_intro", lang))
 
     c1, c2 = st.columns([3, 2], gap="large")
     with c1:
-        st.markdown(f"### {t('grace_title', lang)}")
+        ui.section(t("grace_title", lang) + src_tag("water_storage"), t("grace_note", lang))
         ws = hub.water_storage(b)
         wp = hub.records.get(("water_storage", b.id))
         if wp is not None and not wp.is_real:
-            st.caption(("Kaynak: " if lang == "tr" else "Source: ") + wp.label(lang)
-                       + (" — " + wp.warning_texts(lang, 1)[0][:200] if wp.warnings else ""))
+            ui.callout(ui.esc(("Kaynak: " if lang == "tr" else "Source: ") + wp.label(lang)), "warn")
         if ws is not None and not ws.empty:
-            full = ws.reindex(pd.date_range(ws.index.min(), ws.index.max(), freq="MS"))
+            full = ws[["tws_anomaly_cm"]].astype(float).resample("MS").mean()
             fig = go.Figure()
             fig.add_scatter(x=full.index, y=full["tws_anomaly_cm"], mode="lines", line=dict(color=ui.WATER, width=2),
-                            name="TWS", connectgaps=False)
+                            name=("Toplam su deposu anomalisi" if lang == "tr" else "Total water storage anomaly"),
+                            connectgaps=False, fill="tozeroy", fillcolor="rgba(46,150,245,0.12)")
             x = (ws.index - ws.index[0]).days / 365.25
             k, c0 = np.polyfit(x, ws["tws_anomaly_cm"], 1)
-            fig.add_scatter(x=ws.index, y=c0 + k * x, mode="lines", line=dict(color=ui.INK, dash="dash", width=1),
+            fig.add_scatter(x=ws.index, y=c0 + k * x, mode="lines", line=dict(color=ui.NEON_YELLOW, dash="dash", width=2),
                             name=(f"Eğilim {k:+.1f} cm/yıl" if lang == "tr" else f"Trend {k:+.1f} cm/yr"))
             fig.update_yaxes(title="cm")
-            st.plotly_chart(ui._layout(fig, 320), width="stretch", config={"displayModeBar": False})
-            st.caption(t("grace_note", lang))
+            ui.chart(ui._layout(fig, 330), width="stretch", config={"displayModeBar": False})
     with c2:
-        st.markdown(f"### {t('sinkholes', lang) if b.id == 'konya' else b.name(lang)}")
+        ui.section(t("sinkholes", lang) if b.id == "konya" else b.name(lang))
         for fact in b.facts(lang):
             st.markdown(f'<div class="bs-fact">{fact}</div>', unsafe_allow_html=True)
         sink = Path(hub.cfg["data"]["files_dir"]) / "sinkholes.csv"
@@ -632,56 +705,54 @@ def page_basin() -> None:
                 df = pd.read_csv(sink)
                 fig = go.Figure(go.Scattermap(lat=df["lat"], lon=df["lon"], mode="markers",
                                               marker=dict(size=6, color=df.get("year", 0), colorscale="Reds")))
-                fig.update_layout(map=dict(style="open-street-map", center=dict(lat=b.map_center[0], lon=b.map_center[1]), zoom=7),
+                fig.update_layout(map=dict(style="carto-darkmatter", center=dict(lat=b.map_center[0], lon=b.map_center[1]), zoom=7),
                                   height=280, margin=dict(l=0, r=0, t=0, b=0))
-                st.plotly_chart(fig, width="stretch")
+                ui.chart(fig, width="stretch")
             else:
                 st.caption(t("sinkholes_missing", lang))
 
     frac = st.slider(t("sust_fraction", lang), 0.4, 1.0, value=float(b.sustainable_water_fraction), step=0.05, key="sust_frac")
     with st.spinner(t("computing", lang)):
         r = state.basin_result(frac)
-    # st.caption(t("basin_synthetic", lang))
+    ui.callout("<b>" + ui.esc(t("basin_synthetic_title", lang)) + "</b> " + ui.esc(t("basin_synthetic", lang)), "warn")
 
     sym = r.currency_symbol
     m = r.metrics
     labels = {"current": t("scen_current", lang), "uncoordinated": t("scen_uncoord", lang), "coordinated": t("scen_coord", lang)}
-    colors = {"current": ui.MUTED, "uncoordinated": "#B3392F", "coordinated": "#2E7D4F"}
+    colors = {"current": ui.MUTED, "uncoordinated": ui.ROCKET, "coordinated": ui.GREEN}
+    total_area = sum(ft.area_da for ft in r.farm_types)
+    kp = [
+        {"label": t("poa", lang), "value": money(r.price_of_anarchy_income / total_area, sym, unit, lang),
+         "sub": t("poa_kpi_sub", lang, wat=water(r.price_of_anarchy_water / total_area, unit, lang)), "tone": ui.ROCKET},
+    ]
+    if np.isfinite(r.shadow_price_water):
+        kp.append({"label": t("shadow", lang), "value": f"{num(r.shadow_price_water, lang, 2)} {sym}/m³",
+                   "sub": t("shadow_kpi_sub", lang), "tone": ui.YONDER})
+    kp.append({"label": t("budget_kpi", lang), "value": f"%{frac * 100:.0f}" if lang == "tr" else f"{frac * 100:.0f}%",
+               "sub": t("budget_kpi_sub", lang), "tone": ui.NEON_YELLOW})
+    ui.kpi_grid(kp)
+    for n in r.notes:
+        ui.callout(ui.esc(loc(n, lang)), "warn")
     g1, g2 = st.columns(2, gap="large")
     with g1:
-        st.markdown(f"### {t('income_per_area', lang)}")
-        fig = go.Figure(go.Bar(x=[labels[i] for i in m.index], y=m["income_per_da"] * f,
-                               marker_color=[colors[i] for i in m.index]))
-        fig.update_yaxes(title=f"{sym}/{unit}/{'yıl' if lang == 'tr' else 'yr'}")
-        st.plotly_chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
+        ui.section(t("income_per_area", lang))
+        ui.chart(ui.bar_compare([labels[i] for i in m.index], list(m["income_per_da"] * f), [colors[i] for i in m.index],
+                                       f"{sym}/{unit}/{'yıl' if lang == 'tr' else 'yr'}", lang=lang),
+                        width="stretch", config={"displayModeBar": False})
     with g2:
-        st.markdown(f"### {t('water_per_area', lang)}")
-        fig = go.Figure(go.Bar(x=[labels[i] for i in m.index], y=m["water_per_da"] * f,
-                               marker_color=[colors[i] for i in m.index]))
-        total_area = sum(ft.area_da for ft in r.farm_types)
-        fig.add_hline(y=r.water_budget_m3 / total_area * f, line_dash="dash", line_color=ui.WATER,
-                      annotation_text=("Sürdürülebilir bütçe" if lang == "tr" else "Sustainable budget"))
-        fig.update_yaxes(title=f"m³/{unit}/{'yıl' if lang == 'tr' else 'yr'}")
-        st.plotly_chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
-
-    total_area = sum(ft.area_da for ft in r.farm_types)
-    k1, k2 = st.columns(2, gap="large")
-    with k1:
-        st.markdown(f"### {t('poa', lang)}")
-        inc = money(r.price_of_anarchy_income / total_area, sym, unit, lang)
-        wat = water(r.price_of_anarchy_water / total_area, unit, lang)
-        st.markdown(t("poa_text", lang, inc=inc, wat=wat))
-    with k2:
-        st.markdown(f"### {t('shadow', lang)}")
-        if np.isfinite(r.shadow_price_water):
-            st.markdown(f'<div class="bs-big water">{num(r.shadow_price_water, lang, 2)} {sym}/m³</div>', unsafe_allow_html=True)
-            st.markdown(t("shadow_text", lang, v=f"{num(r.shadow_price_water, lang, 2)} {sym}"))
-        for n in r.notes:
-            st.warning(loc(n, lang))
+        ui.section(t("water_per_area", lang))
+        ui.chart(ui.bar_compare([labels[i] for i in m.index], list(m["water_per_da"] * f), [colors[i] for i in m.index],
+                                       f"m³/{unit}/{'yıl' if lang == 'tr' else 'yr'}",
+                                       hline=r.water_budget_m3 / total_area * f,
+                                       hline_text=("Sürdürülebilir bütçe" if lang == "tr" else "Sustainable budget"), lang=lang),
+                        width="stretch", config={"displayModeBar": False})
+    st.markdown(t("poa_text", lang, inc=money(r.price_of_anarchy_income / total_area, sym, unit, lang),
+                  wat=water(r.price_of_anarchy_water / total_area, unit, lang)) + " "
+                + (t("shadow_text", lang, v=f"{num(r.shadow_price_water, lang, 2)} {sym}") if np.isfinite(r.shadow_price_water) else ""))
 
     h1, h2 = st.columns(2, gap="large")
     with h1:
-        st.markdown(f"### {t('cobweb_title', lang)}")
+        ui.section(t("cobweb_title", lang), t("cobweb_help", lang))
         crops = load_crops()
         pp = r.price_path
         movers = pp.std().sort_values(ascending=False).head(4).index
@@ -690,19 +761,21 @@ def page_basin() -> None:
             fig.add_scatter(x=pp.index, y=pp[c] * 100, mode="lines+markers", name=crops[c].name(lang),
                             line=dict(color=crops[c].color, width=2))
         fig.add_hline(y=100, line_color=ui.MUTED, line_dash="dot")
+        fig.update_traces(line_shape="spline")
         fig.update_yaxes(title=("Fiyat endeksi (bugün = 100)" if lang == "tr" else "Price index (today = 100)"))
-        st.plotly_chart(ui._layout(fig, 320), width="stretch", config={"displayModeBar": False})
+        ui.chart(ui._layout(fig, 320), width="stretch", config={"displayModeBar": False})
     with h2:
-        st.markdown(f"### {t('budget_curve', lang)}")
+        ui.section(t("budget_curve", lang), t("budget_curve_help", lang))
         bc = r.budget_curve
         if not bc.empty:
             fig = go.Figure(go.Scatter(x=bc["fraction"] * 100, y=bc["shadow_price"], mode="lines+markers",
-                                       line=dict(color=ui.WATER, width=3)))
+                                       line=dict(color=ui.WATER, width=3, shape="spline"), fill="tozeroy",
+                                       fillcolor="rgba(46,150,245,0.12)"))
             fig.update_xaxes(title=("Su bütçesi (bugünkü çekimin %)" if lang == "tr" else "Water budget (% of today)"))
             fig.update_yaxes(title=f"{sym}/m³")
-            st.plotly_chart(ui._layout(fig, 320), width="stretch", config={"displayModeBar": False})
+            ui.chart(ui._layout(fig, 320), width="stretch", config={"displayModeBar": False})
 
-    st.markdown(f"### {t('pattern_title', lang)}")
+    ui.section(t("pattern_title", lang), t("pattern_help", lang))
     crops = load_crops()
     fig = go.Figure()
     scen_rows = [(t("scen_current", lang), r.current), (t("scen_uncoord", lang), r.uncoordinated_last),
@@ -713,70 +786,60 @@ def page_basin() -> None:
             continue
         fig.add_bar(y=[n for n, _ in scen_rows], x=vals, name=crops[cid].name(lang), orientation="h",
                     marker_color=crops[cid].color)
-    fig.update_layout(barmode="stack")
+    fig.update_layout(barmode="stack", bargap=0.35)
     fig.update_xaxes(title="%")
-    st.plotly_chart(ui._layout(fig, 280), width="stretch", config={"displayModeBar": False})
+    ui.chart(ui._layout(fig, 300), width="stretch", config={"displayModeBar": False})
+    _trade_section(b, lang, unit)
 
-    # -----------------------------------------------------------------------
-    # Küresel Ticaret, İhracat/İthalat ve Emtia Piyasası Karşılaştırması
-    # -----------------------------------------------------------------------
-    st.markdown("---")
-    st.markdown(f"### {t('trade_section_title', lang)}")
-    st.markdown(f'<p class="bs-tagline">{t("trade_section_sub", lang)}</p>', unsafe_allow_html=True)
 
-    from ..knowledge.tables import load_commodity_trade
+def _trade_section(b, lang: str, unit: str) -> None:
+    """Ürün kararını ulusal ticaret dengesiyle ilişkilendirir. Su rakamları SABİT TABLO DEĞİL,
+    seçili tarlanın stres testinden gelir (aynı modelle, çelişkisiz)."""
     tdf = load_commodity_trade(b.id)
-    if not tdf.empty:
-        tc1, tc2, tc3, tc4 = st.columns(4)
-        with tc1:
-            st.markdown(f'<div class="bs-headline" style="font-size:0.88rem; padding:0.6rem 0.8rem; border-left-color:#2E96F5; line-height:1.35;">🌾 {t("trade_wheat_card", lang)}</div>', unsafe_allow_html=True)
-        with tc2:
-            st.markdown(f'<div class="bs-headline" style="font-size:0.88rem; padding:0.6rem 0.8rem; border-left-color:#EAFE07; line-height:1.35;">🌻 {t("trade_oil_card", lang)}</div>', unsafe_allow_html=True)
-        with tc3:
-            st.markdown(f'<div class="bs-headline red" style="font-size:0.88rem; padding:0.6rem 0.8rem; line-height:1.35;">🌽 {t("trade_corn_card", lang)}</div>', unsafe_allow_html=True)
-        with tc4:
-            st.markdown(f'<div class="bs-headline" style="font-size:0.88rem; padding:0.6rem 0.8rem; border-left-color:#00D26A; line-height:1.35;">🫘 {t("trade_pulse_card", lang)}</div>', unsafe_allow_html=True)
+    if tdf.empty:
+        return
+    ui.section(t("trade_section_title", lang), t("trade_section_sub", lang))
+    try:
+        ctx = state.context()
+    except Exception:  # noqa: BLE001 — bağlam kurulamazsa yalnızca nitel tablo
+        ctx = None
+    econ = load_economics(b.id)
+    crops = load_crops()
+    f = area_factor(unit)
+    rows, bars = [], []
+    for _, row in tdf.iterrows():
+        cid = row["crop_id"]
+        blue_da = per_t = None
+        if ctx is not None and cid in ctx.crop_ids and ctx.settings.irrigated:
+            i = ctx.table.index(cid)
+            blue_da = float(ctx.table.ir_net[i].mean() / ctx.settings.efficiency)
+            ym = econ[cid].ym_kg_da if cid in econ else None
+            per_t = blue_da / (ym / 1000) if ym else None
+            bars.append((crops[cid].name(lang), blue_da * f, crops[cid].color))
+        price = econ[cid].price_per_kg if cid in econ else None
+        rows.append({
+            t("col_crop", lang): crops[cid].name(lang) if cid in crops else cid,
+            t("col_group", lang): row[f"market_group_{lang}"],
+            t("col_local_price", lang): f"{num(price, lang, 2)} {b.currency_symbol}/kg" if price else "—",
+            t("col_trade_status", lang): row[f"trade_status_{lang}"],
+            t("col_blue_da", lang): f"{num(blue_da * f, lang)}" if blue_da is not None else "—",
+            t("col_blue_t", lang): f"{num(per_t, lang)}" if per_t is not None else "—",
+            t("col_source", lang): row["source"],
+        })
+    ui.html_table(pd.DataFrame(rows), num_cols=(t("col_local_price", lang), t("col_blue_da", lang), t("col_blue_t", lang)),
+                  small_cols=(t("col_source", lang),))
+    left, right = st.columns([3, 2], gap="large")
+    with right:
+        ui.callout(ui.esc(t("trade_note", lang)), "")
+    with left:
+        if bars:
+            bars.sort(key=lambda x: x[1])
+            fig = go.Figure(go.Bar(x=[v for _, v, _ in bars], y=[n for n, _, _ in bars], orientation="h",
+                                   marker=dict(color=[c for _, _, c in bars]),
+                                   text=[num(v, lang) for _, v, _ in bars], textposition="outside", cliponaxis=False))
+            fig.update_xaxes(title=f"m³/{unit} · " + ("tam sulama, kuyu suyu" if lang == "tr" else "full irrigation, groundwater"))
+            ui.chart(ui._layout(fig, 360, showlegend=False), width="stretch", config={"displayModeBar": False})
 
-        t_left, t_right = st.columns([3, 2], gap="large")
-        with t_left:
-            table_rows = []
-            for _, row in tdf.iterrows():
-                c_name = row["commodity_name_tr"] if lang == "tr" else row["commodity_name_en"]
-                c_grp = row["market_group_tr"] if lang == "tr" else row["market_group_en"]
-                l_pr = f"{row['local_price']:.2f} {b.currency_symbol}/kg"
-                g_pr = f"${row['global_price_usd_ton']:.0f}/ton"
-                tr_st = row["trade_status_tr"] if lang == "tr" else row["trade_status_en"]
-                vw = f"{row['virtual_water_m3_ton']} m³/ton"
-                table_rows.append({
-                    t("col_crop", lang): c_name,
-                    t("col_group", lang): c_grp,
-                    t("col_local_price", lang): l_pr,
-                    t("col_global_price", lang): g_pr,
-                    t("col_trade_status", lang): tr_st,
-                    t("col_virtual_water", lang): vw,
-                })
-            disp_df = pd.DataFrame(table_rows)
-            try:
-                st.dataframe(disp_df, width="stretch", hide_index=True)
-            except TypeError:
-                st.dataframe(disp_df, use_container_width=True, hide_index=True)
-
-        with t_right:
-            vw_names = [row["commodity_name_tr"] if lang == "tr" else row["commodity_name_en"] for _, row in tdf.iterrows()]
-            vw_vals = [row["virtual_water_m3_ton"] for _, row in tdf.iterrows()]
-            vw_colors = ["#E43700" if v > 1500 else ("#2E96F5" if v < 1000 else "#EAFE07") for v in vw_vals]
-            fig_vw = go.Figure(go.Bar(
-                x=vw_vals, y=vw_names, orientation="h", marker_color=vw_colors,
-                text=[f"{v} m³" for v in vw_vals], textposition="auto",
-            ))
-            fig_vw.update_layout(
-                title=dict(text=("Sanal Su Maliyeti (m³/ton)" if lang == "tr" else "Virtual Water Footprint (m³/ton)"),
-                           font=dict(size=14, color=ui.INK)),
-                margin=dict(l=10, r=10, t=35, b=10),
-            )
-            fig_vw.update_xaxes(title="m³/ton", gridcolor="rgba(255,255,255,0.08)", tickfont=dict(color=ui.MUTED))
-            fig_vw.update_yaxes(autorange="reversed", gridcolor="rgba(255,255,255,0.08)", tickfont=dict(color=ui.INK))
-            st.plotly_chart(ui._layout(fig_vw, 320), width="stretch", config={"displayModeBar": False})
 
 
 # ---------------------------------------------------------------------------
@@ -790,8 +853,7 @@ def page_report() -> None:
     ctx, res = _get_result()
     if res is None:
         return
-    st.markdown(f"## {t('report_title', lang)}")
-    st.caption(t("report_help", lang))
+    ui.page_intro(step_label(6), t("report_title", lang), t("report_help", lang))
     keys = [k for k in ("balance", "profit", "aquifer", "current") if k in res.options]
     pick = st.radio(t("report_pick", lang), keys, horizontal=True,
                     format_func=lambda k: card_title(k, ctx.settings.irrigated)[0], key="rep_pick")
@@ -804,10 +866,15 @@ def page_report() -> None:
     expl = explain(opt, res.options.get("current"), ctx, ctx.provenance, lang, unit)
     pdf = build_scorecard_pdf(opt, res.options.get("current"), ctx, expl, ctx.provenance, lang, unit,
                               farmer=name, field_area=area, title=card_title(pick, ctx.settings.irrigated)[0])
-    st.download_button(t("download_pdf", lang), pdf, file_name=f"basinshift_karne_{ctx.site.id}_{pick}.pdf",
+    st.download_button("⬇ " + t("download_pdf", lang), pdf, file_name=f"basinshift_karne_{ctx.site.id}_{pick}.pdf",
                        mime="application/pdf", type="primary")
-    ui.option_column(opt, card_title(pick, ctx.settings.irrigated)[0], option_text(opt.parts, ctx.crops, lang),
-                     ctx, lang, unit, any_synthetic(ctx.provenance))
+    a, bcol = st.columns([2, 3], gap="large")
+    with a, st.container(key=f"bs-card-{pick}"):
+        ui.option_column(opt, card_title(pick, ctx.settings.irrigated)[0], option_text(opt.parts, ctx.crops, lang),
+                         ctx, lang, unit, core_synthetic(ctx.provenance), key=pick)
+    with bcol:
+        ui.section(t("why_title", lang))
+        ui.why_panel(expl, lang)
 
 
 # ---------------------------------------------------------------------------
@@ -816,33 +883,33 @@ def page_report() -> None:
 def page_method() -> None:
     lang = L()
     hub = state.get_hub()
-    st.markdown(f"## {t('method_title', lang)}")
+    ui.page_intro(step_label(7), t("method_title", lang), t("method_intro", lang))
     prov = all_prov()
     rows = []
     for ds, spec in SPECS.items():
         p = prov.get(ds)
         rows.append({
             t("col_dataset", lang): t("ds_" + ds, lang),
-            t("col_product", lang): loc(spec.product, lang),
+            t("col_status", lang): ui.data_chip(p.status, lang) if p else "—",
+            t("col_product", lang): loc(p.product if p and p.product else spec.product, lang),
             t("col_resolution", lang): loc(spec.resolution, lang),
-            t("col_source", lang): (p.label(lang) + (" (cache)" if p.from_cache else "")) if p else "—",
             t("col_scale", lang): spec.use_scale_tr if lang == "tr" else spec.use_scale_en,
             t("col_notes", lang): " ".join(p.messages(lang, 2)) if p else "",
         })
-    st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+    ui.html_table(pd.DataFrame(rows), small_cols=(t("col_notes", lang), t("col_scale", lang)), html_cols=(t("col_status", lang),))
 
-    st.markdown(f"### {t('assumptions', lang)}")
+    ui.section(t("assumptions", lang), t("assumptions_help", lang))
     names = {
         "water": ("Su ihtiyacı", "Water need"), "yield": ("Verim", "Yield"), "risk": ("Risk (kötü dönem)", "Risk (bad periods)"),
         "income": ("Gelir", "Income"), "soil": ("Toprak sağlığı", "Soil health"), "support": ("Destek ve kurallar", "Support and rules"),
         "basin": ("Havza modeli", "Basin model"),
     }
-    st.dataframe(pd.DataFrame([
+    ui.html_table(pd.DataFrame([
         {("Sonuç" if lang == "tr" else "Result"): names[k][0 if lang == "tr" else 1],
-         ("Güven" if lang == "tr" else "Confidence"): conf_label(v[0], lang),
+         ("Güven" if lang == "tr" else "Confidence"): {"high": "●●●", "medium": "●●○", "low": "●○○"}[v[0]] + " " + conf_label(v[0], lang),
          ("Neden" if lang == "tr" else "Why"): v[1] if lang == "tr" else v[2]}
         for k, v in METHOD_CONFIDENCE.items()
-    ]), hide_index=True, width="stretch")
+    ]))
     st.markdown(
         "- " + ("Sıcak stresi: hassas dönemde Tmax ürün eşiğini ve yerel 90. yüzdeliği aşınca günde −%1,5; don −%3; hasatta >25 mm yağış −%2; toplam en fazla −%50."
                 if lang == "tr" else "Heat stress: −1.5%/day when Tmax exceeds both the crop threshold and the local 90th percentile in the sensitive stage; frost −3%; >25 mm rain at harvest −2%; capped at −50%.")
@@ -854,7 +921,7 @@ def page_method() -> None:
                     if lang == "tr" else "Crop coefficients, prices and rotation effects live in tables/ and can be edited without code.")
     )
 
-    st.markdown(f"### {t('not_used', lang)}")
+    ui.section(t("not_used", lang))
     st.markdown(
         "- **OpenET**: " + ("Türkiye'yi kapsamıyor (ABD ve Brezilya pilotu)." if lang == "tr" else "Does not cover Türkiye (US and Brazil pilot).")
         + "\n- **GRACE " + ("tarla ölçeğinde" if lang == "tr" else "at field scale") + "**: " + ("~300 km çözünürlük; yalnızca havza bağlamı." if lang == "tr" else "~300 km resolution; basin context only.")
@@ -862,13 +929,13 @@ def page_method() -> None:
         + "\n- **" + ("Karbon sertifikası" if lang == "tr" else "Carbon certificate") + "**: " + ("Toprak karbonu değişimi 1–3 yılda uydudan doğrulanamaz." if lang == "tr" else "Soil carbon change cannot be verified from space in 1–3 years.")
     )
 
-    st.markdown(f"### {t('glossary', lang)}")
+    ui.section(t("glossary", lang))
     for _, entry in load_glossary().items():
         e = entry[lang]
         with st.expander(e["term"]):
             st.write(e["text"])
 
-    st.markdown(f"### {t('how_switch', lang)}")
+    ui.section(t("how_switch", lang))
     st.code(("veri_indir.bat        # Windows: gerçek NASA verisini indirir, kontrol eder, config.yaml'ı günceller\n"
              "python scripts/setup_real_data.py   # aynı işin komut satırı hali\n# ayrıntı: docs/DATA_SWAP.md") if lang == "tr" else
             ("veri_indir.bat        # Windows: downloads real NASA data, checks it, updates config.yaml\n"

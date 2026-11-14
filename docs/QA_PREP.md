@@ -6,8 +6,15 @@ Proje planı bölüm 21 ve kılavuz bölüm 12 temel alındı; uygulamanın bug�
 ## Veri
 
 **Bu veri gerçek mi?**
-Kenar çubuğunda "N / 8 veri seti gerçek veriden" yazıyor ve her veri setinin kaynağı açılır listede. Sentetik kalanlar
-sarı şeritle ve PDF karnede uyarıyla işaretli. (Sunumdan önce bu sayıya bakın ve aynısını söyleyin.)
+Teslim halinde **4 / 8 gerçek**: NASA POWER (iklim), GPM IMERG (uydu yağışı), GRACE/GRACE-FO (havza su deposu) ve
+NEX-GDDP-CMIP6 (2040'lar). SoilGrids Karapınar ve Cihanbeyli için gerçek; Çumra'da nokta kil/kum döndürmediği için elle
+girildi (varsayım). SMAP ve HLS/MODIS **sentetik yer tutucu** (AppEEARS siparişleri indirilmedi); SMAP hesaba girmiyor,
+NDVI yalnızca grafik. SRTM eğimi elle girildi. Bu durum `data/external/KAYNAK.yaml`'da beyan edilir; kökeni yazılmayan
+dosya "doğrulanmamış" görünür. Kenar çubuğundaki sayaç ve PDF karnedeki uyarı aynı şeyi söyler.
+
+**POWER yağışı Konya'da yüksek değil mi?**
+Evet: Çumra'da POWER ≈ 539 mm/yıl, IMERG ≈ 327 mm/yıl, istasyon normali ≈ 320–330 mm. Bu yüzden her takvim ayı için
+IMERG/POWER oranıyla bütün POWER serisini düzeltiyoruz (günlerin sırası korunur). "İklim geçmişi" sayfasında üç seri yan yana.
 
 **0,5° iklim verisi bir tarla için kaba değil mi?**
 İklim bölge ölçeğinde değişir; 50 km içinde sıcaklık ve yağış rejimi benzerdir. Tarlada fark yaratan toprak ve yönetimdir;

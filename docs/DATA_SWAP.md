@@ -13,6 +13,13 @@ birim/ölçek kontrolünden geçirir (yıllık yağış, radyasyon birimi, eksik
 karşılaştırır ve **yalnızca tümü başarılı olan** veri setleri için `config.yaml`'daki kaynağı `nasa` yapar. Rapor:
 `data/veri_raporu.txt`. İndirilen veri `data/cache/nasa/` altında kalır; sonrasında internet gerekmez.
 
+### Kaynak beyanı: `data/external/KAYNAK.yaml`
+
+`data/external/` klasöründe bir dosyanın durması onun gerçek veri olduğu anlamına gelmez. Her veri seti için
+`origin` yazılır: `nasa` (NASA ürünü), `external` (NASA dışı açık veri, ör. SoilGrids), `synthetic` (yer tutucu),
+`assumed` (elle girilmiş değer). Kökeni yazılmayan dosya arayüzde **doğrulanmamış** görünür ve gerçek sayılmaz.
+Gerçek SMAP/HLS dosyası koyduğunuzda ilgili satırı `origin: nasa` yapın.
+
 Earthdata gerektirenler (SMAP, HLS/MODIS, SRTM, GRACE): `.env.example` dosyasını `.env` adıyla kopyalayıp doldurun,
 `nasa_ek_paketler.bat` çalıştırın, sonra `veri_indir.bat --earthdata`. CMIP6: `veri_indir.bat --datasets climate_deltas`.
 

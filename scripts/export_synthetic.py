@@ -50,6 +50,12 @@ def main() -> int:
     p = out / "water_storage" / f"{basin.id}.csv"
     p.parent.mkdir(parents=True, exist_ok=True)
     ws.to_csv(p, index_label="date", float_format="%.3f")
+    (out / "KAYNAK.yaml").write_text(
+        "# Bu klasördeki her dosya SENTETİK yer tutucudur (scripts/export_synthetic.py).\n"
+        + "".join(f"{ds}:\n  default:\n    origin: synthetic\n" for ds in (
+            "climate_daily", "soil_moisture", "ndvi", "precip_satellite", "climate_deltas",
+            "terrain", "soil_properties", "water_storage")),
+        encoding="utf-8")
     print(f"Şablon dosyalar yazıldı: {out.resolve()}")
     print(json.dumps({"not": "Bu dosyalar SENTETİKTİR; yalnızca biçim örneğidir."}, ensure_ascii=False))
     return 0

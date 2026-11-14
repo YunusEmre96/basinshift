@@ -8,8 +8,9 @@ başındaki sabitler.
 
 ```
 NASA POWER günlük iklim (1981–) ──► FAO-56 Penman-Monteith ET0
+GPM IMERG (2000–) ─► aylık IMERG/POWER oranı ─► POWER yağışı düzeltilir
                                    │
-SMAP kök bölgesi nemi (2015–) ─────┤► ekimde başlangıç toprak suyu
+SMAP kök bölgesi nemi (2015–) ─────┤► ekimde başlangıç toprak suyu (yalnızca GERÇEK veriyse)
                                    │
 ürün takvimi + Kc (FAO-56) ────────┴► günlük kök bölgesi su dengesi (her ürün × her yıl)
                                        │   ETc, kuru tarım ETa, tam sulama ihtiyacı, kullanılan yağış
@@ -31,6 +32,24 @@ SMAP kök bölgesi nemi (2015–) ─────┤► ekimde başlangıç topr
 * **Günlük denge:** S ← min(TAW, S + yağış − yüzey akışı) ; ETa = Ks·ETc ;
   Ks = 1 ya da S / RAW sınırı (p = 0,5; patates 0,35).
 * **Tam sulama:** S, RAW sınırının altına inince TAW'a kadar doldurulur → net ihtiyaç.
+  Sezonun son sulaması, sezon sonuna kadar kalan ürün su tüketimiyle sınırlanır (hasattan
+  önce toprağı boşuna doldurmamak için). **Uyarı:** model "su eksiği bırakmayan tam sulama"
+  varsayar. Konya'da buğday çoğunlukla 1–2 destek sulamasıyla ya da kuru yetiştirilir; bu
+  yüzden modelin buğday suyu (~500–560 m³/da brüt, salma) sahadaki ortalamanın üstündedir.
+  Karşılaştırma tüm planlara aynı kuralla yapıldığı için sıralama etkilenmez; mutlak m³
+  değerleri "üst sınır" olarak okunmalıdır.
+
+## 2b. Yağış düzeltmesi (GPM IMERG)
+
+* NASA POWER yağışı MERRA-2 tabanlıdır ve Konya Kapalı Havzası'nda belirgin yüksektir
+  (Çumra, örtüşen yıllar: POWER ≈ 539 mm/yıl, IMERG ≈ 327 mm/yıl; Konya istasyon normali ≈ 320–330 mm).
+* `config.yaml → data.precip_correction: imerg_monthly` açıkken ve **iki veri de gerçekse**
+  her takvim ayı için oran = Σ IMERG / Σ POWER (yalnızca ≥25 günü dolu aylar, en az
+  10 örtüşen yıl) hesaplanır, 0,30–1,50 aralığına kırpılır ve 1981'den bugüne bütün POWER
+  günlük yağışı bu oranla çarpılır. Günlerin sırası (kurak/yağışlı dizilim) korunur.
+* Kodu: `basinshift/engine/pipeline.py → imerg_monthly_ratio, correct_precip`;
+  testler: `tests/test_provenance_precip.py`.
+* IMERG sentetikse ya da örtüşme yetersizse düzeltme yapılmaz ve arayüz bunu yazar.
 * **Sınırlı su:** ETa, kuru tarım ETa'sı ile ETc arasında uygulanan suyla doğrusal.
 * **Brüt su:** net / randıman (damla 0,90, yağmurlama 0,75, salma 0,60). 1 mm = 1 m³/da.
 * **Nadas:** nadas yılı yağışının %20'si sonraki ürüne kalır (varsayım).

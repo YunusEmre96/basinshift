@@ -11,7 +11,8 @@ Yöntem — FAO-56 günlük kök bölgesi su dengesi (Bölüm 8, tek katsayılı
     Günlük     S ← min(TAW, S + P − yüzey akışı)
                ETc = Kc · ET0
                Kuru tarım: Ks = 1 (S ≥ RAW sınırı) ya da S / sınır;  ETa = Ks · ETc
-               Tam sulu:   S RAW sınırının altına düşünce TAW'a kadar sulanır
+               Tam sulu:   S RAW sınırının altına düşünce TAW'a kadar sulanır (son sulamada
+                           sezonun kalan ihtiyacından fazlası verilmez)
     Çıktılar   ETc toplamı, kuru tarım ETa'sı, tam sulama için net su (IRnet),
                ürünün kullandığı yağış.
     Sınırlı su altında ETa, kuru tarım ETa'sı ile ETc arasında uygulanan
@@ -87,10 +88,12 @@ def _bucket(p: np.ndarray, etc_d: np.ndarray, taw: float, s0: float, dep: float)
         e = ks * etc_d[i]
         s = max(0.0, s - e)
         eta += e
-    # Tam sulama (RAW sınırında TAW'a kadar doldur)
+    # Tam sulama (RAW sınırına inince tarla kapasitesine kadar doldur). Son sulamada
+    # sezonun KALAN ihtiyacından fazlası verilmez: hasatta dolu kalan su, sulama sayılmasın.
     s = s0
     irr = 0.0
     drain = 0.0
+    remaining = np.cumsum(etc_d[::-1])[::-1]          # i. günden sezon sonuna kalan ETc
     for i in range(len(p)):
         s += infil[i]
         if s > taw:
@@ -98,8 +101,10 @@ def _bucket(p: np.ndarray, etc_d: np.ndarray, taw: float, s0: float, dep: float)
             s = taw
         s -= etc_d[i]
         if s < thr:
-            irr += taw - s
-            s = taw
+            rest = remaining[i + 1] if i + 1 < len(p) else 0.0
+            add = min(taw - s, max(0.0, rest - (s - thr)))
+            irr += add
+            s += add
     rain_used = float(infil.sum() - drain - max(0.0, s - s0))
     return float(eta), float(irr), max(0.0, rain_used)
 

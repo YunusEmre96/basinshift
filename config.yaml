@@ -40,6 +40,12 @@ data:
   # sentetik veriye geri düşülür (demo güvenliği için).
   fallback_to_synthetic: true
 
+  # POWER yağışını GPM IMERG ile düzelt (yalnızca ikisi de gerçek veriyse uygulanır).
+  #   imerg_monthly : her takvim ayı için IMERG/POWER oranı (örtüşen yıllar) bütün seriye uygulanır
+  #   none          : düzeltme yok
+  # Neden: Çumra'da POWER ~540 mm/yıl, IMERG ~330 mm/yıl verir; Konya istasyon normali ~320–330 mm.
+  precip_correction: imerg_monthly
+
   cache:
     enabled: true
     dir: data/cache

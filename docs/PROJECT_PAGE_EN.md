@@ -44,16 +44,17 @@ and every page carries the note that the decision belongs to the farmer and the 
 
 | Dataset | Role | Status in our submission |
 |---|---|---|
-| NASA POWER (daily agroclimatology, 1981–) | Backbone of the stress test, ET0, risk calendar | [real / synthetic — read the sidebar counter] |
-| SMAP L4 (SPL4SMGP) | Initial soil moisture at planting | [real / synthetic] |
-| HLS (Landsat + Sentinel-2) and MODIS MOD13Q1 NDVI | Crop-history check, bare-soil months | [real / synthetic] |
-| GPM IMERG | Second rainfall source | [real / synthetic] |
-| GRACE / GRACE-FO mascons | Basin-scale water storage only | [real / synthetic] |
-| NEX-GDDP-CMIP6 | 2040s delta-change scenarios | [real / synthetic] |
-| SRTM | Slope for erosion risk | [real / synthetic] |
+| NASA POWER (daily agroclimatology, 1981–) | Backbone of the stress test, ET0, risk calendar | **Real** (POWER API) |
+| GPM IMERG (via POWER API, `IMERG_PRECTOT`) | Monthly bias correction of POWER rainfall | **Real** (2000–) |
+| GRACE / GRACE-FO JPL mascons RL06.3 | Basin-scale water storage only | **Real** (cosine-weighted basin mean) |
+| NEX-GDDP-CMIP6 (ACCESS-CM2, SSP2-4.5) | 2040s delta-change scenario | **Real**, single model / single scenario |
+| SMAP L4 (SPL4SMGP) | Initial soil moisture at planting | **Synthetic placeholder** (AppEEARS order not yet downloaded); not used in the calculation |
+| HLS (Landsat + Sentinel-2) and MODIS MOD13Q1 NDVI | Crop-history check, bare-soil months | **Synthetic placeholder** (AppEEARS order not yet downloaded) |
+| SRTM | Slope for erosion risk | **Assumed** (slope entered by hand in `tables/basins.yaml`) |
 
-Datasets marked synthetic are physically consistent placeholders with the same schema; the app labels them on every
-screen. Also used: ISRIC SoilGrids, FAO-56 and FAO-33 methods. Deliberately **not** used: OpenET (no coverage of
+Every local file's origin is declared in `data/external/KAYNAK.yaml`; a file without a declared origin is shown as
+"unverified" and is never counted as real. Synthetic placeholders have the same schema; the app labels them on every
+screen and in the PDF scorecard, and the soil-moisture placeholder is ignored by the water balance. Also used: ISRIC SoilGrids, FAO-56 and FAO-33 methods. Deliberately **not** used: OpenET (no coverage of
 Türkiye), ECOSTRESS (not integrated), GRACE at field scale (~300 km resolution).
 
 ## Space agency partner data / tools

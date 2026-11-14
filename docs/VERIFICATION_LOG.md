@@ -70,3 +70,17 @@ nokta). Planlar arasındaki su ve kural farkları fiyattan bağımsızdır.
 - [ ] Konya Ticaret Borsası'ndan nohut, mercimek, mısır fiyatı.
 - [ ] Bir ziraat mühendisine `tables/rotation_effects.csv` ve `crops.csv → min_gap_years` sütununu 10 dakika gösterin.
 - [ ] Obruk sayıları (739 / 702 / 126 / 32), 244 mm ve 30 m rakamları haber kaynaklıdır; slaytta kaynak yazın.
+
+
+## Ek: Veri durumu ve kod denetimi (14 Kasım 2026, son tur)
+
+| Konu | Durum | Dayanak |
+|---|---|---|
+| Kenar çubuğu önceki sürümde "8 / 8 gerçek" gösteriyordu | **DÜZELTİLDİ** | `data/external/` altındaki SMAP ve NDVI dosyaları `export_synthetic` çıktısıyla birebir (r = 0,99); dosyanın klasörde olması "gerçek" sayılıyordu. Artık köken `KAYNAK.yaml`'dan okunuyor → 4 / 8 |
+| PDF karnedeki sentetik veri uyarısı kaldırılmıştı | **DÜZELTİLDİ** | `report/scorecard.py` uyarıları geri geldi |
+| POWER yağışı (Çumra ≈ 539 mm) istasyon normalinin (~320–330 mm) çok üstünde | **DÜZELTİLDİ** | IMERG aylık oran düzeltmesi (`engine/pipeline.py`) |
+| `tables/commodity_trade.csv` içinde kaynaksız sanal su ve dünya fiyatı sütunları | **KALDIRILDI** | Yalnızca kaynaklı ticaret bilgisi + kaynak sütunu; su değerleri modelden |
+| Un ihracatında dünya birinciliği; 2025'te 2.344.528 t | KAYNAKLI | Un sanayicileri açıklamaları (Ekonomi Gazetesi, Yeni Asır, Ekim 2026) |
+| Mısır tüketimi ~12 Mt, üretim ~8,5 Mt, 2024 ithalatı ~4,4 Mt | KAYNAKLI | Türkiye Tarım Birliği / TÜİK (Ekonomim, 2025) |
+| Ayçiçeğinde yeterlilik 2024/25'te %63 | KAYNAKLI | TÜİK denge tabloları (Ekonomi Gazetesi, 2026) |
+| Buğdayda tam sulama varsayımı mutlak su değerini yükseltir | **SINIRLAMA** | METHODS.md §2; sıralamayı değiştirmez |

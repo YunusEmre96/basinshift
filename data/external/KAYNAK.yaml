@@ -1,0 +1,83 @@
+# data/external içindeki dosyaların GERÇEK kökeni.
+# Uygulama bu dosyaya bakarak her veri setini "NASA", "açık veri", "sentetik yer tutucu",
+# "varsayım" ya da "kökeni belirtilmemiş" diye etiketler. Bir dosya klasörde durduğu için
+# gerçek veri sayılmaz: kökenini burada yazmadığınız dosya "doğrulanmamış" görünür.
+#
+# origin değerleri:
+#   nasa       NASA'dan indirilmiş veri (POWER, IMERG, GRACE, NEX-GDDP-CMIP6, AppEEARS ürünleri)
+#   external   NASA dışı açık veri (ör. ISRIC SoilGrids)
+#   synthetic  scripts/export_synthetic.py ile üretilmiş yer tutucu (gerçek değil)
+#   assumed    elle girilmiş / tahmini değer
+#   unknown    bilinmiyor (varsayılan)
+#
+# Gerçek veriyi koyduğunuzda ilgili satırı güncelleyin. AppEEARS çıktıları için:
+#   python scripts/appeears_to_external.py <indirilen klasör>   (bu dosyayı kendisi günceller)
+#
+# 14 Kasım 2026 durumu (veri_paketi.zip ve veri_raporu.txt ile karşılaştırılarak belirlendi):
+
+climate_daily:
+  default:
+    origin: nasa
+    product: "NASA POWER Daily Agroclimatology (MERRA-2/GEOS + CERES), 1981-01-01 – 2026-10-31"
+    note_tr: "veri_paketi/veri/power — POWER API'den CSV olarak indirildi."
+    note_en: "veri_paketi/veri/power — downloaded as CSV from the POWER API."
+
+precip_satellite:
+  default:
+    origin: nasa
+    product: "GPM IMERG (POWER API, parametre IMERG_PRECTOT, UTC), 2000-06-01 – 2026-11-04"
+    note_tr: "veri_paketi/veri/imerg — POWER API üzerinden IMERG günlük yağışı."
+    note_en: "veri_paketi/veri/imerg — IMERG daily precipitation via the POWER API."
+
+water_storage:
+  default:
+    origin: nasa
+    product: "GRACE/GRACE-FO JPL Mascon RL06.3 v04 CRI (GRCTellus.JPL.200204_202609), havza kutusu kosinüs ağırlıklı ortalaması"
+    note_tr: "veri_paketi/veri/grace — PO.DAAC'tan NetCDF; havza kutusunun alan ağırlıklı ortalaması."
+    note_en: "veri_paketi/veri/grace — NetCDF from PO.DAAC; area-weighted mean over the basin box."
+
+climate_deltas:
+  default:
+    origin: nasa
+    product: "NEX-GDDP-CMIP6, tek model ACCESS-CM2 r1i1p1f1, SSP2-4.5; 2041–2059 ile 1995–2013 (iki yılda bir örnek) aylık farkları"
+    note_tr: "Tek iklim modeli ve tek senaryo (SSP2-4.5); SSP5-8.5 yok. Model belirsizliği gösterilmez."
+    note_en: "Single climate model and single scenario (SSP2-4.5); no SSP5-8.5. Model spread is not shown."
+
+soil_moisture:
+  default:
+    origin: synthetic
+    note_tr: "SMAP L4 için AppEEARS görevi gönderildi ama sonucu indirilmedi; bu dosyalar sentetik üreticinin çıktısıyla birebir aynı."
+    note_en: "An AppEEARS SMAP L4 task was submitted but its output was not downloaded; these files are identical to the synthetic generator output."
+
+ndvi:
+  default:
+    origin: synthetic
+    note_tr: "HLS/MODIS için AppEEARS görevleri gönderildi ama sonuçları indirilmedi; bu dosyalar sentetik üreticinin çıktısıdır (r = 0,99)."
+    note_en: "AppEEARS HLS/MODIS tasks were submitted but outputs were not downloaded; these files are synthetic generator output (r = 0.99)."
+
+terrain:
+  default:
+    origin: assumed
+    note_tr: "Yükseklik tables/basins.yaml'dan, eğim elle girilmiş (Konya 0,8°). SRTM AppEEARS görevinin sonucu indirilmedi."
+    note_en: "Elevation from tables/basins.yaml, slope hand-entered (Konya 0.8°). The SRTM AppEEARS output was not downloaded."
+
+soil_properties:
+  default:
+    origin: synthetic
+    note_tr: "Sentetik yer tutucu (havza varsayılanı)."
+    note_en: "Synthetic placeholder (basin default)."
+  files:
+    karapinar:
+      origin: external
+      product: "ISRIC SoilGrids 2.0 (250 m), 0–100 cm"
+      note_tr: "SoilGrids REST API (veri_raporu.txt, 14.11.2026)."
+      note_en: "SoilGrids REST API (veri_raporu.txt, 14 Nov 2026)."
+    cihanbeyli:
+      origin: external
+      product: "ISRIC SoilGrids 2.0 (250 m), 0–100 cm"
+      note_tr: "SoilGrids REST API (veri_raporu.txt, 14.11.2026)."
+      note_en: "SoilGrids REST API (veri_raporu.txt, 14 Nov 2026)."
+    cumra:
+      origin: assumed
+      note_tr: "SoilGrids Çumra noktasında kil/kum döndürmedi; değerler elle girilmiş tahmindir."
+      note_en: "SoilGrids returned no clay/sand at the Çumra point; values are hand-entered estimates."

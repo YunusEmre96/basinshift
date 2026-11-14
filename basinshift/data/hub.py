@@ -49,7 +49,7 @@ PROVIDERS: dict[str, type[DataProvider]] = {
 }
 CACHED_SOURCES = {"nasa"}
 EXPECTED_ERRORS = (NotAvailable, FetchError, SchemaError, requests.RequestException, OSError, ValueError, ImportError)
-DEFAULT, MISSING = "default", "missing"
+DEFAULT, MISSING, UNVERIFIED = "default", "missing", "unverified"
 
 
 @dataclass
@@ -63,6 +63,7 @@ class Provenance:
     product: str = ""
     resolution: str = ""
     from_cache: bool = False
+    origin: str = ""          # files kaynağı için KAYNAK.yaml kökeni (nasa | external | synthetic | assumed | unknown)
     warnings: list[str] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
 
@@ -75,8 +76,30 @@ class Provenance:
         return self.actual in ("nasa", "files")
 
     @property
+    def is_nasa(self) -> bool:
+        """Gerçekten NASA kaynaklı mı (canlı API ya da kökeni 'nasa' olan dosya)?"""
+        return self.actual == "nasa" or (self.actual == "files" and self.origin == "nasa")
+
+    @property
     def is_default(self) -> bool:
         return self.actual in (DEFAULT, MISSING)
+
+    @property
+    def is_unverified(self) -> bool:
+        return self.actual == UNVERIFIED
+
+    @property
+    def status(self) -> str:
+        """Arayüz rozeti: real | synthetic | default | unverified | missing."""
+        if self.is_real:
+            return "real"
+        if self.is_synthetic:
+            return "synthetic"
+        if self.actual == MISSING:
+            return "missing"
+        if self.is_unverified:
+            return "unverified"
+        return "default"
 
     @property
     def fell_back(self) -> bool:
@@ -186,6 +209,8 @@ class DataHub:
                 prov.label_tr, prov.label_en = p.label_tr, p.label_en
                 if source == "synthetic":
                     prov.product = f"SENTETİK — gerçek ürün: {spec.product}"
+                if source == "files":
+                    self._apply_file_origin(prov, getattr(p, "last_origin", {}) or {}, spec)
                 self._store(prov)
                 return data
             except EXPECTED_ERRORS as exc:
@@ -202,6 +227,37 @@ class DataHub:
         prov.label_tr, prov.label_en = "Veri alınamadı", "Data unavailable"
         self._store(prov)
         raise RuntimeError(f"{dataset} hiçbir kaynaktan alınamadı: {last_error}")
+
+    @staticmethod
+    def _apply_file_origin(prov: Provenance, origin: dict, spec) -> None:
+        """Yerel dosyanın KAYNAK.yaml'daki kökenine göre kaydı düzeltir.
+
+        Dosyanın klasörde durması gerçek veri olduğu anlamına gelmez: sentetik yer tutucu
+        ya da elle girilmiş değer öyle etiketlenir; kökeni yazılmamış dosya "doğrulanmamış" sayılır.
+        """
+        o = origin.get("origin", "unknown")
+        prov.origin = o
+        note = bi(origin.get("note_tr", ""), origin.get("note_en", "")) if origin.get("note_tr") else ""
+        if origin.get("product"):
+            prov.product = origin["product"]
+        if o == "nasa":
+            prov.label_tr, prov.label_en = "NASA verisi (yerel dosya)", "NASA data (local file)"
+        elif o == "external":
+            prov.label_tr, prov.label_en = "Açık veri (yerel dosya, NASA dışı)", "Open data (local file, non-NASA)"
+        elif o == "synthetic":
+            prov.actual = "synthetic"
+            prov.label_tr, prov.label_en = "Sentetik yer tutucu (dosya)", "Synthetic placeholder (file)"
+            prov.product = f"SENTETİK — gerçek ürün: {spec.product}"
+        elif o == "assumed":
+            prov.actual = DEFAULT
+            prov.label_tr, prov.label_en = "Varsayım / elle girilmiş değer", "Assumed / hand-entered value"
+        else:
+            prov.actual = UNVERIFIED
+            prov.label_tr, prov.label_en = "Yerel dosya (kökeni belirtilmemiş)", "Local file (origin not declared)"
+            prov.warnings.append(bi("Bu dosyanın kökeni data/external/KAYNAK.yaml'da yazılı değil; gerçek veri sayılmadı.",
+                                    "This file's origin is not declared in data/external/KAYNAK.yaml; not counted as real data."))
+        if note:
+            prov.notes.append(note)
 
     def _optional(self, dataset, key, call):
         """Ana hesap için zorunlu olmayan veri setleri: alınamazsa None (kayıt 'missing')."""

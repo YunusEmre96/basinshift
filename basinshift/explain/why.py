@@ -159,12 +159,21 @@ def explain(option: PlanOption, current: PlanOption | None, ctx: FieldContext,
             (f"Şu veri setleri alınamadı, varsayılan değer kullanıldı: {', '.join(defaults)}.") if tr else
             (f"These datasets were unavailable and defaults were used: {', '.join(defaults)}.")
         )
-    if any(p.is_synthetic for p in provenance.values()):
+    clim = provenance.get("climate_daily")
+    if clim is not None and clim.is_synthetic:
         out["gaps"].append(
             "Bu sonuçlar SENTETİK demo verisiyle üretildi; gerçek NASA verisi bağlanınca yeniden hesaplanmalı."
             if tr else
             "These results use SYNTHETIC demo data; recompute once real NASA data is connected."
         )
+    else:
+        ph = [ds for ds, p in provenance.items() if p.is_synthetic]
+        if "soil_moisture" in ph:
+            out["gaps"].append(
+                "Gerçek SMAP toprak nemi henüz bağlı değil; ekim anındaki toprak suyu son 90 günün gerçek yağışından tahmin edildi."
+                if tr else
+                "Real SMAP soil moisture is not connected yet; soil water at sowing is estimated from the real rainfall of the previous 90 days."
+            )
     out["gaps"].append(
         "Ürün fiyatları ve maliyetler 2026 varsayımıdır; gelir tahmini fiyat değişimine en duyarlı kalemdir."
         if tr else

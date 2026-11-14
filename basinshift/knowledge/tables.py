@@ -139,7 +139,10 @@ def load_glossary() -> dict:
 
 @lru_cache(maxsize=4)
 def load_commodity_trade(basin_id: str | None = None) -> pd.DataFrame:
-    """Küresel emtia ticareti, ithalat/ihracat dengesi ve sanal su tablosu."""
+    """Ürünlerin ulusal ticaret konumu (kaynaklı, tarihli nitel bilgi).
+
+    Su rakamları bu tabloda TUTULMAZ: arayüz, seçili tarlanın stres testinden hesaplar.
+    """
     path = TABLES_DIR / "commodity_trade.csv"
     if not path.exists():
         return pd.DataFrame()

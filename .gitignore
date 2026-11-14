@@ -8,6 +8,7 @@ data/cache/*
 data/external/*
 !data/external/.gitkeep
 !data/external/README.md
+!data/external/KAYNAK.yaml
 .env
 *.log
 .streamlit/secrets.toml

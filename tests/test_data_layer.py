@@ -184,5 +184,7 @@ def test_commodity_trade_data():
     assert "wheat" in df["crop_id"].values
     assert "maize_grain" in df["crop_id"].values
     assert "sunflower" in df["crop_id"].values
-    assert "virtual_water_m3_ton" in df.columns
+    assert {"trade_status_tr", "trade_status_en", "source"} <= set(df.columns)
+    # Su rakamları tabloda değil, modelden gelir (çelişkili sabit "sanal su" sütunu kaldırıldı)
+    assert "virtual_water_m3_ton" not in df.columns
 
