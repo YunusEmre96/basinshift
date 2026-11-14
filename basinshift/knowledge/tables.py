@@ -137,6 +137,18 @@ def load_glossary() -> dict:
         return yaml.safe_load(fh)
 
 
+@lru_cache(maxsize=4)
+def load_commodity_trade(basin_id: str | None = None) -> pd.DataFrame:
+    """Küresel emtia ticareti, ithalat/ihracat dengesi ve sanal su tablosu."""
+    path = TABLES_DIR / "commodity_trade.csv"
+    if not path.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(path)
+    if basin_id:
+        df = df[df["basin"] == basin_id].copy()
+    return df
+
+
 def basin_crops(basin_id: str) -> list[str]:
     """Havzada ekonomik verisi tanımlı ürünler (sıralı)."""
     crops = load_crops()

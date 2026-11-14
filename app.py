@@ -6,6 +6,8 @@
 """
 from __future__ import annotations
 
+from pathlib import Path
+from PIL import Image
 import streamlit as st
 
 from basinshift.config import load_config
@@ -13,14 +15,22 @@ from basinshift.ui import components as ui
 from basinshift.ui import pages, state
 from basinshift.ui.i18n import t
 
-st.set_page_config(page_title="BasinShift", page_icon="🌾", layout="wide", initial_sidebar_state="expanded")
+_icon_path = Path(__file__).parent / "basinshift" / "ui" / "assets" / "logos" / "Space Apps White small logo.png"
+_page_icon = Image.open(_icon_path) if _icon_path.exists() else "🛰️"
+
+st.set_page_config(
+    page_title="BasinShift · NASA Space Apps Challenge",
+    page_icon=_page_icon,
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
 
 cfg = load_config()
 state.init_state(cfg)
 state.persist_widgets()
 ui.inject_css()
 pages.sidebar()
-lang = st.session_state["lang"]
+lang = st.session_state.get("lang") or "tr"
 
 PAGES = [
     ("field", "page_field", "🌾", pages.page_field),
@@ -35,6 +45,7 @@ PAGES = [
 
 def _wrap(fn, key):
     def run():
+        ui.inject_css()
         pages.header(show_tagline=(key == "field"))
         # Veri kaynaklarının durumu (sentetik/geri düşme) için önce ana veriyi yükle
         state.site_data()

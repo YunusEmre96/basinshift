@@ -102,6 +102,13 @@ def check_ndvi(df) -> tuple[list[str], list[str], dict]:
     return errs, warns, {"en düşük": lo, "en yüksek": hi, "HLS gözlem": n_hls, "MODIS gözlem": int((df["source"] == "MODIS").sum())}
 
 
+def check_soil_properties(data, basin_id: str) -> tuple[list[str], list[str], dict]:
+    errs, warns = [], []
+    if not isinstance(data, dict) or "clay_pct" not in data or "sand_pct" not in data:
+        errs.append("SoilGrids kil/kum değeri döndürmedi (varsayılan sentetik değere düşüldü)")
+    return errs, warns, {k: v for k, v in (data or {}).items()}
+
+
 def check_generic(data) -> tuple[list[str], list[str], dict]:
     if isinstance(data, dict):
         return [], [], {k: v for k, v in data.items()}
@@ -109,7 +116,7 @@ def check_generic(data) -> tuple[list[str], list[str], dict]:
 
 
 CHECKS = {"climate_daily": check_climate, "soil_moisture": lambda d, b: check_soil_moisture(d),
-          "ndvi": lambda d, b: check_ndvi(d)}
+          "ndvi": lambda d, b: check_ndvi(d), "soil_properties": check_soil_properties}
 
 
 def run_check(ds: str, data, basin_id: str):

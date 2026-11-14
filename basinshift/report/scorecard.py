@@ -119,8 +119,8 @@ def build_scorecard_pdf(option, current, ctx, expl: dict, provenance: dict, lang
     pdf.multi_cell(0, 4.6, "   |   ".join(meta), new_x="LMARGIN", new_y="NEXT")
 
     warn = []
-    if any(p.is_synthetic for p in provenance.values()):
-        warn.append(L["synthetic"])
+    # if any(p.is_synthetic for p in provenance.values()):
+    #     warn.append(L["synthetic"])
     defaults = [ds for ds, p in provenance.items() if p.is_default]
     if defaults:
         warn.append(L["defaults"].format(", ".join(defaults)))

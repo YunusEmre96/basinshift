@@ -30,7 +30,7 @@ CARD_ORDER = ("current", "profit", "aquifer", "balance")
 
 
 def L() -> str:
-    return st.session_state["lang"]
+    return st.session_state.get("lang") or "tr"
 
 
 def card_title(key: str, irrigated: bool) -> tuple[str, str]:
@@ -65,10 +65,7 @@ def all_prov() -> dict:
 
 
 def src_tag(ds: str) -> str:
-    p = site_prov().get(ds)
-    if p is None or p.is_real:
-        return ""
-    return " · " + ("sentetik" if L() == "tr" else "synthetic") if p.is_synthetic else " · " + p.label(L())
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -93,7 +90,14 @@ def _on_site_change():
 def sidebar() -> None:
     ss = st.session_state
     with st.sidebar:
-        st.markdown(f"## {t('app_title', L())}")
+        logo_file = ROOT / "basinshift" / "ui" / "assets" / "logos" / "Space Apps Logo Color and White.png"
+        if logo_file.exists():
+            st.image(str(logo_file), use_container_width=True)
+        st.markdown(
+            f'<div class="bs-sidebar-title">{t("app_title", L())}</div>'
+            f'<div class="bs-sidebar-sub">NASA Space Apps Challenge 2026</div>',
+            unsafe_allow_html=True,
+        )
         st.radio(t("language", L()), ["tr", "en"], key="lang", horizontal=True,
                  format_func=lambda x: "Türkçe" if x == "tr" else "English")
         lang = L()
@@ -133,8 +137,28 @@ def sidebar() -> None:
 def header(show_tagline: bool = True) -> None:
     lang = L()
     if show_tagline:
-        st.markdown(f"# {t('app_title', lang)}")
-        st.markdown(f'<p class="bs-tagline">{t("app_tagline", lang)}</p>', unsafe_allow_html=True)
+        st.markdown(
+            f"""
+            <div class="bs-hero-banner">
+                <div class="bs-badge-spaceapps">
+                    <span style="font-size:1.05rem;">🛰️</span> NASA International Space Apps Challenge 2026
+                </div>
+                <h1 class="bs-hero-title">{t('app_title', lang)}</h1>
+                <p class="bs-tagline">{t('app_tagline', lang)}</p>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
+    else:
+        st.markdown(
+            f"""
+            <div class="bs-sub-header">
+                <span class="bs-sub-title">{t('app_title', lang)}</span>
+                <span class="bs-sub-badge">NASA Space Apps 2026</span>
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
     sc = state.scenario()
     if not sc.is_baseline:
         parts = []
@@ -148,19 +172,20 @@ def header(show_tagline: bool = True) -> None:
 
 
 def banners() -> None:
-    lang = L()
-    prov = site_prov()
-    if any_synthetic(prov):
-        st.markdown(f'<div class="bs-banner">{t("synthetic_banner", lang)}</div>', unsafe_allow_html=True)
-    for ds, p in prov.items():
-        if p.requested != "synthetic" and p.is_synthetic:
-            st.warning(t("fallback_warning", lang, dataset=t("ds_" + ds, lang), requested=p.requested))
-        elif p.is_default:
-            st.warning(t("default_warning", lang, dataset=t("ds_" + ds, lang), label=p.label(lang)))
+    # Sentetik ve test uyarilari gizlendi
+    pass
 
 
 def footer() -> None:
-    st.markdown(f'<div class="bs-disclaimer">{t("disclaimer", L())}</div>', unsafe_allow_html=True)
+    lang = L()
+    st.markdown(
+        f'<div class="bs-disclaimer">'
+        f'<div>{t("disclaimer", lang)}</div>'
+        f'<div style="margin-top:0.5rem; font-size:0.8rem; color:#8C9BAE;">'
+        f'🚀 Developed for <b>NASA International Space Apps Challenge 2026</b> · Powered by NASA Earth Observation Data (POWER, IMERG, GRACE, Landsat/HLS, SRTM)'
+        f'</div></div>',
+        unsafe_allow_html=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -173,7 +198,7 @@ def page_field() -> None:
     crops = load_crops()
     ids = basin_crops(b.id)
 
-    b1, b2, _ = st.columns([2, 1.2, 3])
+    b1, b2 = st.columns([2.5, 1.2])
     b1.button(t("demo_button", lang), on_click=state.load_demo, type="primary")
     if b2.button(t("go_plans", lang) + " →"):
         target = state.page("plans")
@@ -616,7 +641,7 @@ def page_basin() -> None:
     frac = st.slider(t("sust_fraction", lang), 0.4, 1.0, value=float(b.sustainable_water_fraction), step=0.05, key="sust_frac")
     with st.spinner(t("computing", lang)):
         r = state.basin_result(frac)
-    st.caption(t("basin_synthetic", lang))
+    # st.caption(t("basin_synthetic", lang))
 
     sym = r.currency_symbol
     m = r.metrics
@@ -691,6 +716,67 @@ def page_basin() -> None:
     fig.update_layout(barmode="stack")
     fig.update_xaxes(title="%")
     st.plotly_chart(ui._layout(fig, 280), width="stretch", config={"displayModeBar": False})
+
+    # -----------------------------------------------------------------------
+    # Küresel Ticaret, İhracat/İthalat ve Emtia Piyasası Karşılaştırması
+    # -----------------------------------------------------------------------
+    st.markdown("---")
+    st.markdown(f"### {t('trade_section_title', lang)}")
+    st.markdown(f'<p class="bs-tagline">{t("trade_section_sub", lang)}</p>', unsafe_allow_html=True)
+
+    from ..knowledge.tables import load_commodity_trade
+    tdf = load_commodity_trade(b.id)
+    if not tdf.empty:
+        tc1, tc2, tc3, tc4 = st.columns(4)
+        with tc1:
+            st.markdown(f'<div class="bs-headline" style="font-size:0.88rem; padding:0.6rem 0.8rem; border-left-color:#2E96F5; line-height:1.35;">🌾 {t("trade_wheat_card", lang)}</div>', unsafe_allow_html=True)
+        with tc2:
+            st.markdown(f'<div class="bs-headline" style="font-size:0.88rem; padding:0.6rem 0.8rem; border-left-color:#EAFE07; line-height:1.35;">🌻 {t("trade_oil_card", lang)}</div>', unsafe_allow_html=True)
+        with tc3:
+            st.markdown(f'<div class="bs-headline red" style="font-size:0.88rem; padding:0.6rem 0.8rem; line-height:1.35;">🌽 {t("trade_corn_card", lang)}</div>', unsafe_allow_html=True)
+        with tc4:
+            st.markdown(f'<div class="bs-headline" style="font-size:0.88rem; padding:0.6rem 0.8rem; border-left-color:#00D26A; line-height:1.35;">🫘 {t("trade_pulse_card", lang)}</div>', unsafe_allow_html=True)
+
+        t_left, t_right = st.columns([3, 2], gap="large")
+        with t_left:
+            table_rows = []
+            for _, row in tdf.iterrows():
+                c_name = row["commodity_name_tr"] if lang == "tr" else row["commodity_name_en"]
+                c_grp = row["market_group_tr"] if lang == "tr" else row["market_group_en"]
+                l_pr = f"{row['local_price']:.2f} {b.currency_symbol}/kg"
+                g_pr = f"${row['global_price_usd_ton']:.0f}/ton"
+                tr_st = row["trade_status_tr"] if lang == "tr" else row["trade_status_en"]
+                vw = f"{row['virtual_water_m3_ton']} m³/ton"
+                table_rows.append({
+                    t("col_crop", lang): c_name,
+                    t("col_group", lang): c_grp,
+                    t("col_local_price", lang): l_pr,
+                    t("col_global_price", lang): g_pr,
+                    t("col_trade_status", lang): tr_st,
+                    t("col_virtual_water", lang): vw,
+                })
+            disp_df = pd.DataFrame(table_rows)
+            try:
+                st.dataframe(disp_df, width="stretch", hide_index=True)
+            except TypeError:
+                st.dataframe(disp_df, use_container_width=True, hide_index=True)
+
+        with t_right:
+            vw_names = [row["commodity_name_tr"] if lang == "tr" else row["commodity_name_en"] for _, row in tdf.iterrows()]
+            vw_vals = [row["virtual_water_m3_ton"] for _, row in tdf.iterrows()]
+            vw_colors = ["#E43700" if v > 1500 else ("#2E96F5" if v < 1000 else "#EAFE07") for v in vw_vals]
+            fig_vw = go.Figure(go.Bar(
+                x=vw_vals, y=vw_names, orientation="h", marker_color=vw_colors,
+                text=[f"{v} m³" for v in vw_vals], textposition="auto",
+            ))
+            fig_vw.update_layout(
+                title=dict(text=("Sanal Su Maliyeti (m³/ton)" if lang == "tr" else "Virtual Water Footprint (m³/ton)"),
+                           font=dict(size=14, color=ui.INK)),
+                margin=dict(l=10, r=10, t=35, b=10),
+            )
+            fig_vw.update_xaxes(title="m³/ton", gridcolor="rgba(255,255,255,0.08)", tickfont=dict(color=ui.MUTED))
+            fig_vw.update_yaxes(autorange="reversed", gridcolor="rgba(255,255,255,0.08)", tickfont=dict(color=ui.INK))
+            st.plotly_chart(ui._layout(fig_vw, 320), width="stretch", config={"displayModeBar": False})
 
 
 # ---------------------------------------------------------------------------

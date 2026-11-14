@@ -145,9 +145,11 @@ def test_data_checks_catch_unit_errors(hub, konya):
 
 
 def test_setup_script_edits_only_requested_sources(tmp_path):
+    import re
     import setup_real_data as s
     cfg = tmp_path / "config.yaml"
-    cfg.write_text((Path(__file__).resolve().parent.parent / "config.yaml").read_text(encoding="utf-8"), encoding="utf-8")
+    raw = (Path(__file__).resolve().parent.parent / "config.yaml").read_text(encoding="utf-8")
+    cfg.write_text(re.sub(r"(\bclimate_daily:\s*)\S+", r"\g<1>synthetic", raw), encoding="utf-8")
     before = cfg.read_text(encoding="utf-8")
     assert s.set_config_sources(cfg, ["climate_daily"]) == ["climate_daily"]
     after = cfg.read_text(encoding="utf-8")

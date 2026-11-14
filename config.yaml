@@ -22,18 +22,18 @@
 # =====================================================================
 
 data:
-  default_source: synthetic
+  default_source: files
 
   # Veri seti bazında kaynak (boş bırakılan default_source'u kullanır)
   sources:
-    climate_daily: null        # NASA POWER (günlük iklim, 1981-bugün)
+    climate_daily: nasa        # NASA POWER (günlük iklim, 1981-bugün)
     soil_moisture: null        # SMAP L4 (yüzey + kök bölgesi nemi)
     ndvi: null                 # HLS (30 m) + MODIS (250 m) NDVI
-    precip_satellite: null     # GPM IMERG (uydu yağışı)
-    water_storage: null        # GRACE / GRACE-FO (havza su depolama)
-    climate_deltas: null       # NEX-GDDP-CMIP6 (2040'lar değişim katsayıları)
-    terrain: null              # SRTM (yükseklik, eğim)
-    soil_properties: null      # SoilGrids (TAW, kil, organik karbon)
+    precip_satellite: files    # GPM IMERG (uydu yağışı)
+    water_storage: files       # GRACE / GRACE-FO (havza su depolama)
+    climate_deltas: files      # NEX-GDDP-CMIP6 (2040'lar değişim katsayıları)
+    terrain: files             # SRTM (yükseklik, eğim)
+    soil_properties: files     # SoilGrids (TAW, kil, organik karbon)
 
   # Bir kaynak hata verirse sessizce sentetiğe düşülmez; arayüzde
   # açıkça uyarı gösterilir. true yapılırsa uyarıyla birlikte

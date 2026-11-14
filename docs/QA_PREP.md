@@ -70,7 +70,16 @@ Hayır, beş temsili tip; ekranda öyle yazıyor. Rakamlar yönü ve büyüklük
 Plan emir değil, pusula. Kamu destek tasarımında, kooperatif üyeleri arasında ürün paylaşımında kullanır; suyun gölge
 fiyatı tasarruf yatırımının önceliğini gösterir.
 
-## Ürün ve iş
+## Ürün, İş Modeli ve Hedef Kitle
+
+**Hedef kitleniz tam olarak kim? Çiftçi için bu arayüz fazla karmaşık değil mi?**
+Projenin müşterisi ve karar vericisi B2B/B2G: Tarım Kredi Kooperatifleri, Şeker Fabrikaları (Konya Şeker/TÜRKŞEKER sözleşmeli tarım ekipleri), Ziraat Odaları, TARSİM ve Tarım Bankacılığıdır. Çiftçi tek başına kullandığında ise sistem "3 Tıkla Karar" mantığıyla çalışır: 1. Tarlayı seç, 2. Kırmızı kart cezasından kaçıran 3 hazır planı (Kâr, Akifer, Denge) gör, 3. Tek sayfalık PDF karneni al. Pareto cephesi, CMIP6 iklim deltalari ve cobweb fiyat dinamikleri çiftçiyi boğmamak için "Mühendis Görünümü" açılır penceresinde tutulur.
+
+**Projeyle ihracat/ithalat ve dünya piyasaları entegre mi? Buğday, mısır, un ticareti için ne söylüyor?**
+Evet. "Havza" sayfasındaki Küresel Ticaret ve Emtia tablosunda her ürün için TMO/yerel borsa fiyatı ile CBOT/Euronext dünya gösterge fiyatı, ulusal ticaret dengesi ve sanal su ayak izi kıyaslanır. Örneğin; Türkiye dünyanın #1 un ihracatçısıdır, ancak kuraklıkta buğday ithal eder; mısırda yılda ~2.5 milyon ton ithalat açığı vardır ama mısır ton başına 1.280 m³ yeraltı suyu tüketir; ayçiçeğinde %60 ham yağ ithalat bağımlılığı vardır. Model, mısır yerine ayçiçeği ve kışlık buğday rotasyonunu teşvik ederek hem akiferi korur hem de Türkiye'nin döviz faturasını ve un sanayisinin yerli hammadde güvencesini destekler.
+
+**Uygulama sadece "şunu ek buna bak" diyen mekanik bir rotasyon aracı mı, yoksa tavsiye ve stratejik karar destek sistemi mi?**
+Kör bir tavsiye sistemi değil, çok kriterli bir karar pusulasıdır. 20.736 olası 4 yıllık kombinasyonu tarar; mevzuat kuralı (kırmızı kart), 40 yıllık NASA iklim verisi, yeraltı suyu çekimi, kötü dönem geliri (CVaR %5), toprak sağlığı ve küresel emtia dengesini bir araya getirir. Kullanıcıya tek bir emir dayatmaz; "Kâr", "Akifer (Su Koruma)" ve "Denge" alternatifleri sunar; her kartın neden önerildiğini, kanıtını, bilgi boşluğunu ve yerel riskini şeffafça açıklar.
 
 **Bunu yapan uygulamalar yok mu?**
 Sezon içi takip yapan çok uygulama var. Çok yıllık planı kurala, iklim riskine ve havza suyuna göre birlikte değerlendiren

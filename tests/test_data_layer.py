@@ -175,3 +175,14 @@ def test_default_values_are_labelled(monkeypatch, konya, tmp_path):
 def test_dict_schema_rejects_nan():
     with pytest.raises(SchemaError):
         validate("soil_properties", {"taw_mm_per_m": float("nan")})
+
+
+def test_commodity_trade_data():
+    from basinshift.knowledge.tables import load_commodity_trade
+    df = load_commodity_trade("konya")
+    assert not df.empty
+    assert "wheat" in df["crop_id"].values
+    assert "maize_grain" in df["crop_id"].values
+    assert "sunflower" in df["crop_id"].values
+    assert "virtual_water_m3_ton" in df.columns
+

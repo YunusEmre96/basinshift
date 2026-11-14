@@ -1,10 +1,13 @@
-"""Görsel bileşenler: kart rozeti, tarla şeridi, plan sütunu, grafikler.
+"""Görsel bileşenler: NASA Space Apps Challenge 2026 Tasarım Sistemi (Stealth Navy).
 
-Tasarım dili:
-    zemin   #F3F4EF  kireçli bozkır toprağı      mürekkep #1F2A24 liken
-    su      #1C5D7A  derin akifer                gelir    #C9971C buğday okrası
-    kart    #2E7D4F yeşil · #E3B505 sarı · #B3392F kırmızı (mevzuattaki sarı/kırmızı kart)
-    yazı    Barlow (gövde) + Barlow Semi Condensed (başlıklar)
+Tasarım dili (NASA Space Apps Brand Guide 2026 - Stealth Navy Theme):
+    zemin       #060B14  Stealth Navy Ground (mat gece laciverti zemin)
+    panel       #0D1524  Navy Card Surface (mat gece laciverti kartlar)
+    vurgu/link  #0042A6  Electric Blue / #2E96F5 Blue Yonder
+    öne çıkan   #EAFE07  Neon Yellow (PMS Neon 387 - %10 kuralı, buton/rozet/metrik)
+    uyarı/ceza  #E43700  Rocket Red (PMS Bright Red C - kırmızı kart/alarm)
+    metin       #FFFFFF  White (ana) / #8C9BAE Slate Gray (ikincil)
+    yazı        Fira Sans (başlıklar, 700-900) + Overpass (gövde/metrik) + Fira Code (kod/veri)
 """
 from __future__ import annotations
 
@@ -20,65 +23,363 @@ from ..explain.fmt import merged_year, money, num, water
 from ..knowledge.tables import Crop
 from .i18n import t
 
-INK, MUTED, GROUND, PANEL = "#1F2A24", "#6B7A70", "#F3F4EF", "#E4E8E1"
-WATER, INCOME = "#1C5D7A", "#C9971C"
-STATUS_COLOR = {"green": "#2E7D4F", "yellow": "#E3B505", "red": "#B3392F"}
-CONF_COLOR = {"high": "#2E7D4F", "medium": "#C9971C", "low": "#B3392F"}
+INK, MUTED, GROUND, PANEL = "#FFFFFF", "#8C9BAE", "#060B14", "#0D1524"
+WATER, INCOME = "#2E96F5", "#EAFE07"
+STATUS_COLOR = {"green": "#00D26A", "yellow": "#FFD600", "red": "#E43700"}
+CONF_COLOR = {"high": "#00D26A", "medium": "#FFD600", "low": "#E43700"}
 
 CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap');
-html, body, [class*="css"], .stMarkdown, .stText, button, input, select, textarea {
-  font-family: 'Barlow', 'Segoe UI', system-ui, sans-serif;
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Fira+Sans:wght@700;800;900&family=Overpass:ital,wght@0,300;0,400;0,600;0,700;0,800;1,400&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap');
+
+html, body, .stApp, .stMarkdown, .stText, p, label, .bs-tagline, .bs-disclaimer, .bs-metric {
+  font-family: 'Overpass', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
-h1, h2, h3, h4 { font-family: 'Barlow Semi Condensed', 'Barlow', system-ui, sans-serif; letter-spacing: -0.01em; color: #1F2A24; }
-h1 { font-weight: 700; }
-h2, h3 { font-weight: 600; }
-.block-container { padding-top: 1.6rem; max-width: 1380px; }
-.bs-tagline { color: #4A5750; font-size: 1.05rem; max-width: 70ch; margin: -0.4rem 0 1.2rem 0; line-height: 1.45; }
-.bs-banner { border-left: 4px solid #E3B505; background: #FBF6DF; padding: 0.55rem 0.9rem; margin: 0.2rem 0 1rem 0; color: #3A3A2A; font-size: 0.95rem; }
-.bs-disclaimer { color: #6B7A70; font-size: 0.85rem; border-top: 1px solid #D5DBD2; padding-top: 0.6rem; margin-top: 2rem; }
+
+/* Explicit Material Symbols icon styling for Streamlit expanders & buttons */
+[data-testid="stIconMaterial"],
+span[data-testid="stIconMaterial"],
+[data-testid*="IconMaterial"],
+[data-testid*="stIcon"],
+[data-testid*="stExpanderToggleIcon"],
+[data-testid="stExpanderToggleIcon"] *,
+.material-symbols-rounded,
+.material-symbols-outlined,
+.material-icons {
+  font-family: 'Material Symbols Rounded', 'Material Icons', sans-serif !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  font-size: 1.25rem !important;
+  line-height: 1 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  word-wrap: normal !important;
+  direction: ltr !important;
+  font-feature-settings: 'liga' 1 !important;
+  -webkit-font-feature-settings: 'liga' 1 !important;
+  -webkit-font-smoothing: antialiased !important;
+}
+
+/* Hide Streamlit Deploy button and toolbar branding */
+.stDeployButton, [data-testid="stDeployButton"], #MainMenu, header[data-testid="stHeader"] .stDeployButton {
+  display: none !important;
+}
+
+div[data-baseweb="select"] {
+  font-size: 0.88rem !important;
+}
+div[data-baseweb="select"] > div {
+  background-color: #0D1524 !important;
+  border: 1px solid rgba(46, 150, 245, 0.18) !important;
+  border-radius: 6px !important;
+}
+div[data-baseweb="select"] > div:hover {
+  border-color: rgba(46, 150, 245, 0.55) !important;
+}
+div[data-baseweb="popover"], div[data-baseweb="menu"], ul[data-baseweb="menu"] {
+  background-color: #0D1524 !important;
+  border: 1px solid rgba(46, 150, 245, 0.25) !important;
+}
+[data-testid="stExpander"] {
+  background-color: #0D1524 !important;
+  border: 1px solid rgba(46, 150, 245, 0.15) !important;
+  border-radius: 8px !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Fira Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  color: #FFFFFF !important;
+  letter-spacing: -0.01em;
+}
+h1 { font-weight: 900 !important; letter-spacing: 0.02em !important; }
+h2, h3 { font-weight: 700 !important; }
+code, pre { font-family: 'Fira Code', monospace !important; }
+
+.block-container { padding-top: 1.2rem; max-width: 1400px; }
+
+/* NASA Space Apps Hero Header & Rozet - Stealth Navy */
+.bs-hero-banner {
+  background: linear-gradient(135deg, rgba(14, 23, 38, 0.95) 0%, rgba(6, 11, 20, 0.98) 100%),
+              radial-gradient(ellipse at 85% 15%, rgba(46, 150, 245, 0.16) 0%, transparent 60%);
+  border: 1px solid rgba(46, 150, 245, 0.22);
+  border-radius: 12px;
+  padding: 1.4rem 1.8rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+.bs-hero-banner::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -5%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(46, 150, 245, 0.12) 0%, rgba(234, 254, 7, 0.02) 50%, transparent 75%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.bs-badge-spaceapps {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(46, 150, 245, 0.14);
+  border: 1px solid rgba(46, 150, 245, 0.38);
+  border-radius: 20px;
+  padding: 0.28rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #EAFE07;
+  margin-bottom: 0.7rem;
+}
+.bs-hero-title {
+  font-family: 'Fira Sans', sans-serif !important;
+  font-weight: 900 !important;
+  font-size: 2.2rem !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  color: #FFFFFF !important;
+  margin: 0 0 0.4rem 0 !important;
+}
+.bs-tagline {
+  color: #A0B2C6;
+  font-size: 1.05rem;
+  max-width: 75ch;
+  margin: 0.2rem 0 0.4rem 0;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+/* Alt sayfa başlığı */
+.bs-sub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.8rem;
+  margin-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(46, 150, 245, 0.15);
+}
+.bs-sub-title {
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 900;
+  font-size: 1.45rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+}
+.bs-sub-badge {
+  background: rgba(46, 150, 245, 0.14);
+  border: 1px solid rgba(46, 150, 245, 0.38);
+  color: #EAFE07;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Kenar Çubuğu */
+[data-testid="stSidebar"] {
+  background: #04070D !important;
+  border-right: 1px solid rgba(46, 150, 245, 0.12) !important;
+}
+.bs-sidebar-title {
+  font-family: 'Fira Sans', sans-serif;
+  font-weight: 900;
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  margin-top: 0.4rem;
+}
+.bs-sidebar-sub {
+  font-family: 'Overpass', sans-serif;
+  font-size: 0.76rem;
+  color: #EAFE07;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.bs-banner {
+  border-left: 4px solid #EAFE07;
+  background: rgba(234, 254, 7, 0.12);
+  padding: 0.6rem 1rem;
+  margin: 0.3rem 0 1rem 0;
+  color: #E8EEF5;
+  font-size: 0.95rem;
+  border-radius: 4px;
+}
+.bs-disclaimer {
+  color: #8C9BAE;
+  font-size: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.8rem;
+  margin-top: 2rem;
+}
+
+/* Butonlar: Neon Yellow birincil buton */
+.stButton > button {
+  font-family: 'Overpass', sans-serif !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  transition: all 0.2s ease-in-out !important;
+}
+.stButton > button[kind="primary"] {
+  background-color: #EAFE07 !important;
+  color: #060B14 !important;
+  border: 1px solid #EAFE07 !important;
+  font-weight: 800 !important;
+}
+.stButton > button[kind="primary"]:hover {
+  background-color: #F5FF55 !important;
+  box-shadow: 0 0 15px rgba(234, 254, 7, 0.5) !important;
+  color: #050B14 !important;
+}
+.stButton > button[kind="secondary"] {
+  background-color: #0D1524 !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(46, 150, 245, 0.22) !important;
+}
+.stButton > button[kind="secondary"]:hover {
+  background-color: #132036 !important;
+  border-color: #2E96F5 !important;
+}
 
 /* Sarı / kırmızı kart rozeti — mevzuattaki kart cezası */
-.bs-status { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 600; font-size: 0.92rem; }
-.bs-status .card { width: 13px; height: 18px; border-radius: 2px; transform: rotate(-9deg); box-shadow: 1px 1px 0 rgba(31,42,36,0.35); }
-.bs-status.green .card { background: #2E7D4F; transform: none; border-radius: 50%; width: 12px; height: 12px; box-shadow: none; }
-.bs-status.yellow .card { background: #E3B505; }
-.bs-status.red .card { background: #B3392F; }
-.bs-status.red { color: #8E2A22; }
+.bs-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-weight: 700;
+  font-size: 0.92rem;
+  font-family: 'Overpass', sans-serif;
+}
+.bs-status .card {
+  width: 13px;
+  height: 18px;
+  border-radius: 2px;
+  transform: rotate(-9deg);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+.bs-status.green .card {
+  background: #00D26A;
+  transform: none;
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 8px rgba(0, 210, 106, 0.7);
+}
+.bs-status.yellow .card {
+  background: #FFD600;
+  box-shadow: 0 0 8px rgba(255, 214, 0, 0.6);
+}
+.bs-status.red .card {
+  background: #E43700;
+  box-shadow: 0 0 8px rgba(228, 55, 0, 0.7);
+}
+.bs-status.green { color: #00E676; }
+.bs-status.yellow { color: #FFEA00; }
+.bs-status.red { color: #FF5252; }
 
 /* Tarla şeridi — 4 yıl, ürün renkli bloklar */
-.bs-strip { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; margin: 0.5rem 0 0.8rem 0; }
+.bs-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  margin: 0.5rem 0 0.8rem 0;
+}
 .bs-strip-wrap { container-type: inline-size; }
 @container (max-width: 330px) { .bs-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-.bs-tile { padding: 0.45rem 0.4rem 0.4rem 0.45rem; min-height: 3.4rem; border-radius: 3px; font-size: 0.86rem; line-height: 1.15; position: relative; min-width: 0; overflow-wrap: break-word; }
-.bs-tile .yr { font-size: 0.72rem; opacity: 0.8; display: block; margin-bottom: 0.15rem; }
-.bs-tile.viol { outline: 2px solid #B3392F; outline-offset: -2px; }
-.bs-col-head { font-family: 'Barlow Semi Condensed', sans-serif; font-size: 1.35rem; font-weight: 700; margin: 0; color: #1F2A24; }
-.bs-col-sub { color: #6B7A70; font-size: 0.88rem; margin: 0 0 0.35rem 0; min-height: 2.2em; }
-.bs-col-current .bs-col-head { color: #4A5750; }
+.bs-tile {
+  padding: 0.5rem 0.45rem;
+  min-height: 3.5rem;
+  border-radius: 6px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  line-height: 1.2;
+  position: relative;
+  min-width: 0;
+  overflow-wrap: break-word;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.bs-tile .yr {
+  font-size: 0.72rem;
+  opacity: 0.85;
+  display: block;
+  margin-bottom: 0.15rem;
+  font-weight: 800;
+}
+.bs-tile.viol {
+  outline: 3px solid #E43700;
+  outline-offset: -2px;
+  box-shadow: 0 0 10px rgba(228, 55, 0, 0.7);
+}
+.bs-col-head {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 800;
+  margin: 0;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+}
+.bs-col-sub {
+  color: #8C9BAE;
+  font-size: 0.88rem;
+  margin: 0 0 0.35rem 0;
+  min-height: 2.2em;
+  line-height: 1.3;
+}
+.bs-col-current .bs-col-head { color: #B0C4DE; }
 
 /* Gösterge satırları */
-.bs-metric { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px dotted #C9D0C6; padding: 0.28rem 0; font-size: 0.93rem; }
-.bs-metric .k { color: #4A5750; }
-.bs-metric .v { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
-.bs-metric .v.water { color: #1C5D7A; }
-.bs-metric .v.income { color: #7A5A0C; }
-.bs-metric .v.neg { color: #B3392F; }
-.bs-conf { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-left: 0.35rem; vertical-align: middle; }
-.bs-bar { height: 6px; background: #D5DBD2; border-radius: 3px; overflow: hidden; margin: 0.12rem 0 0.35rem 0; }
-.bs-bar > span { display: block; height: 100%; background: #2E7D4F; }
-.bs-soil-k { font-size: 0.84rem; color: #4A5750; display: flex; justify-content: space-between; }
+.bs-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dotted rgba(255, 255, 255, 0.18);
+  padding: 0.3rem 0;
+  font-size: 0.93rem;
+}
+.bs-metric .k { color: #8C9BAE; font-weight: 500; }
+.bs-metric .v { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; color: #FFFFFF; }
+.bs-metric .v.water { color: #2E96F5; }
+.bs-metric .v.income { color: #EAFE07; }
+.bs-metric .v.neg { color: #FF5252; }
+.bs-conf { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 0.35rem; vertical-align: middle; }
+.bs-bar { height: 7px; background: rgba(255, 255, 255, 0.12); border-radius: 4px; overflow: hidden; margin: 0.14rem 0 0.38rem 0; }
+.bs-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #0052FF 0%, #00D26A 100%); border-radius: 4px; }
+.bs-soil-k { font-size: 0.85rem; color: #8C9BAE; display: flex; justify-content: space-between; font-weight: 600; }
 
-.bs-big { font-family: 'Barlow Semi Condensed', sans-serif; font-size: 2.3rem; font-weight: 700; line-height: 1.05; color: #1F2A24; }
-.bs-big.water { color: #1C5D7A; }
-.bs-big-label { color: #4A5750; font-size: 0.92rem; margin-bottom: 0.8rem; }
-.bs-headline { font-family: 'Barlow Semi Condensed', sans-serif; font-size: 1.45rem; font-weight: 600; line-height: 1.3;
-  padding: 0.7rem 1rem; margin: 0.2rem 0 1rem 0; border-left: 6px solid #2E7D4F; background: #EAF1EA; color: #1F2A24; }
-.bs-headline.yellow { border-left-color: #E3B505; background: #FBF6DF; }
-.bs-headline.red { border-left-color: #B3392F; background: #F7E9E7; }
-.bs-realcount { font-size: 0.9rem; color: #4A5750; margin: 0.6rem 0 0.2rem 0; }
-.bs-fact { padding: 0.35rem 0 0.35rem 0.8rem; border-left: 3px solid #1C5D7A; margin: 0.25rem 0; color: #2E3A33; }
+.bs-big { font-family: 'Fira Sans', sans-serif; font-size: 2.3rem; font-weight: 900; line-height: 1.05; color: #FFFFFF; }
+.bs-big.water { color: #2E96F5; }
+.bs-big-label { color: #8C9BAE; font-size: 0.92rem; margin-bottom: 0.8rem; }
+.bs-headline {
+  font-family: 'Fira Sans', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.35;
+  padding: 0.8rem 1.1rem;
+  margin: 0.3rem 0 1rem 0;
+  border-left: 5px solid #00D26A;
+  background: rgba(13, 21, 36, 0.88);
+  border: 1px solid rgba(46, 150, 245, 0.12);
+  border-left: 5px solid #00D26A;
+  border-radius: 6px;
+  color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+.bs-headline.yellow { border-left-color: #FFD600; background: rgba(36, 30, 10, 0.7); }
+.bs-headline.red { border-left-color: #E43700; background: rgba(40, 12, 12, 0.7); }
+.bs-realcount { font-size: 0.9rem; color: #8C9BAE; margin: 0.6rem 0 0.2rem 0; font-weight: 600; }
+.bs-fact { padding: 0.4rem 0 0.4rem 0.85rem; border-left: 3px solid #2E96F5; margin: 0.3rem 0; color: #D8E2ED; }
 @media (max-width: 760px) { .bs-strip { grid-template-columns: repeat(2, 1fr); } .bs-big { font-size: 1.8rem; } }
 </style>
 """
@@ -115,7 +416,7 @@ def _text_on(hex_color: str) -> str:
     h = hex_color.lstrip("#")
     r, g, b = (int(h[i:i + 2], 16) / 255 for i in (0, 2, 4))
     lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
-    return INK if lum > 0.55 else "#FFFFFF"
+    return "#060B14" if lum > 0.55 else "#FFFFFF"
 
 
 def status_html(status: str, lang: str) -> str:
@@ -221,12 +522,15 @@ def _layout(fig: go.Figure, height: int = 360, **kw) -> go.Figure:
     fig.update_layout(
         height=height, margin=dict(l=10, r=10, t=30, b=10),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Barlow, 'Segoe UI', system-ui, sans-serif", color=INK, size=17 if presenting() else 13),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0),
+        font=dict(family="Overpass, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                  color=INK, size=17 if presenting() else 13),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0, font=dict(color=INK)),
         **kw,
     )
-    fig.update_xaxes(gridcolor="#D5DBD2", zeroline=False)
-    fig.update_yaxes(gridcolor="#D5DBD2", zerolinecolor="#AEB8AC")
+    fig.update_xaxes(gridcolor="rgba(255,255,255,0.08)", zeroline=False,
+                     tickfont=dict(color=MUTED), title_font=dict(color=INK))
+    fig.update_yaxes(gridcolor="rgba(255,255,255,0.08)", zerolinecolor="rgba(255,255,255,0.18)",
+                     tickfont=dict(color=MUTED), title_font=dict(color=INK))
     return fig
 
 
@@ -251,7 +555,7 @@ def risk_heatmap(risk: pd.DataFrame, bare: pd.Series | None, lang: str) -> go.Fi
         text.append([f"{v * 100:.0f}" for v in bare.fillna(0).to_numpy()])
     fig = go.Figure(go.Heatmap(
         z=zs, x=month_names(lang), y=labels, text=text, texttemplate="%{text}", showscale=False,
-        colorscale=[[0, "#F3F4EF"], [0.5, "#C7D3C2"], [1, "#2F5A44"]], hoverinfo="skip",
+        colorscale=[[0, "#060B14"], [0.35, "#0042A6"], [0.7, "#2E96F5"], [1, "#EAFE07"]], hoverinfo="skip",
         xgap=2, ygap=2,
     ))
     fig.update_yaxes(autorange="reversed")
@@ -261,7 +565,7 @@ def risk_heatmap(risk: pd.DataFrame, bare: pd.Series | None, lang: str) -> go.Fi
 def water_month_chart(risk: pd.DataFrame, lang: str) -> go.Figure:
     fig = go.Figure()
     fig.add_bar(x=month_names(lang), y=risk["precip_mm"], name=("Yağış (mm)" if lang == "tr" else "Rain (mm)"),
-                marker_color="#7FA7B8")
+                marker_color="#2E96F5")
     fig.add_scatter(x=month_names(lang), y=risk["et0_mm"], name="ET0 (mm)", mode="lines+markers",
                     line=dict(color=INCOME, width=3))
     return _layout(fig, 300)
@@ -276,9 +580,9 @@ def income_box(options: dict, crops, ctx, lang: str, unit: str, order: list[tupl
         if key not in options:
             continue
         totals = options[key].detail["sim"]["margin"].sum(axis=1) * f
-        color = MUTED if key == "current" else {"profit": INCOME, "aquifer": WATER, "balance": "#2E7D4F"}[key]
+        color = MUTED if key == "current" else {"profit": INCOME, "aquifer": WATER, "balance": "#00D26A"}[key]
         fig.add_box(y=totals, name=label, boxpoints="all", jitter=0.4, pointpos=0, marker=dict(size=4, color=color),
-                    line=dict(color=color), fillcolor="rgba(0,0,0,0.03)")
+                    line=dict(color=color), fillcolor="rgba(255,255,255,0.04)")
     fig.update_yaxes(title=f"{ctx.basin.currency_symbol}/{unit}")
     return _layout(fig, 380, showlegend=False)
 
@@ -293,12 +597,13 @@ def pareto_chart(res, options: dict, labels: dict[str, str], ctx, unit: str, lan
     x_col = "water_mean" if ctx.settings.irrigated else "cvar5"
     x_title = (f"{t('water_use', lang)} (m³/{unit})" if ctx.settings.irrigated else f"{t('bad_income', lang)} ({ctx.basin.currency_symbol}/{unit})")
     fig.add_scatter(x=sample[x_col] * f, y=sample["mean_margin"] * f, mode="markers",
-                    marker=dict(size=4, color="#AEB8AC", opacity=0.5), name=("Uygun planlar" if lang == "tr" else "Feasible plans"),
+                    marker=dict(size=4, color="rgba(140, 155, 174, 0.45)", opacity=0.5), name=("Uygun planlar" if lang == "tr" else "Feasible plans"),
                     hoverinfo="skip")
     p = res.pareto
     fig.add_scatter(x=p[x_col] * f, y=p["mean_margin"] * f, mode="markers",
-                    marker=dict(size=7, color=p["soil"], colorscale="Greens", showscale=True,
-                                colorbar=dict(title=t("soil_health", lang), thickness=10)),
+                    marker=dict(size=7, color=p["soil"], colorscale=[[0, "#0042A6"], [0.5, "#00D26A"], [1, "#EAFE07"]], showscale=True,
+                                colorbar=dict(title=dict(text=t("soil_health", lang), font=dict(color=INK)),
+                                              tickfont=dict(color=MUTED), thickness=10)),
                     name="Pareto", text=[" → ".join(ctx.crops[c].name(lang) for c in pl) for pl in p["plan"]],
                     hovertemplate="%{text}<extra></extra>")
     for key, opt in options.items():
@@ -323,10 +628,10 @@ def calendar_chart(cal: pd.DataFrame, crops, risk: pd.DataFrame, lang: str) -> g
                                  line=dict(color=c.color, width=16), showlegend=False,
                                  hovertemplate=f"{c.name(lang)} {r['year']}<extra></extra>"))
         fig.add_trace(go.Scatter(x=[r["mid_start"], r["mid_end"]], y=[c.name(lang)] * 2, mode="lines",
-                                 line=dict(color="#B3392F", width=4), showlegend=False,
+                                 line=dict(color="#E43700", width=4), showlegend=False,
                                  hovertemplate=("Sıcak stresine hassas" if lang == "tr" else "Heat-sensitive") + "<extra></extra>"))
         fig.add_trace(go.Scatter(x=[r["frost_start"], r["frost_end"]], y=[c.name(lang)] * 2, mode="lines",
-                                 line=dict(color="#5B8DB8", width=4, dash="dot"), showlegend=False,
+                                 line=dict(color="#2E96F5", width=4, dash="dot"), showlegend=False,
                                  hovertemplate=("Dona hassas" if lang == "tr" else "Frost-sensitive") + "<extra></extra>"))
     fig.update_yaxes(autorange="reversed")
     return _layout(fig, 70 + 42 * max(1, cal["crop"].nunique()))

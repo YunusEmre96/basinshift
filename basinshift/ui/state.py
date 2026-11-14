@@ -48,7 +48,9 @@ def basins() -> dict[str, Basin]:
 
 
 def current_basin() -> Basin:
-    return basins()[st.session_state["basin_id"]]
+    bid = st.session_state.get("basin_id", "konya")
+    bs = basins()
+    return bs.get(bid) or list(bs.values())[0]
 
 
 def current_site() -> Site:
@@ -227,14 +229,19 @@ def sync_plan_widgets() -> None:
 
 def init_state(cfg: dict) -> None:
     ss = st.session_state
+    app = cfg.get("app", {})
+    if not ss.get("lang"):
+        ss["lang"] = app.get("default_language", "tr")
+    if not ss.get("basin_id"):
+        ss["basin_id"] = app.get("default_basin", "konya")
+    if not ss.get("unit"):
+        ss["unit"] = app.get("area_unit", "da")
+    bs = basins()
+    if not ss.get("site_id") and ss.get("basin_id") in bs:
+        ss["site_id"] = bs[ss["basin_id"]].sites[0].id
     if ss.get("_init"):
         return
-    app = cfg.get("app", {})
-    ss["lang"] = app.get("default_language", "tr")
-    ss["basin_id"] = app.get("default_basin", "konya")
-    ss["site_id"] = basins()[ss["basin_id"]].sites[0].id
-    ss["unit"] = app.get("area_unit", "da")
-    b = basins()[ss["basin_id"]]
+    b = bs[ss["basin_id"]]
     ss["lat"], ss["lon"] = b.sites[0].lat, b.sites[0].lon
     ss["cap_unlimited"] = True
     ss["cap_val"] = 600.0
@@ -251,6 +258,7 @@ def init_state(cfg: dict) -> None:
 
 
 PERSISTENT_WIDGETS = (
+    "lang", "basin_id", "site_id", "unit", "present", "lat", "lon", "d_temp", "d_precip", "cmip6",
     "hist_0", "hist_1", "plan_0", "plan_1", "plan_2", "plan_3",
     "irrigated", "method", "restricted", "cap_unlimited", "cap_val",
     "equipment", "contracts", "no_buyer", "excluded", "min_forage",

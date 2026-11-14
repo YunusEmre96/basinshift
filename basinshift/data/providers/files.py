@@ -33,8 +33,9 @@ ALIASES = {
     "SPL4SMGP_008_Geophysical_Data_sm_rootzone": "sm_rootzone",
     # AppEEARS MODIS
     "MOD13Q1_061__250m_16_days_NDVI": "ndvi",
-    # GPM IMERG (GES DISC zaman serisi)
+    # GPM IMERG (GES DISC zaman serisi / POWER API)
     "precipitation": "precip", "precipitationCal": "precip", "GPM_3IMERGDF_07_precipitation": "precip",
+    "IMERG_PRECTOT": "precip",
     # GRACE
     "lwe_thickness": "tws_anomaly_cm", "tws": "tws_anomaly_cm",
     # Genel

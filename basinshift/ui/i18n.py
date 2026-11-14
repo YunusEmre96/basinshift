@@ -248,6 +248,27 @@ STRINGS: dict[str, dict[str, str]] = {
     "glossary": {"tr": "Sözlük", "en": "Glossary"},
     "not_used": {"tr": "Bilerek kullanmadıklarımız", "en": "Deliberately not used"},
     "how_switch": {"tr": "Gerçek veriye geçiş", "en": "Switching to real data"},
+
+    # Küresel Ticaret ve Emtia Dengesi
+    "trade_section_title": {"tr": "🌐 Küresel Ticaret, İhracat/İthalat & Emtia Piyasaları Karşılaştırması",
+                            "en": "🌐 Global Commodity Trade, Import/Export & Market Benchmarks"},
+    "trade_section_sub": {"tr": "BasinShift yalnızca 'şunu ek' demez; tarladaki her ürün kararının ulusal ithalat bağımlılığı, küresel borsa fiyatları (CBOT/Euronext) ve sanal su ticaretindeki yerini analiz eder.",
+                          "en": "BasinShift does not merely say 'plant this'; it evaluates every field decision against national import dependencies, global exchange benchmarks (CBOT/Euronext), and virtual water trade."},
+    "trade_wheat_card": {"tr": "Buğday & Un: Türkiye dünya #1 un ihracatçısıdır. Kışlık buğday ekimi akiferi korurken ihracat sanayisinin yerli hammadde açığını kapatır.",
+                         "en": "Wheat & Flour: Türkiye is the world's #1 flour exporter. Winter wheat preserves aquifers while securing domestic milling raw material."},
+    "trade_oil_card": {"tr": "Bitkisel Yağ & Ayçiçeği: Türkiye bitkisel yağda %60 ithalat bağımlısıdır. Ayçiçeği, mısıra kıyasla %35 daha az su çekerek devasa ithalat faturasını azaltır.",
+                       "en": "Vegetable Oil: Türkiye has a 60% import deficit. Sunflower uses 35% less irrigation than corn, directly reducing foreign currency drains."},
+    "trade_corn_card": {"tr": "Dane Mısır & Sanal Su: Mısır yüksek kâr getirir ancak ton başına 1.280 m³ yeraltı suyu tüketir; aşırı ekim obrukları tetikler ve sanal su kaybı yaratır.",
+                        "en": "Feed Corn & Virtual Water: Corn yields high immediate cash but drains 1,280 m³/ton of groundwater, accelerating sinkholes and virtual water depletion."},
+    "trade_pulse_card": {"tr": "Nohut & Bakliyat: Kuru tarımda sıfır kuyu suyu harcar; toprağa doğal azot bağlayarak bir sonraki yılın gübre maliyetini düşürür ve net ihracat sağlar.",
+                         "en": "Pulses & Nitrogen: Zero aquifer withdrawal under rainfed; fixes atmospheric nitrogen, cutting next season's fertilizer costs and supporting pulse exports."},
+    "col_crop": {"tr": "Ürün", "en": "Crop"},
+    "col_group": {"tr": "Emtia Grubu", "en": "Commodity Group"},
+    "col_local_price": {"tr": "Yerel Fiyat", "en": "Local Price"},
+    "col_global_price": {"tr": "Küresel Borsa (USD/ton)", "en": "Global Benchmark (USD/ton)"},
+    "col_trade_status": {"tr": "İthalat / İhracat Dengesi", "en": "Trade Balance & Security"},
+    "col_virtual_water": {"tr": "Sanal Su (m³/ton)", "en": "Virtual Water (m³/ton)"},
+    "col_macro_advice": {"tr": "Stratejik Değerlendirme", "en": "Strategic Macro Advice"},
 }
 
 
