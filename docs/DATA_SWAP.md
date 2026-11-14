@@ -4,6 +4,21 @@ BasinShift'in hesap çekirdeği yalnızca **veri şemasını** (`basinshift/data
 bilir; verinin nereden geldiğini bilmez. Bu yüzden kaynak değiştirmek tek bir
 ayardır ve kodda değişiklik gerektirmez.
 
+## 0. Kısa yol (yarışma günü, Windows)
+
+1. `kur.bat` (bir kez) → 2. `veri_indir.bat` → 3. `calistir.bat`.
+
+`veri_indir.bat` dört havzanın bütün pilot noktaları için NASA POWER iklimini ve SoilGrids toprak verisini indirir,
+birim/ölçek kontrolünden geçirir (yıllık yağış, radyasyon birimi, eksik veri, Tmax < Tmin…), sentetikle yan yana
+karşılaştırır ve **yalnızca tümü başarılı olan** veri setleri için `config.yaml`'daki kaynağı `nasa` yapar. Rapor:
+`data/veri_raporu.txt`. İndirilen veri `data/cache/nasa/` altında kalır; sonrasında internet gerekmez.
+
+Earthdata gerektirenler (SMAP, HLS/MODIS, SRTM, GRACE): `.env.example` dosyasını `.env` adıyla kopyalayıp doldurun,
+`nasa_ek_paketler.bat` çalıştırın, sonra `veri_indir.bat --earthdata`. CMIP6: `veri_indir.bat --datasets climate_deltas`.
+
+Aşağıdaki `BASINSHIFT_DATA=... streamlit run app.py` biçimi Linux/macOS içindir. Windows PowerShell'de:
+`$env:BASINSHIFT_DATA_CLIMATE_DAILY="nasa"; streamlit run app.py`
+
 ## 1. Üç kaynak
 
 | Kaynak | Ne zaman | Nasıl çalışır |

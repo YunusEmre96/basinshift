@@ -64,9 +64,10 @@ SMAP kök bölgesi nemi (2015–) ─────┤► ekimde başlangıç topr
 
 * `tables/rules/*.yaml`; motor: `basinshift/knowledge/rules.py`.
 * Konya 2026: mısır/patates/pancar 4 yılda ≤ 2 ve art arda değil; havza ürün deseni.
-  İlk ihlal yılı **sarı**, ertesi yıl da sürerse **kırmızı**. Sarı yılda o yılın
-  desteği, kırmızıdan itibaren tüm destek kesilir. Kaynak: yerel haberler —
-  **resmi metinle teyit edilmeli**.
+  İlk ihlal yılı **sarı**, ertesi yıl da sürerse **kırmızı**. Kırmızıdan itibaren tüm destek kesilir (İl Müdürlüğü
+  açıklaması). Sarı yılda o yılın desteğinin sıfır sayılması bizim yorumumuzdur (destek "münavebeye uygun üretene"
+  ödenir). Kural, tebliğ haberleri ve Bakanlık belgesiyle 14.11.2026'da kontrol edildi; kaynaklar ve hâlâ varsayım
+  olan destek kalemleri: docs/VERIFICATION_LOG.md.
 * Tavsiye kuralları (hastalık ara verme süreleri, aynı aile art arda) kartları
   filtreler (ayarlanabilir) ve toprak "zararlı döngüsü" skorunu düşürür.
 
@@ -81,7 +82,8 @@ SMAP kök bölgesi nemi (2015–) ─────┤► ekimde başlangıç topr
 
 ## 7. Optimizasyon
 
-* Havzanın ürünleriyle tüm 4 yıllık sıralamalar (Konya: 13⁴ = 28.561) taranır.
+* Havzanın ürünleriyle tüm 4 yıllık sıralamalar taranır. Konya'da 13 ürün var; çok yıllık yonca öneri dışında
+  tutulduğu için taranan plan sayısı 12⁴ = **20.736**'dır (ekrandaki sayı da budur).
 * Kısıtlar: kuru tarıma uygunluk, ekipman, sözleşme, alıcı, istenmeyen ürün, yem alt sınırı.
   Çok yıllık bitkiler (yonca) tek yıl modellendiği için öneri kartlarına girmez; mevcut planda seçilebilir.
 * Yalnızca yasal olarak **yeşil** planlar kartlara aday.

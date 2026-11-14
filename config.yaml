@@ -11,8 +11,12 @@
 #   files      -> data/external/ klasörüne konmuş CSV dosyaları
 #                 (yarışmada NASA dosya paylaşırsa bu yol kullanılır)
 #
-# Ortam değişkeniyle hepsini birden değiştirmek:
+# En kolay yol: veri_indir.bat (ya da python scripts/setup_real_data.py). Veriyi indirir,
+# birim kontrolünden geçirir ve başarılı veri setlerinin kaynağını aşağıda 'nasa' yapar.
+#
+# Ortam değişkeniyle hepsini birden değiştirmek (Linux/macOS):
 #   BASINSHIFT_DATA=nasa streamlit run app.py
+# Windows PowerShell:   $env:BASINSHIFT_DATA="nasa"; streamlit run app.py
 # Tek bir veri setini değiştirmek:
 #   BASINSHIFT_DATA_CLIMATE_DAILY=nasa
 # =====================================================================

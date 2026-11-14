@@ -43,7 +43,9 @@ basinshift/
   optimizer/
     pareto.py                  Pareto maskesi
     search.py                  tarama, kartlar, tarla bölme karışımları
+  textutil.py                  iki dilli not/uyarı yardımcıları (bi, loc)
   explain/
+    headline.py                Planlar sayfasının tek cümlelik özeti
     why.py                     "Neden bu plan?" (5 başlık, şablon tabanlı)
     confidence.py              güven etiketleri
     fmt.py                     para/alan/plan biçimlendirme
@@ -51,9 +53,11 @@ basinshift/
   report/scorecard.py          Risk ve Su Karnesi (PDF)
   ui/                          state (önbellekli hesaplar), components, pages, i18n
 scripts/
+  setup_real_data.py           gerçek veriyi indir + birim kontrolü + config.yaml'ı güncelle (veri_indir.bat)
+  freeze.py                    kod dondurma: test + etiket + çevrimdışı zip (yedek_al.bat)
   fetch_data.py                gerçek veriyi indir → önbellek
   export_synthetic.py          files kaynağı için şablon CSV'ler
-tests/                         pytest (46 test)
+tests/                         pytest (62 test)
 ```
 
 ## Tasarım ilkeleri
@@ -67,13 +71,13 @@ tests/                         pytest (46 test)
    modeli güncelleyebilir.
 4. **Kara kutu yok:** hesaplar FAO yöntemleri ve şeffaf optimizasyon; açıklama
    metinleri şablon tabanlı (dil modeli rakam üretmez).
-5. **Vektörel hesap:** 28.561 plan × 41 dönem × 4 yıl, sıradan bir dizüstünde ~1 sn.
+5. **Vektörel hesap:** 20.736 plan (12 ürün; çok yıllık yonca öneri dışı) × 41 dönem × 4 yıl, sıradan bir dizüstünde ~1 sn.
 
 ## Performans
 
 | Adım | Süre (dizüstü) |
 |---|---|
 | Ürün-yıl tablosu (13 ürün × 44 yıl, günlük denge) | ~0,2 sn |
-| 28.561 planın stres testi + kurallar + toprak | ~0,9 sn |
+| 20.736 planın stres testi + kurallar + toprak | ~0,9 sn |
 | Pareto + kartlar + karışımlar | ~0,3 sn |
 | Havza modeli (LP + 12 yıllık örümcek ağı + bütçe eğrisi) | ~0,5–1 sn |

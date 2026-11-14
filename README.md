@@ -11,24 +11,32 @@ bu kararın **havzanın suyuna ve ürün fiyatlarına** etkisini gösteren karar
 > fiziksel olarak tutarlı **sentetik** veriyle çalışır ve bunu her ekranda açıkça
 > söyler. Gerçek veriye geçiş tek bir ayardır → [docs/DATA_SWAP.md](docs/DATA_SWAP.md)
 
-## Hızlı başlangıç
+## Hızlı başlangıç (Windows)
+
+Klasördeki dosyalara çift tıklayın (Python 3.11+ kurulu olmalı):
+
+| Dosya | Ne yapar |
+|---|---|
+| `kur.bat` | Sanal ortamı kurar, paketleri yükler, testleri çalıştırır (bir kez; internet gerekir) |
+| `calistir.bat` | Uygulamayı açar → http://localhost:8501 |
+| `veri_indir.bat` | Gerçek NASA verisini indirir, birim kontrolünden geçirir, başarılı veri setleri için `config.yaml`'ı günceller |
+| `test.bat` | Testleri çalıştırır |
+| `yedek_al.bat` | Testler + sürüm etiketi + `data/cache` dahil çevrimdışı zip (`dist/`) |
+| `nasa_ek_paketler.bat` | GRACE ve CMIP6 için ek paketler |
+
+Tarayıcıda **"Örnek tarlayı yükle: Mehmet Amca, Çumra"** düğmesine basın; uygulama doğrudan Planlar sayfasına geçer.
+Projektörde kenar çubuğundan **Sunum modu**nu açın.
+
+Linux / macOS:
 
 ```bash
-python -m venv .venv && source .venv/bin/activate     # Windows: .venv\Scripts\activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 streamlit run app.py
+python scripts/setup_real_data.py        # gerçek NASA verisi (POWER + SoilGrids; anahtar gerekmez)
 ```
 
-Tarayıcıda açılan sayfada **"Örnek tarlayı yükle: Mehmet Amca, Çumra"** düğmesine basın.
-
-Gerçek NASA POWER iklim verisiyle (anahtar gerekmez):
-
-```bash
-python scripts/fetch_data.py --basin konya --datasets climate_daily
-BASINSHIFT_DATA_CLIMATE_DAILY=nasa streamlit run app.py
-```
-
-Testler: `python -m pytest -q` (46 test; FAO-56 Örnek 18 doğrulaması dahil).
+Testler: `python -m pytest -q` (62 test; FAO-56 Örnek 18 doğrulaması, uç durumlar ve veri birim kontrolleri dahil).
 
 ## Sayfalar
 
@@ -52,7 +60,11 @@ konum (pilot noktalar veya koordinat), alan birimi (da/ha), **Ya şöyle olursa?
 * [docs/METHODS.md](docs/METHODS.md) — tüm formüller, katsayılar ve varsayımlar
 * [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — kod yapısı ve tasarım ilkeleri
 * [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) — 3 dakikalık jüri demosu
-* [docs/PROJECT_PAGE_EN.md](docs/PROJECT_PAGE_EN.md) — İngilizce proje sayfası taslağı
+* [docs/PROJECT_PAGE_EN.md](docs/PROJECT_PAGE_EN.md) — İngilizce proje sayfası (gönderim formu için)
+* [docs/BRIEF_CHECK.md](docs/BRIEF_CHECK.md) — NASA brifi karşılama tablosunun uygulamayla satır satır kontrolü
+* [docs/VERIFICATION_LOG.md](docs/VERIFICATION_LOG.md) — hangi rakam hangi kaynaktan teyit edildi, ne varsayım kaldı
+* [docs/QA_PREP.md](docs/QA_PREP.md) — jürinin zor soruları ve cevaplar
+* [docs/SUNUM_PAKETI.md](docs/SUNUM_PAKETI.md) — pitch metni, video akışı, gönderim kontrol listesi
 
 ## Varsayımları güncellemek (kod bilmeden)
 
@@ -65,12 +77,15 @@ konum (pilot noktalar veya koordinat), alan birimi (da/ha), **Ya şöyle olursa?
 | Havza modeli çiftlik tipleri | `tables/farm_types.csv` |
 | Pilot noktalar | `tables/basins.yaml` |
 
-## Teyit edilmesi gerekenler (sunumdan önce)
+## Teyit durumu (14 Kasım 2026)
 
-* Konya su kısıtı ilçe listesi ve 2026 destek tutarları (şu an yerel haberlerden; `tr_konya_water_2026.yaml`)
-* Silajlık mısırın kısıt kapsamında olup olmadığı
-* 2026 ürün fiyatları ve maliyetleri (`basin_economics.csv`)
-* Rotasyon etkisi katsayıları ve hastalık ara verme süreleri (yerel ziraat mühendisi)
+Ayrıntı ve kaynaklar: [docs/VERIFICATION_LOG.md](docs/VERIFICATION_LOG.md).
+
+* **Teyit edildi:** münavebe kuralı (4 üretim yılında en fazla 2, art arda değil; silajlık mısır kapsamda), 19 Konya ilçesi,
+  buğday/arpa/nohut/mercimek/aspir/ayçiçeği temel+planlı destek tutarları (Eylül 2026 güncellemesi), TMO buğday-arpa ve
+  TÜRKŞEKER pancar alım fiyatları.
+* **Hâlâ varsayım:** su kısıtı desteğinin bir kısmı (katsayıdan türetildi), fiğ/silaj/pancar/yonca destekleri, mısır ve
+  baklagil fiyatları, bütün maliyetler, rotasyon etkisi katsayıları ve ara verme süreleri (yerel ziraat mühendisi).
 
 ## Lisans ve kaynaklar
 

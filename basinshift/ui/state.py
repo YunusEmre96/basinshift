@@ -1,7 +1,7 @@
 """Arayüz durumu ve önbellekli hesaplar.
 
 Streamlit her etkileşimde betiği baştan çalıştırır; ağır hesaplar
-(veri, ürün-yıl tablosu, 28 bin planın taranması, havza LP'si) burada
+(veri, ürün-yıl tablosu, 20 bin planın taranması, havza LP'si) burada
 parametreleriyle önbelleğe alınır.
 """
 from __future__ import annotations

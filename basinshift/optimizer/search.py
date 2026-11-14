@@ -1,7 +1,7 @@
 """Plan arama, kartların seçimi ve tarla bölme (portföy) karışımları.
 
 Akış:
-    1. Havzanın ürünlerinden 4 yıllık tüm sıralamalar (ör. 13⁴ = 28.561)
+    1. Havzanın ürünlerinden 4 yıllık tüm sıralamalar (Konya: 13 ürün, çok yıllık yonca hariç 12⁴ = 20.736)
     2. Çiftçi kısıtları: kuru tarıma uygunluk, ekipman, sözleşme, alıcı
     3. Kural paketi (yasal) → yalnızca YEŞİL planlar kartlara aday
     4. Stres testi + toprak skorları (FieldContext.evaluate)
