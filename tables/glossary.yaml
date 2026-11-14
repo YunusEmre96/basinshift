@@ -1,0 +1,52 @@
+# Uygulama içi sözlük (NASA brifi: bilimsel terimleri açıklayın)
+et0:
+  tr: {term: "Referans buharlaşma-terleme (ET0)", text: "Belirli bir havada, iyi sulanmış kısa bir çim örtüsünün bir günde kaybettiği su (mm). Havanın 'su emme gücü'dür; sıcak, güneşli, rüzgârlı ve kuru günlerde artar. NASA POWER'ın sıcaklık, nem, rüzgâr ve güneş verisiyle FAO-56 Penman-Monteith denkleminden hesaplanır."}
+  en: {term: "Reference evapotranspiration (ET0)", text: "Water a well-watered short grass loses per day under given weather (mm) — the atmosphere's 'thirst'. Computed from NASA POWER temperature, humidity, wind and solar data with the FAO-56 Penman-Monteith equation."}
+etc:
+  tr: {term: "Ürün su ihtiyacı (ETc)", text: "ET0 × bitki katsayısı (Kc). Kc ürüne ve gelişme dönemine göre değişir; örneğin pancar yaz ortasında çime göre %20 fazla su tüketir (Kc≈1.2)."}
+  en: {term: "Crop water requirement (ETc)", text: "ET0 × crop coefficient (Kc). Kc varies by crop and growth stage; mid-summer sugar beet uses ~20% more than grass (Kc≈1.2)."}
+soil_moisture_anomaly:
+  tr: {term: "Toprak nemi anomalisi", text: "Toprağın şu anki neminin o mevsimin uzun yıllar ortalamasından ne kadar farklı olduğu. NASA SMAP uydusu yüzey (0–5 cm) ve kök bölgesi (0–100 cm) nemini ~9 km çözünürlükte tahmin eder."}
+  en: {term: "Soil moisture anomaly", text: "How much current soil moisture differs from the long-term seasonal average. NASA SMAP estimates surface (0–5 cm) and root-zone (0–100 cm) moisture at ~9 km."}
+ndvi:
+  tr: {term: "NDVI (bitki örtüsü indeksi)", text: "Uydunun kırmızı ve yakın kızılötesi ışık ölçümlerinden hesaplanan yeşillik göstergesi (−1 ile 1 arası). Çıplak toprak ≈0.1–0.2, sağlıklı ürün ≈0.6–0.9. HLS (Landsat + Sentinel-2) ile 30 m çözünürlükte tarla düzeyinde izlenir."}
+  en: {term: "NDVI (vegetation index)", text: "Greenness index from red and near-infrared reflectance (−1 to 1). Bare soil ≈0.1–0.2, healthy crop ≈0.6–0.9. Tracked per field at 30 m with HLS (Landsat + Sentinel-2)."}
+frost_risk:
+  tr: {term: "Don riski", text: "Ürünün hassas döneminde (ilkbahar ekimlerinde çıkış, kışlık tahıllarda çiçeklenme) minimum sıcaklığın ürün eşiğinin altına düştüğü gün sayısı. Son 40+ yılın NASA POWER verisinden hesaplanır."}
+  en: {term: "Frost risk", text: "Days when minimum temperature falls below the crop threshold during its sensitive stage. Computed from 40+ years of NASA POWER data."}
+water_balance:
+  tr: {term: "Su dengesi", text: "Kök bölgesine giren (yağış, sulama) ve çıkan (buharlaşma-terleme, derine sızma, yüzey akışı) suyun günlük muhasebesi. Ürün ihtiyacını karşılamayan kısım sulama ihtiyacıdır."}
+  en: {term: "Water balance", text: "Daily accounting of water entering (rain, irrigation) and leaving (evapotranspiration, drainage, runoff) the root zone. The unmet part of crop demand is the irrigation need."}
+cvar:
+  tr: {term: "Kötü dönem geliri (CVaR %5)", text: "Geçmişin en kötü %5'lik 4 yıllık dönemlerinde bu planın yıllık ortalama brüt kârı. Finansta risk ölçmek için kullanılır: 'işler kötü giderse ortalama ne kazanırım?'"}
+  en: {term: "Bad-period income (CVaR 5%)", text: "Average yearly gross margin of this plan in the worst 5% of historical 4-year periods. A finance risk measure: 'if things go badly, what do I earn on average?'"}
+pareto:
+  tr: {term: "Pareto cephesi", text: "Hiçbir göstergede (gelir, risk, su, toprak) başka bir planın gerisinde kalmayan planlar kümesi. Bu planlar arasında seçim bir tercih meselesidir: biri daha çok kazandırır ama daha çok su harcar."}
+  en: {term: "Pareto front", text: "Plans that are not beaten on every indicator (income, risk, water, soil) by another plan. Choosing among them is a trade-off."}
+grace:
+  tr: {term: "GRACE / GRACE-FO", text: "Yerçekimindeki çok küçük değişimlerden yeraltı suyu dahil toplam su depolamasını ölçen NASA uyduları. Çözünürlük ~300 km olduğu için yalnızca havza ölçeğinde yorumlanır; tek bir tarla için kullanılamaz."}
+  en: {term: "GRACE / GRACE-FO", text: "NASA satellites measuring total water storage, including groundwater, from tiny changes in gravity. At ~300 km resolution they are interpreted at basin scale only — never for a single field."}
+satellite_vs_ground:
+  tr: {term: "Uydu ve yer ölçümü", text: "Uydu geniş alanı düzenli ve aynı yöntemle ölçer ama tek bir noktadaki hassasiyeti sınırlıdır; yer istasyonu tek noktada hassas ölçer ama arada kalan alanları göremez. İkisini birlikte kullanmak, uydunun sapmasını yerel ölçümle düzeltmeyi sağlar."}
+  en: {term: "Satellite vs ground", text: "Satellites observe wide areas consistently but with limited point accuracy; ground stations are precise at one point but miss the space between. Combining both lets local measurements correct satellite bias."}
+shadow_price:
+  tr: {term: "Suyun gölge fiyatı", text: "Havzaya 1 m³ ek su verilseydi havzanın toplam brüt kârının kaç para artacağı. Doğrusal programlamanın yan ürünüdür; su kısıtının gerçek ekonomik maliyetini gösterir."}
+  en: {term: "Shadow price of water", text: "How much basin-wide gross margin would rise with one more m³ of water. A by-product of linear programming; shows the true economic cost of the water constraint."}
+price_of_anarchy:
+  tr: {term: "Koordinasyonsuzluğun bedeli", text: "Herkes kendi başına geçen yılın fiyatına bakarak ektiğinde ortaya çıkan sonuç ile havza ölçeğinde koordineli bir planın sonucu arasındaki fark (gelir ve su). Oyun teorisinde 'anarşinin bedeli' olarak bilinir."}
+  en: {term: "Cost of non-coordination", text: "Gap in income and water between everyone planting on last year's price and a basin-coordinated plan. Known in game theory as the 'price of anarchy'."}
+cobweb:
+  tr: {term: "Örümcek ağı (cobweb) döngüsü", text: "Çiftçiler geçen yıl iyi fiyat bulan ürüne yönelince hasatta arz fazlası oluşur ve fiyat düşer; ertesi yıl o üründen kaçılır ve fiyat yükselir. Bilinen bir tarım ekonomisi modelidir."}
+  en: {term: "Cobweb cycle", text: "Farmers chase last year's high price, causing oversupply and a price crash; next year they avoid the crop and prices spike. A classic agricultural economics model."}
+nitrogen_fixing:
+  tr: {term: "Azot bağlayan bitkiler", text: "Nohut, mercimek, fiğ, yonca gibi baklagiller köklerindeki bakterilerle havadaki azotu toprağa bağlar; sonraki ürünün gübre ihtiyacını azaltır."}
+  en: {term: "Nitrogen-fixing crops", text: "Legumes (chickpea, lentil, vetch, alfalfa) fix atmospheric nitrogen via root bacteria, cutting fertiliser needs of the next crop."}
+cover_crop:
+  tr: {term: "Örtü bitkisi", text: "İki ana ürün arasında toprağı çıplak bırakmamak için ekilen bitki. Erozyonu azaltır, organik madde ekler; ancak yarı kurak bölgelerde su tüketir — bu ödünleşim stres testiyle rakamla gösterilir."}
+  en: {term: "Cover crop", text: "A crop grown between main crops to keep soil covered. Reduces erosion and adds organic matter, but uses water in semi-arid areas — a trade-off quantified by the stress test."}
+deep_rooted:
+  tr: {term: "Derin köklü bitkiler", text: "Aspir, ayçiçeği gibi bitkiler alt katmanlardaki su ve besinlere ulaşır; toprak yapısını iyileştirebilir ve kurak dönemlerde daha dayanıklıdır."}
+  en: {term: "Deep-rooted crops", text: "Safflower and sunflower reach deeper water and nutrients, can improve soil structure and cope better with drought."}
+drought_tolerant:
+  tr: {term: "Kuraklığa dayanıklı bitkiler", text: "Arpa, nohut, aspir gibi bitkilerin verimi su eksikliğinde daha az düşer (FAO-33 verim tepki faktörü Ky düşüktür)."}
+  en: {term: "Drought-tolerant crops", text: "Barley, chickpea and safflower lose less yield under water shortage (low FAO-33 yield response factor Ky)."}

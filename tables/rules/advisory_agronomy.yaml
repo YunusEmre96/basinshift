@@ -1,0 +1,17 @@
+id: advisory_agronomy
+kind: advisory
+name_tr: "Tarımsal tavsiye kuralları (hastalık/zararlı ara verme)"
+name_en: "Agronomic advisory rules (pest/disease breaks)"
+status_tr: "Genel tarım bilgisi; yerel ziraat mühendisi ile teyit edilmeli."
+status_en: "General agronomy; confirm with a local agronomist."
+applies_when: {}
+rules:
+  - id: crop_min_gap
+    type: crop_min_gap_from_table     # crops.csv -> min_gap_years
+    text_tr: "Aynı ürün, hastalık/zararlı döngüsünü kırmak için önerilen süreden önce tekrar ekilmemeli."
+    text_en: "Do not return to the same crop before its recommended break."
+  - id: family_consecutive
+    type: family_no_consecutive
+    families: [cereal, legume, asteraceae, solanaceae, brassicaceae, amaranthaceae]
+    text_tr: "Aynı bitki ailesini art arda ekmek hastalık ve yabancı ot baskısını artırır."
+    text_en: "Same plant family in consecutive years raises disease and weed pressure."

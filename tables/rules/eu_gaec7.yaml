@@ -1,0 +1,16 @@
+id: eu_gaec7
+kind: legal
+name_tr: "AB Ortak Tarım Politikası — GAEC 7 (sadeleştirilmiş)"
+name_en: "EU CAP — GAEC 7 crop rotation (simplified)"
+status_tr: "Sadeleştirilmiş gösterim: aynı ana ürün en fazla 3 yıl üst üste. Üye ülke uygulamaları farklıdır."
+status_en: "Simplified: same main crop at most 3 consecutive years. Member-state rules differ."
+applies_when: {}
+rules:
+  - id: max_consecutive_same
+    type: crop_max_consecutive
+    max: 3
+    text_tr: "Aynı ana ürün en fazla 3 yıl üst üste ekilebilir."
+    text_en: "The same main crop at most 3 years in a row."
+penalties:
+  yellow_loses_support_that_year: true
+  red_loses_all_support_from_then: false

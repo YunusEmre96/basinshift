@@ -1,0 +1,14 @@
+id: au_mdb_cap
+kind: legal
+name_tr: "Avustralya — Murray-Darling su tahsisi (temsili)"
+name_en: "Australia — Murray-Darling water allocation (representative)"
+status_tr: "Temsili tahsis; yıllık tahsis yüzdesi ve su ticareti fiyatı değişir."
+status_en: "Representative allocation; yearly allocation % and water market prices vary."
+applies_when:
+  irrigated: true
+rules:
+  - id: mdb_cap
+    type: water_cap
+    m3_per_da_per_year: 700
+    text_tr: "Yıllık sulama dekar başına 700 m³ ile sınırlı (temsili)."
+    text_en: "Annual irrigation capped at 700 m³ per decare (representative)."

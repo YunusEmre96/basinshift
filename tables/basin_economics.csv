@@ -1,0 +1,42 @@
+basin,crop_id,plant_month,plant_day,ym_kg_da,price_per_kg,var_cost_per_da,rainfed_ok,rainfed_cost_factor,demand_elasticity,season_scale,note
+konya,wheat,10,15,700,15.0,6500,1,0.7,-4.0,1.0,Fiyat/maliyet 2026 varsayımı; TMO/TÜİK ile güncelleyin
+konya,barley,10,20,650,12.5,6000,1,0.7,-3.0,1.0,2026 varsayımı
+konya,sugar_beet,4,1,8000,3.6,18000,0,1.0,-0.3,1.0,Fiyat: Konya Şeker alım fiyatı varsayımı; kota ile sınırlı
+konya,maize_grain,5,1,1300,11.0,10000,0,1.0,-3.0,1.0,2026 varsayımı
+konya,maize_silage,5,10,6500,2.2,11000,0,1.0,-0.8,1.0,Yerel yem pazarı
+konya,sunflower,4,25,380,24.0,5500,1,0.75,-2.5,1.0,2026 varsayımı
+konya,chickpea,3,25,260,42.0,6000,1,0.75,-0.8,1.0,Yerel/ulusal pazar; fiyat dalgalı
+konya,lentil,3,20,220,40.0,5500,1,0.75,-0.8,1.0,2026 varsayımı
+konya,safflower,3,25,300,22.0,4500,1,0.75,-0.7,1.0,Alıcı sayısı sınırlı
+konya,vetch,10,20,600,8.0,3500,1,0.8,-0.8,1.0,Kuru ot; yerel yem pazarı
+konya,potato,4,15,4500,9.0,28000,0,1.0,-0.6,1.0,2026 Konya'da destek yok
+konya,alfalfa,3,15,1500,8.0,7000,0,1.0,-0.8,1.0,"Kuru ot, çok biçim"
+konya,fallow,10,1,0,0.0,800,1,1.0,-1.0,1.0,Toprak işleme maliyeti
+central_valley,wheat,11,15,650,0.26,75,1,0.7,-6.0,0.75,Temsili (USD)
+central_valley,barley,11,15,550,0.22,65,1,0.7,-5.0,0.75,Temsili
+central_valley,maize_grain,4,15,1250,0.24,150,0,1.0,-6.0,1.0,Temsili
+central_valley,maize_silage,4,20,6500,0.055,150,0,1.0,-1.0,1.0,Temsili (süt sığırcılığı)
+central_valley,sunflower,4,10,280,1.2,100,0,1.0,-2.0,1.0,Temsili (tohumluk)
+central_valley,safflower,3,15,300,0.48,60,1,0.75,-1.5,1.0,Temsili
+central_valley,cotton,4,15,170,1.9,230,0,1.0,-5.0,1.0,Lif verimi; temsili
+central_valley,tomato,3,25,9000,0.14,620,0,1.0,-0.7,1.0,"Sanayi domatesi, sözleşmeli; temsili"
+central_valley,alfalfa,3,1,1700,0.3,230,0,1.0,-1.0,1.0,Temsili
+central_valley,chickpea,12,1,280,0.85,90,1,0.75,-1.0,1.4,Temsili
+central_valley,fallow,10,1,0,0.0,10,1,1.0,-1.0,1.0,Temsili
+punjab,wheat,11,10,500,24.25,5000,0,1.0,-8.0,0.6,MSP tabanlı; temsili (INR)
+punjab,rice,6,20,650,23.0,6200,0,1.0,-8.0,1.0,MSP tabanlı; dikim Haziran ortası yasası
+punjab,maize_grain,6,15,600,22.25,4500,1,0.85,-2.0,1.0,Temsili
+punjab,cotton,5,1,250,71.0,6000,0,1.0,-3.0,1.0,Kütlü pamuk; temsili
+punjab,chickpea,10,25,180,56.5,3000,1,0.8,-2.0,1.3,Temsili
+punjab,canola,10,15,180,59.5,3000,1,0.8,-2.0,1.0,Hardal; temsili
+punjab,barley,11,5,400,19.8,3500,1,0.8,-2.0,0.6,Temsili
+punjab,sunflower,2,1,220,72.0,4200,0,1.0,-1.5,1.0,İlkbahar ayçiçeği; temsili
+punjab,fallow,10,1,0,0.0,300,1,1.0,-1.0,1.0,Temsili
+murray_darling,wheat,5,15,650,0.33,60,1,0.6,-8.0,0.7,Temsili (AUD)
+murray_darling,barley,5,10,600,0.28,55,1,0.6,-6.0,0.7,Temsili
+murray_darling,canola,4,25,300,0.65,70,1,0.65,-4.0,1.1,Temsili
+murray_darling,chickpea,5,20,250,0.75,50,1,0.7,-3.0,1.5,Temsili
+murray_darling,cotton,10,10,250,2.6,360,0,1.0,-6.0,1.0,Lif; temsili
+murray_darling,rice,10,25,1000,0.45,300,0,1.0,-2.0,1.0,Temsili
+murray_darling,maize_grain,10,15,1200,0.38,190,0,1.0,-3.0,1.0,Temsili
+murray_darling,fallow,4,1,0,0.0,8,1,1.0,-1.0,1.0,Temsili

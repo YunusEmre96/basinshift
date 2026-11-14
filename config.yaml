@@ -1,0 +1,80 @@
+# =====================================================================
+# BasinShift yapılandırması
+# =====================================================================
+# Veri kaynağını değiştirmek için YALNIZCA bu dosyayı (veya ortam
+# değişkenlerini) değiştirmeniz yeterli. Kodun hiçbir yerine dokunmanız
+# gerekmez. Ayrıntı: docs/DATA_SWAP.md
+#
+# Her veri seti için kaynak seçenekleri:
+#   synthetic  -> Demo için üretilen, gerçek şemayla birebir aynı veri
+#   nasa       -> Canlı NASA API'leri (POWER, AppEEARS, CMR/PO.DAAC, NEX-GDDP)
+#   files      -> data/external/ klasörüne konmuş CSV dosyaları
+#                 (yarışmada NASA dosya paylaşırsa bu yol kullanılır)
+#
+# Ortam değişkeniyle hepsini birden değiştirmek:
+#   BASINSHIFT_DATA=nasa streamlit run app.py
+# Tek bir veri setini değiştirmek:
+#   BASINSHIFT_DATA_CLIMATE_DAILY=nasa
+# =====================================================================
+
+data:
+  default_source: synthetic
+
+  # Veri seti bazında kaynak (boş bırakılan default_source'u kullanır)
+  sources:
+    climate_daily: null        # NASA POWER (günlük iklim, 1981-bugün)
+    soil_moisture: null        # SMAP L4 (yüzey + kök bölgesi nemi)
+    ndvi: null                 # HLS (30 m) + MODIS (250 m) NDVI
+    precip_satellite: null     # GPM IMERG (uydu yağışı)
+    water_storage: null        # GRACE / GRACE-FO (havza su depolama)
+    climate_deltas: null       # NEX-GDDP-CMIP6 (2040'lar değişim katsayıları)
+    terrain: null              # SRTM (yükseklik, eğim)
+    soil_properties: null      # SoilGrids (TAW, kil, organik karbon)
+
+  # Bir kaynak hata verirse sessizce sentetiğe düşülmez; arayüzde
+  # açıkça uyarı gösterilir. true yapılırsa uyarıyla birlikte
+  # sentetik veriye geri düşülür (demo güvenliği için).
+  fallback_to_synthetic: true
+
+  cache:
+    enabled: true
+    dir: data/cache
+
+  files_dir: data/external
+
+  # Stres testi için kullanılacak hasat yılları
+  history_start_year: 1982
+  history_end_year: 2025
+
+nasa:
+  power:
+    base_url: https://power.larc.nasa.gov/api/temporal/daily/point
+    community: AG
+    timeout_s: 60
+    max_retries: 3
+  appeears:
+    base_url: https://appeears.earthdatacloud.nasa.gov/api
+    # Kimlik bilgileri ASLA bu dosyaya yazılmaz. Ortam değişkenleri:
+    #   EARTHDATA_USERNAME / EARTHDATA_PASSWORD  veya  EARTHDATA_TOKEN
+    poll_interval_s: 20
+    max_wait_s: 1800
+  cmr:
+    base_url: https://cmr.earthdata.nasa.gov/search
+  cmip6:
+    # NEX-GDDP-CMIP6 AWS Open Data (anonim erişim)
+    s3_root: s3://nex-gddp-cmip6/NEX-GDDP-CMIP6
+    # NCCS THREDDS NetCDF Subset Service (nokta → CSV); dosya adı şablonu modele göre değişebilir
+    ncss_base: https://ds.nccs.nasa.gov/thredds/ncss/grid/AMES/NEX/GDDP-CMIP6
+    filename: "{var}_day_{model}_{scenario}_{member}_{grid}_{year}{suffix}.nc"
+    models:
+      ACCESS-CM2: {member: r1i1p1f1, grid: gn, suffix: ""}
+      MRI-ESM2-0: {member: r1i1p1f1, grid: gn, suffix: ""}
+    scenarios: [ssp245, ssp585]
+    baseline: [1995, 2014]
+    future: [2041, 2060]
+    year_step: 2          # istek sayısını azaltmak için her 2 yılda bir örnekle
+
+app:
+  default_language: tr          # tr | en
+  default_basin: konya
+  area_unit: da                 # da | ha

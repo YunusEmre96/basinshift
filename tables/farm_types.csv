@@ -1,0 +1,15 @@
+basin,type_id,name_tr,name_en,area_da,irrigated,irrigation_method,site_id,current_pattern,max_crop_share
+# SENTETİK temsili çiftlik tipleri. Gerçek uygulamada ÇKS / kooperatif verisiyle değiştirilir.
+konya,T1,"Sulu, büyük, pancar-mısır ağırlıklı","Irrigated, large, beet-maize",600000,1,sprinkler,cumra,"sugar_beet:0.30;maize_grain:0.30;wheat:0.30;sunflower:0.10",0.6
+konya,T2,"Sulu, orta, hububat-pancar","Irrigated, medium, cereal-beet",800000,1,sprinkler,cumra,"wheat:0.45;sugar_beet:0.20;maize_grain:0.15;barley:0.10;chickpea:0.10",0.6
+konya,T3,"Damla sulamalı, karışık","Drip-irrigated, mixed",300000,1,drip,karapinar,"maize_grain:0.25;sugar_beet:0.25;potato:0.15;wheat:0.20;sunflower:0.15",0.6
+konya,T4,"Kuru tarım, buğday-nadas","Rainfed, wheat-fallow",1500000,0,none,cihanbeyli,"wheat:0.45;barley:0.20;fallow:0.30;chickpea:0.05",0.7
+konya,T5,"Hayvancılık-yem odaklı","Livestock-forage",400000,1,sprinkler,karapinar,"maize_silage:0.35;alfalfa:0.25;barley:0.20;wheat:0.20",0.6
+central_valley,T1,"Sulu, ihracat bitkileri","Irrigated, row crops",900000,1,drip,fresno,"tomato:0.25;cotton:0.25;maize_grain:0.20;wheat:0.20;safflower:0.10",0.6
+central_valley,T2,"Süt-yem","Dairy forage",700000,1,surface,fresno,"alfalfa:0.40;maize_silage:0.40;wheat:0.20",0.6
+central_valley,T3,"Kuru/az sulu tahıl","Dryland grains",400000,0,none,fresno,"wheat:0.50;barley:0.30;fallow:0.20",0.7
+punjab,T1,"Çeltik-buğday","Rice-wheat",2000000,1,surface,ludhiana,"rice:0.50;wheat:0.45;maize_grain:0.05",0.7
+punjab,T2,"Pamuk kuşağı","Cotton belt",600000,1,surface,ludhiana,"cotton:0.40;wheat:0.40;canola:0.10;chickpea:0.10",0.6
+punjab,T3,"Çeşitlendirilmiş","Diversified",400000,1,surface,ludhiana,"maize_grain:0.30;wheat:0.30;chickpea:0.20;canola:0.20",0.6
+murray_darling,T1,"Sulu karma","Irrigated mixed",500000,1,surface,griffith,"rice:0.25;cotton:0.25;wheat:0.30;canola:0.20",0.6
+murray_darling,T2,"Kuru tarım tahıl","Dryland grains",1500000,0,none,griffith,"wheat:0.50;barley:0.20;canola:0.15;chickpea:0.10;fallow:0.05",0.7

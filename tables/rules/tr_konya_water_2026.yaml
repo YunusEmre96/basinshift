@@ -1,0 +1,54 @@
+id: tr_konya_water_2026
+kind: legal
+name_tr: "Türkiye — Konya su kısıtı ve münavebe (2026)"
+name_en: "Türkiye — Konya water restriction & rotation (2026)"
+status_tr: "Yerel haberlere dayanır; resmi Bakanlık / İl Tarım ve Orman Müdürlüğü metniyle TEYİT EDİLMELİDİR."
+status_en: "Based on local news reports; MUST be verified against the official Ministry text."
+applies_when:
+  water_restricted: true     # yalnızca su kısıtı ilan edilmiş ilçelerde
+  irrigated: true            # yalnızca sulu arazide
+rules:
+  - id: restricted_max2_in4
+    type: group_max_in_window
+    crops: [maize_grain, maize_silage, potato, sugar_beet]
+    window: 4
+    max: 2
+    text_tr: "Mısır, patates ve şeker pancarı 4 yılda en fazla 2 kez ekilebilir."
+    text_en: "Maize, potato and sugar beet: at most 2 times in any 4 years."
+    note_tr: "Silajlık mısırın kapsamda olup olmadığı teyit edilmeli."
+  - id: restricted_no_consecutive
+    type: group_no_consecutive
+    crops: [maize_grain, maize_silage, potato, sugar_beet]
+    text_tr: "Bu ürünler art arda iki yıl ekilemez."
+    text_en: "These crops cannot be grown in two consecutive years."
+  - id: basin_pattern_2026
+    type: allowed_crops
+    crops: [wheat, barley, sugar_beet, maize_grain, maize_silage, sunflower, chickpea, lentil, safflower, vetch, potato, alfalfa, fallow]
+    text_tr: "Ürün 2026 Havza Ürün Deseni'nde olmalı (10394 sayılı CB Kararı)."
+    text_en: "Crop must be on the 2026 basin crop pattern list."
+    note_tr: "Liste temsili; resmi desenle karşılaştırın."
+penalties:
+  # Kural ihlali takibi: ilk ihlal yılı sarı kart, ihlal sonraki yıl da sürerse kırmızı kart
+  yellow_loses_support_that_year: true
+  red_loses_all_support_from_then: true
+supports:
+  currency: TRY
+  note_tr: "Buğday tutarları haberlerden (806 + 434 TL/da); diğerleri VARSAYIM."
+  base_per_da:
+    wheat: 806
+    barley: 700
+    chickpea: 900
+    lentil: 900
+    safflower: 700
+    sunflower: 700
+    vetch: 600
+    maize_silage: 500
+    sugar_beet: 500
+    alfalfa: 400
+    potato: 0
+    maize_grain: 0
+    fallow: 0
+  no_support: [potato, maize_grain]
+  water_restriction_bonus_per_da: 434
+  water_restriction_bonus_crops: [wheat, barley, chickpea, lentil, safflower, vetch, sunflower]
+  water_restriction_bonus_irrigated_only: true

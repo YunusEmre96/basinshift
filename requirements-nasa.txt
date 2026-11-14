@@ -1,0 +1,8 @@
+# Yalnızca GRACE-FO / NEX-GDDP-CMIP6 / GPM gibi NetCDF-HDF dosyalarını
+# doğrudan okumak istediğinizde gerekir. NASA POWER ve AppEEARS (CSV çıktı)
+# için gerekmez.
+-r requirements.txt
+xarray>=2024.1
+netCDF4>=1.6
+h5netcdf>=1.3
+s3fs>=2024.2

@@ -1,0 +1,15 @@
+id: in_punjab_diversification
+kind: advisory
+name_tr: "Hindistan Pencap — ürün çeşitlendirme teşviki (temsili)"
+name_en: "India Punjab — crop diversification (representative)"
+status_tr: "Temsili: çeltikten çeşitlendirme hedefi. Dikim tarihi yasası (2009) ekim takviminde uygulanır."
+status_en: "Representative: diversification away from paddy. Transplanting-date law (2009) applied in the calendar."
+applies_when: {}
+rules:
+  - id: paddy_max2_in4
+    type: group_max_in_window
+    crops: [rice]
+    window: 4
+    max: 2
+    text_tr: "Çeltik 4 yılda en fazla 2 kez (çeşitlendirme hedefi, temsili)."
+    text_en: "Paddy at most 2 in 4 years (diversification target, representative)."

@@ -1,0 +1,14 @@
+id: us_ca_sgma
+kind: legal
+name_tr: "ABD Kaliforniya — SGMA çekim sınırı (temsili)"
+name_en: "USA California — SGMA pumping allocation (representative)"
+status_tr: "Temsili değer; Groundwater Sustainability Agency (GSA) planına göre değişir."
+status_en: "Representative value; varies by Groundwater Sustainability Agency plan."
+applies_when:
+  irrigated: true
+rules:
+  - id: sgma_cap
+    type: water_cap
+    m3_per_da_per_year: 750
+    text_tr: "Yıllık sulama çekimi dekar başına 750 m³ ile sınırlı (temsili)."
+    text_en: "Annual pumping capped at 750 m³ per decare (representative)."

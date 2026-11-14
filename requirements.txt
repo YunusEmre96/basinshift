@@ -1,0 +1,20 @@
+# Çekirdek
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11          # HiGHS LP çözücüsü (havza optimizasyonu) + istatistik
+pyyaml>=6.0
+requests>=2.31       # NASA POWER / AppEEARS / CMR API istemcileri
+
+# Arayüz
+streamlit>=1.38
+plotly>=5.20
+
+# Rapor (PDF karne) — matplotlib, Türkçe karakterli DejaVu fontunu da sağlar
+fpdf2>=2.7
+matplotlib>=3.8
+
+# Test
+pytest>=8.0
+
+# --- İsteğe bağlı (gerçek uydu dosyalarını okumak için) ---
+# xarray, netCDF4, h5netcdf, s3fs  ->  requirements-nasa.txt
