@@ -189,7 +189,23 @@ yağış_düzeltilmiş(gün) = yağış_POWER(gün) × oran(ayın kendisi)      
     <tr><td class="k">Zararlı döngüsünü kırma</td><td><code>100 − 25 · ara verme ihlali − 10 · aynı aile art arda</code></td></tr>
   </tbody></table>
   <p>Örtü bitkisi seçeneği açıkken, hasadı yaz ortasından önce olan ürünlerden sonra örtü bitkisi eklenir: sonraki ürünün başlangıç suyundan 60 mm alır, maliyeti buğday maliyetinin %12'si sayılır. Planlar sayfasındaki "Örtü bitkisi ödünleşimi" tablosu farkı gösterir (örnek: Denge planında kâr 4.775 → 3.875 ₺/da, su 419 → 467 m³/da, toprak 82 → 90).</p>
+  <h2>6.2 Ürün uygunluk taraması</h2>
+  <p>Ana hesap havzanın ürün listesiyle (Konya'da 13 ürün) çalışır. Ürün uygunluğu sayfası bunun dışına çıkar: ürün tablosundaki <b>bütün</b> ürünleri (pamuk, çeltik, domates, kanola dahil) seçili tarlanın gerçek iklim serisinde dener. Kod: <code>engine/suitability.py</code>; tablo: <code>tables/crop_suitability.csv</code>.</p>
+  <div class="formula">GDD = Σ max(0, (Tmax + Tmin)/2 − Ttaban)          gereken gün: ekimden itibaren GDD ≥ olgunluk ihtiyacı
+ısı payı = pencere / gereken gün      pencere: yazlıkta ilk ağır dona (Tmin &lt; −2 °C), kışlıkta ertesi 20 Temmuz'a kadar</div>
+  <table>
+    <thead><tr><th style="width:22%">Adım</th><th>Ne yapılır</th></tr></thead>
+    <tbody>
+      <tr><td class="k">1 · Isı</td><td>Havzada ekilmeyen ürün için olgunluk ısısı (literatür orta değeri: pamuk 1.300 °C·gün, taban 15,6 °C; domates 1.300, taban 10 °C; çeltik 1.600, taban 10 °C; kanola 1.600, taban 5 °C) bu tarlada kaç günde birikiyor?</td></tr>
+      <tr><td class="k">2 · Ekim tarihi</td><td>Ürünün yetiştiği referans bölgenin (Fresno, Ludhiana) ekim tarihi etrafında −30…+30 gün denenir; en iyi sonuç seçilir. Yarımküre farkı 6 ay kaydırılır.</td></tr>
+      <tr><td class="k">3 · Su ve verim</td><td>Gelişim dönemleri gereken güne ölçeklenir; FAO-56 su dengesi ve FAO-33 verim tepkisi, sıcak/don/yağış stresi planlarla aynı.</td></tr>
+      <tr><td class="k">4 · Hasat öncesi don</td><td>Sezonun son 30 günündeki ağır don günleri, hassas dönem donuna eklenir.</td></tr>
+      <tr><td class="k">5 · Karar</td><td><span class="tag ass">KIRMIZI</span> ısı payı &lt; 1,0 ya da kötü yılda verim oranı &lt; 0,60 ya da don ≥ 5 gün · <span class="tag syn">SARI</span> ısı payı &lt; 1,1, ortanca verim &lt; 0,85, don ≥ 2 gün ya da sulama referanstan %25 fazla · <span class="tag real">YEŞİL</span> diğerleri</td></tr>
+    </tbody>
+  </table>
+  <div class="box warn"><div class="t">Sınır</div><p>Yalnızca agronomi: fiyat, pazar ve destek değerlendirilmez. Isı ihtiyacı çeşide göre ±%20 değişir. Yeni bir ürünü planlara eklemek için <code>tables/basin_economics.csv</code>'ye fiyat, maliyet ve ekim tarihi satırı gerekir.</p></div>
 </section>
+
 
 <!-- ============================ 07 ============================ -->
 <section class="chapter" data-toc="07|Plan seçimi ve kartlar|Kâr, Akifer, Denge nasıl seçiliyor">
@@ -223,7 +239,35 @@ varsayılan ağırlıklar:  gelir 3 · kötü yılda ayakta kalmak 3 · su tasar
   </table>
   <p class="small">Kaynak: uygulama çıktısı, 14.11.2026, Çumra, yağmurlama, su kısıtı ilan edilmiş, tarihsel iklim. Akifer planının zarar olasılığı nadas yılından gelir (nadas yılı gelir sıfırdır, maliyet vardır).</p>
   <div class="box info"><div class="t">Nasıl okunmalı</div><p>Kâr kartı en kârlı ama pancar içerdiği için su ihtiyacı yüksek ve fiyat varsayımına en duyarlı plan. Denge kartı kârdan biraz vazgeçip suyu %58 azaltıyor ve toprak puanını iki katına çıkarıyor. Akifer kartı suyu %70 azaltıyor ama nadas yılı nedeniyle 4 yılın birinde zarar ediyor. <b>Hangisinin seçileceği çiftçinin önceliğine bağlı</b>; araç seçmez, gösterir.</p></div>
+  <h2>7.3 Borsa ve fiyat riski</h2>
+  <p>Kartlar 2026 sabit fiyatlarıyla seçilir; yalnızca hava belirsizdir. Fiyat riski analizi aynı 41 dönemi <b>200 fiyat senaryosunda</b> yeniden oynatır. Kod: <code>engine/price_risk.py</code>; tablo: <code>tables/price_risk.csv</code>.</p>
+  <div class="formula">çarpan[senaryo, yıl, ürün] ~ LogNormal(ortalama 1, CV) × (1 + şok)        kâr' = kâr + verim × fiyat × (çarpan − 1)
+kötü dönem geliri: her senaryoda 41 dönemin en kötü %5'i (ana tanımla aynı) → senaryoların ortalaması</div>
+  <div class="grid2">
+    <table>
+      <thead><tr><th>Pazar</th><th class="n">Yıllık oynaklık (CV)</th></tr></thead>
+      <tbody>
+        <tr><td>Fabrika sözleşmesi (şeker pancarı)</td><td class="n">±%5</td></tr>
+        <tr><td>TMO alım fiyatı + borsa (buğday, arpa)</td><td class="n">±%12–15</td></tr>
+        <tr><td>Borsa + sanayi (mısır, ayçiçeği, aspir)</td><td class="n">±%18–20</td></tr>
+        <tr><td>Serbest borsa (nohut, mercimek)</td><td class="n">±%25</td></tr>
+        <tr><td>Hal (patates)</td><td class="n">±%40</td></tr>
+      </tbody>
+    </table>
+    <table>
+      <thead><tr><th>Plan</th><th class="n">Kötü dönem: sabit → riskli</th><th class="n">Zarar eden yıl</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Mevcut</td><td class="n">2.117 → 1.676</td><td class="n">%8 → %18</td></tr>
+        <tr><td class="k">Kâr</td><td class="n">5.214 → 4.440</td><td class="n">%0 → %1</td></tr>
+        <tr><td class="k">Akifer</td><td class="n">2.743 → 2.214</td><td class="n">%25 → %25</td></tr>
+        <tr><td class="k">Denge</td><td class="n">4.192 → 3.246</td><td class="n">%0 → %1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Okuma: fiyat dalgalanması bütün planların kötü dönem gelirini düşürür. Oransal olarak en çok etkilenen Denge planıdır (−%23), çünkü serbest borsada satılan nohut içerir. Yine de Denge'nin fiyat riskli kötü dönem geliri (3.246 ₺/da) mevcut planın neredeyse iki katıdır ve mevcut planın zarar eden yıl olasılığı %8'den %18'e çıkar.</p>
+  <div class="box warn"><div class="t">Sınır</div><p>Oynaklık değerleri <b>varsayımdır</b>; Konya Ticaret Borsası bültenleriyle kalibre edilmelidir. Ürünler arası fiyat ilişkisi yok sayılır. Canlı borsa/hal bağlantısı yoktur (resmî veri arayüzü bulunmuyor). Hal Kayıt Sistemi yaş meyve-sebze içindir; buradaki ürünlerden yalnızca patatese uyar.</p></div>
 </section>
+
 
 <!-- ============================ 08 ============================ -->
 <section class="chapter" data-toc="08|Havza modeli|Bir çiftçi için doğru olan, bin çiftçi yapınca">
@@ -252,4 +296,20 @@ varsayılan ağırlıklar:  gelir 3 · kötü yılda ayakta kalmak 3 · su tasar
   <h2>8.2 Ulusal ticaret bağlamı</h2>
   <p>Havza sayfasının altındaki tablo her ürünün pazarını, modeldeki fiyatını, kaynaklı ticaret bilgisini ve <b>modelin kendi hesapladığı</b> kuyu suyunu (m³/da ve m³/ton) gösterir. Örnekler (kaynaklı): Türkiye 10+ yıldır dünyanın en büyük un ihracatçısı (2025'te 2,34 milyon ton); mısırda tüketim ~12 milyon ton, üretim ~8,5 milyon ton, 2024 ithalatı ~4,4 milyon ton; ayçiçeğinde yeterlilik 2024/25'te %63. Bu bilgi ürün kararına "ulusal ihtiyaç" penceresi açar ama <b>hesaba girmez</b>.</p>
   <div class="box info"><div class="t">m³/ton yanıltabilir</div><p>Ton başına su, verimi yüksek ürünlerde (pancar) düşük görünür. Akifer için asıl ölçü dekar başına çekilen sudur; tabloda ikisi yan yana durur.</p></div>
+  <h2>8.3 Kooperatif modeli: kazancı kimse kaybetmeden paylaşmak</h2>
+  <p>Koordineli plan toplamda daha çok kazandırır ama gelir üyeler arasında eşit dağılmaz. Kooperatif paylaşımı (<code>basin/model.py → cooperative_sharing</code>):</p>
+  <div class="formula">fazla = Σ gelir(koordineli) − Σ gelir(kendi başına)
+paylaşım sonrası gelirᵢ = kendi başına gelirᵢ + fazla × alanᵢ / toplam alan        transferᵢ = paylaşım sonrasıᵢ − koordineliᵢ   (Σ transfer = 0)</div>
+  <table>
+    <thead><tr><th>Üye (temsili tip)</th><th class="n">Kendi başına</th><th class="n">Koordineli</th><th class="n">Transfer</th><th class="n">Paylaşım sonrası</th><th class="n">Su tasarrufu</th></tr></thead>
+    <tbody>
+      <tr><td>Sulu, büyük, pancar-mısır</td><td class="n">1.977</td><td class="n">2.772</td><td class="n">−479</td><td class="n">2.293</td><td class="n">279</td></tr>
+      <tr><td>Sulu, orta, hububat-pancar</td><td class="n">2.006</td><td class="n">3.070</td><td class="n">−748</td><td class="n">2.322</td><td class="n">245</td></tr>
+      <tr><td>Damla sulamalı, karışık</td><td class="n">2.251</td><td class="n">4.252</td><td class="n">−1.686</td><td class="n">2.567</td><td class="n">113</td></tr>
+      <tr><td>Kuru tarım, buğday-nadas</td><td class="n">2.534</td><td class="n">1.983</td><td class="n">+867</td><td class="n">2.850</td><td class="n">0</td></tr>
+      <tr><td>Hayvancılık-yem</td><td class="n">2.590</td><td class="n">2.678</td><td class="n">+228</td><td class="n">2.906</td><td class="n">201</td></tr>
+    </tbody>
+  </table>
+  <p class="small">₺/da/yıl ve m³/da/yıl; uygulama çıktısı, Konya, su bütçesi %65. Her üye kendi başına duruma göre dekar başına +316 ₺ kazanır; telafi fonu havza ortalamasında 387 ₺/da.</p>
+  <p>Okuma: koordineli planda sulu tipler kazanır, kuru tarım tipi kaybeder (pazar sınırları ve fiyat). Paylaşımla herkes "kendi başına" durumundan daha iyi olur; bu, kooperatifin üyeleri ortak plana ikna etmesinin yoludur. Uygulama araçları: ortak su kotası ve sayaç, toplu pancar sözleşmesi, lisanslı depo + borsada (ELÜS) toplu satış, ortak makine, telafi fonu (kazanan payı + su kısıtı desteği).</p>
 </section>

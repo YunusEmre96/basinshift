@@ -1,7 +1,7 @@
 
 <section class="toc-page">
   <div class="chap-head" style="border:0">
-    <div class="kicker">Kılavuz · Sürüm 3.0</div>
+    <div class="kicker">Kılavuz · Sürüm 3.1</div>
     <div class="toc-title">İçindekiler</div>
     <p class="lead">Çiftçi ve danışman: 1, 9, 10 · Jüri ve sunum: 0–5, 15 · Geliştirici: 6–8, 11–14 · Rakam kaynakları: Ek B</p>
   </div>
@@ -106,6 +106,14 @@
   </div>
   <p style="margin-top:0.8em">Mevcut plan <b>kırmızı kart riski</b> taşıyor: mısır (dane/silaj), patates ve şeker pancarı sulu arazide 4 üretim yılında en fazla 2 kez ve art arda olmamak üzere ekilebiliyor. Denge planı (nohut → buğday → fiğ → buğday) kurala uyuyor, ortalama kârı da biraz yüksek (4.775 vs 4.263 ₺/da/yıl) ama asıl farkı <b>kötü yıllarda çökmemesi</b>: en kötü %5 dönemin ortalaması 4.192 ₺/da, mevcut planda 2.117 ₺/da.</p>
 
+  <div class="box ok"><div class="t">Sürüm 3.1'de yeni (mentör önerileri)</div>
+  <ul>
+    <li><b>Ürün uygunluğu sayfası:</b> başka bölgelerin ürünleri (pamuk, çeltik, domates, kanola) bu tarlada olur mu? Çumra'da domates uygun, çeltik koşullu, pamuk ve kanola uygun değil (Bölüm 6.2, 9.4).</li>
+    <li><b>Borsa ve fiyat riski:</b> kötü hava + kötü fiyat birlikte; ürünün pazarı, fiyat oynaklığı ve fiyat şoku (Bölüm 7.3, 9.5).</li>
+    <li><b>Kooperatif modeli:</b> koordinasyon kazancının üyeler arasında kimse kaybetmeden paylaşımı (Bölüm 8.3, 9.7).</li>
+  </ul>
+  <p>Mikro iklim bilerek eklenmedi: elimizdeki iklim verisi ~50 km ölçekli; tarla içi iklimi varmış gibi göstermek dürüst olmazdı (Bölüm 14.3).</p></div>
+
   <h2>Neden farklı?</h2>
   <div class="grid2">
     <div class="card"><h4>Ortalama değil, kötü yıl</h4><p>Tek bir "ortalama yıl" yerine planı 41 gerçek dört yıllık geçmiş dönemde oynatır; art arda gelen kurak yıllar (2007–2008 gibi) olduğu gibi korunur. Risk ölçüsü CVaR %5'tir.</p></div>
@@ -145,6 +153,8 @@
       <tr><td class="k">Belirsizliği göstermek</td><td><span class="tag real">VAR</span></td><td>Kutu/keman grafikleri (41 dönem), %10–90 bantları, CVaR, zarar olasılığı, güven noktaları, "Ya şöyle olursa?" kaydırıcıları.</td></tr>
       <tr><td class="k">Kararı çiftçiye bırakmak</td><td><span class="tag real">VAR</span></td><td>Her sayfanın altında: "BasinShift seçenekleri ve gerekçelerini gösterir; kararın sahibi çiftçi ve yerel ziraat mühendisidir."</td></tr>
       <tr><td class="k">Ölçeklenebilirlik</td><td><span class="tag real">VAR</span></td><td>Dört havza (Konya, Kaliforniya Central Valley, Pencap, Murray-Darling) aynı motorla; kural paketleri değiştirilebilir.</td></tr>
+      <tr><td class="k">Pazar ve fiyat belirsizliği</td><td><span class="tag syn">KISMEN</span></td><td>Ürünün pazarı (TMO, borsa, fabrika sözleşmesi, hal) ve fiyat oynaklığıyla 200 fiyat senaryosu; fiyat şoku. Canlı borsa/hal bağlantısı yok.</td></tr>
+      <tr><td class="k">Toplu karar ve kurumlar</td><td><span class="tag real">VAR</span></td><td>Havza modeli ve kooperatif kazanç paylaşımı (temsili çiftlik tipleriyle).</td></tr>
       <tr><td class="k">ECOSTRESS gibi termal ET ürünleri</td><td><span class="tag def">YOK</span></td><td>Bilerek dışarıda; FAO-56 su dengesi kullanıldı. OpenET Türkiye'yi kapsamıyor.</td></tr>
     </tbody>
   </table>

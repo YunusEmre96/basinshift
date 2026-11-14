@@ -1,4 +1,4 @@
-"""BasinShift Kılavuzu (Sürüm 3.0) — HTML + Chrome ile PDF üretimi.
+"""BasinShift Kılavuzu (Sürüm 3.1) — HTML + Chrome ile PDF üretimi.
 
 Kullanım:  python build.py <ekran_görüntüsü_klasörü> <çıktı.pdf>
 Adımlar: ekran görüntülerinden kırpmalar → SVG şekiller → kapak + gövde PDF (Chrome/playwright)
@@ -34,7 +34,11 @@ CROPS = {
     "basin_top": ("07_basin.png", (X0, 320, X1, 860)),
     "basin_bars": ("07_basin.png", (X0, 860, X1, 1520)),
     "basin_cobweb": ("07_basin.png", (X0, 1530, X1, 2390)),
-    "basin_trade": ("07_basin.png", (X0, 2400, X1, 3540)),
+    "basin_coop": ("07_basin.png", (X0, 2400, X1, 3270)),
+    "basin_trade": ("07_basin.png", (X0, 3290, X1, 4450)),
+    "crops": ("05b_crops.png", (X0, 140, X1, 1530)),
+    "crops_chart": ("05b_crops.png", (X0, 1505, X1, 2090)),
+    "plans_price": ("03_plans.png", (X0, 2160, X1, 2850)),
     "report": ("08_report.png", (X0, 460, X1, 1990)),
     "method": ("09_method.png", (X0, 180, X1, 1440)),
 }
@@ -235,7 +239,7 @@ HEADER = ('<div style="width:100%;font-family:Inter;font-size:7px;color:#8794AE;
           'justify-content:space-between;-webkit-print-color-adjust:exact"><span><b style="color:#0042A6">BasinShift</b> · Kullanım ve Teknik Kılavuz</span>'
           '<span>NASA Space Apps Challenge 2026 · Field Shift · Konya</span></div>')
 FOOTER = ('<div style="width:100%;font-family:Inter;font-size:7px;color:#8794AE;padding:0 17mm;display:flex;'
-          'justify-content:space-between;align-items:center"><span>Sürüm 3.0 · 14 Kasım 2026</span>'
+          'justify-content:space-between;align-items:center"><span>Sürüm 3.1 · 14 Kasım 2026</span>'
           '<span style="color:#07173F;font-weight:800;font-size:8px"><span class="pageNumber"></span> <span style="color:#8794AE;font-weight:400">/ <span class="totalPages"></span></span></span></div>')
 
 
@@ -288,7 +292,7 @@ def main() -> None:
     for f in ("cover_out.pdf", "body_out.pdf"):
         for page in PdfReader(str(HERE / f)).pages:
             w.add_page(page)
-    w.add_metadata({"/Title": "BasinShift — Kullanım ve Teknik Kılavuz (Sürüm 3.0)", "/Author": "BasinShift ekibi",
+    w.add_metadata({"/Title": "BasinShift — Kullanım ve Teknik Kılavuz (Sürüm 3.1)", "/Author": "BasinShift ekibi",
                     "/Subject": "NASA Space Apps Challenge 2026 · Field Shift · Konya"})
     with open(OUT, "wb") as fh:
         w.write(fh)
