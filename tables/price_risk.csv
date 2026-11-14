@@ -1,0 +1,17 @@
+# Ürünün satıldığı pazar ve yıllık REEL (enflasyondan arındırılmış) fiyat oynaklığı (değişim katsayısı, CV).
+# VARSAYIM: Konya Ticaret Borsası salon satış bültenleri ve TMO/TÜRKŞEKER/fabrika fiyat geçmişiyle kalibre edilmelidir.
+# Mantık: devlet alım fiyatı (TMO) ve sözleşme (TÜRKŞEKER) olan ürünlerde oynaklık düşük; serbest borsa ve hal ürünlerinde yüksek.
+basin,crop_id,price_cv,market_tr,market_en,note
+konya,wheat,0.12,TMO alım fiyatı + Konya Ticaret Borsası,TMO purchase price + Konya Commodity Exchange,TMO taban fiyatı oynaklığı sınırlar
+konya,barley,0.15,TMO + borsa (yem),TMO + exchange (feed),
+konya,sugar_beet,0.05,TÜRKŞEKER / fabrika sözleşmesi (kotalı),TÜRKŞEKER / factory contract (quota),Fiyat ekimden önce bellidir
+konya,maize_grain,0.18,Borsa + TMO + nişasta/yem sanayi,Exchange + TMO + starch/feed industry,İthalat fiyatlarına bağlı
+konya,maize_silage,0.15,Yerel hayvancı (sözleşmeli/pazarlıklı),Local livestock farms (contract/negotiated),
+konya,sunflower,0.20,Borsa + yağ fabrikası (ön alım),Exchange + oil mill (forward price),Dünya yağ fiyatlarına bağlı
+konya,chickpea,0.25,Konya Ticaret Borsası (serbest),Konya Commodity Exchange (free market),Arz şoklarına duyarlı
+konya,lentil,0.25,Konya Ticaret Borsası (serbest),Konya Commodity Exchange (free market),
+konya,safflower,0.20,Yağ fabrikası (sözleşmeli),Oil mill (contract),Alıcı sayısı az
+konya,vetch,0.20,Yerel yem pazarı,Local forage market,
+konya,potato,0.40,Hal (HKS) / tüccar,Wholesale market (HKS) / traders,Yaş sebze; fiyat yıldan yıla çok oynar
+konya,alfalfa,0.20,Yerel yem pazarı,Local forage market,
+konya,fallow,0.0,—,—,

@@ -170,4 +170,4 @@ def load_price_risk() -> pd.DataFrame:
     path = TABLES_DIR / "price_risk.csv"
     if not path.exists():
         return pd.DataFrame(columns=["basin", "crop_id", "price_cv", "market_tr", "market_en", "note"])
-    return pd.read_csv(path, keep_default_na=False)
+    return pd.read_csv(path, comment="#", keep_default_na=False)

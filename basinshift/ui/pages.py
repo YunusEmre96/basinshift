@@ -554,6 +554,7 @@ def page_plans() -> None:
     order = [(k, card_title(k, ctx.settings.irrigated)[0]) for k in CARD_ORDER]
     ui.chart(ui.income_box(res.options, crops, ctx, lang, unit, order), width="stretch",
                     config={"displayModeBar": False})
+    _price_risk_section(res, ctx, crops, lang, unit, order)
 
     c1, c2 = st.columns([3, 2], gap="large")
     with c1:
@@ -663,6 +664,67 @@ def page_futures() -> None:
         dets_w = [(n, d, c if c != ui.GREEN else ui.WATER) for n, d, c in dets]
         ui.chart(ui.band_chart(dets_w, "water_m3", years, f, f"m³/{unit}"), width="stretch", config={"displayModeBar": False})
     st.caption(t("futures_scenario", lang))
+
+
+def _price_risk_section(res, ctx, crops, lang: str, unit: str, order) -> None:
+    """Borsa / fiyat riski: aynı planlar, hava + fiyat birlikte dalgalanırken."""
+    from ..engine.price_risk import option_price_risk, price_cv, price_multipliers, weather_only
+    from ..knowledge.tables import load_price_risk
+
+    sym = ctx.basin.currency_symbol
+    ui.section(t("pr_title", lang), t("pr_help", lang))
+    keys = [k for k, _ in order if k in res.options]
+    used = []
+    for k in keys:
+        for plan, _ in res.options[k].parts:
+            for c in plan:
+                if c not in used and c != "fallow":
+                    used.append(c)
+    cv = price_cv(ctx.basin.id, ctx.crop_ids)
+    pr = load_price_risk()
+    pr = pr[pr["basin"] == ctx.basin.id].set_index("crop_id") if not pr.empty else None
+    c1, c2 = st.columns([2, 3], gap="large")
+    with c1:
+        rows = []
+        for c in used:
+            mk = (pr.loc[c, "market_tr" if lang == "tr" else "market_en"] if pr is not None and c in pr.index else "—")
+            rows.append({t("col_crop", lang): crops[c].name(lang), t("pr_col_market", lang): mk,
+                         t("pr_col_price", lang): f"{num(ctx.econ[c].price_per_kg, lang, 2)} {sym}/kg",
+                         t("pr_col_cv", lang): f"±%{cv[c] * 100:.0f}" if lang == "tr" else f"±{cv[c] * 100:.0f}%"})
+        ui.html_table(pd.DataFrame(rows), num_cols=(t("pr_col_price", lang), t("pr_col_cv", lang)),
+                      small_cols=(t("pr_col_market", lang),))
+        sc1, sc2 = st.columns(2)
+        shock_crop = sc1.selectbox(t("pr_shock_crop", lang), ["—"] + used,
+                                   format_func=lambda c: "—" if c == "—" else crops[c].name(lang), key="pr_crop")
+        shock = sc2.slider(t("pr_shock", lang), -50, 50, 0, 5, key="pr_shock", format="%d%%")
+    shock_d = {shock_crop: shock / 100} if shock_crop != "—" and shock else None
+    mult = price_multipliers(ctx, cv, shock_d)
+    f = area_factor(unit)
+    with c2:
+        rows, worst, best = [], None, None
+        for k, title in order:
+            if k not in res.options:
+                continue
+            o = res.options[k]
+            w, p_ = weather_only(o), option_price_risk(o, ctx, mult)
+            drop = (w["cvar5"] - p_["cvar5"]) / abs(w["cvar5"]) if abs(w["cvar5"]) > 1 else 0.0
+            if worst is None or drop > worst[1]:
+                worst = (title, drop, w["cvar5"] - p_["cvar5"])
+            if best is None or p_["cvar5"] > best[1]:
+                best = (title, p_["cvar5"])
+            pct = lambda v: (f"%{v * 100:.0f}" if lang == "tr" else f"{v * 100:.0f}%")
+            rows.append({
+                t("pr_col_plan", lang): title,
+                t("pr_col_mean", lang): f"{money(w['mean_margin'], sym, unit, lang)} → {money(p_['mean_margin'], sym, unit, lang)}",
+                t("pr_col_cvar", lang): f"{money(w['cvar5'], sym, unit, lang)} → {money(p_['cvar5'], sym, unit, lang)}",
+                t("pr_col_loss", lang): f"{pct(w['loss_prob'])} → {pct(p_['loss_prob'])}",
+            })
+        ui.html_table(pd.DataFrame(rows), num_cols=(t("pr_col_mean", lang), t("pr_col_cvar", lang), t("pr_col_loss", lang)))
+        if worst is not None:
+            ui.callout(ui.esc(t("pr_insight", lang, plan=worst[0], v=money(worst[2], sym, unit, lang),
+                                pct=(f"%{worst[1] * 100:.0f}" if lang == "tr" else f"{worst[1] * 100:.0f}%"))
+                       + " " + ui.esc(t("pr_best", lang, plan=best[0], v=money(best[1], sym, unit, lang))), "")
+        st.caption(t("pr_note", lang))
 
 
 # ---------------------------------------------------------------------------
