@@ -187,10 +187,10 @@ def banners() -> None:
     for ds, p in weak:
         groups.setdefault(p.status, []).append(short[ds])
     names = " · ".join(f"{ui.STATUS_LABEL[lang][st_]}: {', '.join(v)}" for st_, v in groups.items())
+    # Yalnızca hesabın çekirdeği (iklim, toprak) gerçek değilse sayfa başında uyarı gösterilir.
+    # Yardımcı veri setlerinin durumu kenar çubuğundaki sayaçta ve Yöntem sayfasında yazar.
     if core:
         ui.callout(f"<b>{ui.esc(t('banner_core_title', lang))}</b> {ui.esc(names)}. {ui.esc(t('banner_core_text', lang))}", "bad")
-    else:
-        ui.callout(f"<b>{ui.esc(t('banner_title', lang))}</b> {ui.esc(names)}. {ui.esc(t('banner_text', lang))}", "warn")
 
 
 def footer() -> None:
@@ -298,21 +298,47 @@ def _equipment_label(tag: str) -> str:
     return tr if L() == "tr" else en
 
 
+#: Uydu görüntüsü altlığı (Esri World Imagery) + yer adı/sınır katmanı; anahtar gerekmez.
+SAT_TILES = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+REF_TILES = ("https://server.arcgisonline.com/ArcGIS/rest/services/Reference/"
+             "World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}")
+
+
+def basemap(center, zoom: float) -> dict:
+    """Uydu altlıklı harita ayarı (Plotly Scattermap / MapLibre)."""
+    return dict(
+        style="white-bg", center=dict(lat=center[0], lon=center[1]), zoom=zoom,
+        layers=[
+            dict(sourcetype="raster", source=[SAT_TILES], below="traces",
+                 sourceattribution="Görüntü © Esri, Maxar, Earthstar Geographics"),
+            dict(sourcetype="raster", source=[REF_TILES], below="traces", opacity=0.85),
+        ],
+    )
+
+
 def _location_map(b) -> None:
     site = state.current_site()
     fig = go.Figure()
-    fig.add_trace(go.Scattermap(
-        lat=[s.lat for s in b.sites], lon=[s.lon for s in b.sites], text=[s.name for s in b.sites],
-        mode="markers+text", textposition="top right", marker=dict(size=10, color=ui.MUTED), hoverinfo="text",
-        textfont=dict(color=ui.INK, size=13),
-    ))
-    fig.add_trace(go.Scattermap(lat=[site.lat], lon=[site.lon], mode="markers",
-                                marker=dict(size=20, color=ui.NEON_YELLOW), hoverinfo="skip"))
-    fig.update_layout(map=dict(style="carto-darkmatter", center=dict(lat=b.map_center[0], lon=b.map_center[1]),
-                               zoom=b.map_zoom - 0.5),
-                      height=300, margin=dict(l=0, r=0, t=0, b=0), showlegend=False,
+    others = [s for s in b.sites if s.id != site.id]
+    # seçili tarlanın çevresinde yumuşak hale + parlak nokta
+    fig.add_trace(go.Scattermap(lat=[site.lat], lon=[site.lon], mode="markers", hoverinfo="skip",
+                                marker=dict(size=46, color="rgba(234,254,7,0.18)")))
+    fig.add_trace(go.Scattermap(lat=[site.lat], lon=[site.lon], mode="markers", hoverinfo="skip",
+                                marker=dict(size=24, color="rgba(234,254,7,0.35)")))
+    if others:
+        fig.add_trace(go.Scattermap(
+            lat=[s.lat for s in others], lon=[s.lon for s in others], text=[s.name for s in others],
+            mode="markers+text", textposition="top right", hoverinfo="text",
+            marker=dict(size=11, color=ui.YONDER), textfont=dict(color="#FFFFFF", size=13),
+        ))
+    fig.add_trace(go.Scattermap(lat=[site.lat], lon=[site.lon], text=[site.name], mode="markers+text",
+                                textposition="top right", hoverinfo="text",
+                                marker=dict(size=14, color=ui.NEON_YELLOW),
+                                textfont=dict(color=ui.NEON_YELLOW, size=15)))
+    fig.update_layout(map=basemap(b.map_center, b.map_zoom - 0.3),
+                      height=320, margin=dict(l=0, r=0, t=0, b=0), showlegend=False,
                       paper_bgcolor="rgba(0,0,0,0)", font=dict(color=ui.INK))
-    ui.chart(fig, width="stretch", config={"displayModeBar": False})
+    ui.chart(fig, width="stretch", config={"displayModeBar": False, "scrollZoom": True})
 
 
 def _verify_history() -> None:
@@ -874,7 +900,7 @@ def page_basin() -> None:
                 df = pd.read_csv(sink)
                 fig = go.Figure(go.Scattermap(lat=df["lat"], lon=df["lon"], mode="markers",
                                               marker=dict(size=6, color=df.get("year", 0), colorscale="Reds")))
-                fig.update_layout(map=dict(style="carto-darkmatter", center=dict(lat=b.map_center[0], lon=b.map_center[1]), zoom=7),
+                fig.update_layout(map=basemap(b.map_center, 7),
                                   height=280, margin=dict(l=0, r=0, t=0, b=0))
                 ui.chart(fig, width="stretch")
             else:
