@@ -310,7 +310,7 @@ def basemap(center, zoom: float) -> dict:
         style="white-bg", center=dict(lat=center[0], lon=center[1]), zoom=zoom,
         layers=[
             dict(sourcetype="raster", source=[SAT_TILES], below="traces",
-                 sourceattribution="Görüntü © Esri, Maxar, Earthstar Geographics"),
+                 sourceattribution="© Esri"),
             dict(sourcetype="raster", source=[REF_TILES], below="traces", opacity=0.85),
         ],
     )
